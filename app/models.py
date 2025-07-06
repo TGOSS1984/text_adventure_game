@@ -1,0 +1,40 @@
+"""
+models.py
+
+Sets up the class stats
+Shows the player & enemy stats
+"""
+
+class Character:
+    def __init__(self, name, attack, defense, max_hp):
+        """
+        Sets up a character with name, attack power, defense, and max HP.
+        """
+        self.name = name
+        self.attack = attack
+        self.defense = defense
+        self.max_hp = max_hp
+
+    @staticmethod
+    def create(class_name):
+        """
+        Creates a Character based on the selected class name.
+        Each class has unique base stats.
+        """
+        if class_name == "Knight":
+            return Character("Knight", 15, 10, 125)
+        elif class_name == "Mage":
+            return Character("Mage", 25, 5, 85)
+        elif class_name == "Rogue":
+            return Character("Rogue", 20, 7, 95)
+        elif class_name == "Archer":
+            return Character("Archer", 18, 8, 100)
+
+class Enemy:
+    def __init__(self, name, hp, attack):
+        """
+        Enemy with a name, HP, and attack power.
+        """
+        self.name = name
+        self.hp = hp
+        self.attack = attack
