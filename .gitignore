@@ -1,0 +1,10 @@
+__pycache__/
+savegame.json
+.env
+core.Microsoft*
+core.mongo*
+core.python*
+env.py
+*.py[cod]
+.venv/
+creds.json
