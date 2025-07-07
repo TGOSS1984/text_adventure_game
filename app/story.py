@@ -215,6 +215,20 @@ class Story:
                 "rest": True
             },
 
+            17: {
+                "text": (
+                    "The Hollow Knight collapses, blade skittering across the stone. "
+                    "Its armor crumbles to rust and ash, the last breath of duty exhaled in silence.\n\n"
+                    "Around you, the catacombs seem to sigh — a release of ancient tension. Runes that once shimmered with vigilance now flicker and fade. "
+                    "You stand alone, but not unwatched. Somewhere in the dark, something has taken notice.\n\n"
+                    "The path ahead lies open now — a tunnel leading deeper into the dark, or back toward the surface and the flicker of the bonfire. "
+                    "The choice is yours, but you feel the weight of unseen eyes pressing forward with you."
+                ),
+                "choices": ["descend_catacombs", "flee"],
+                "lore": "Some warriors fight not for glory, but because it is all they remember. ",
+                "battle": True
+            },
+
             99: {
                 "text": (
                     "You step through the final gate, and the world shifts. Time unravels. Sound fades. The air thickens into fire, and yet your breath remains cold.\n\n"
@@ -239,7 +253,7 @@ class Story:
         mapping = {
             "explore_throne": 1,
             "descend_catacombs": 2,
-            "fight_knight": 1,
+            "fight_knight": 17,
             "flee": 3,
             "approach_watcher": 3,
             "hide": 3,
