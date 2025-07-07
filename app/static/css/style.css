@@ -200,11 +200,15 @@ a:hover {
 
     .class-option img {
         width: 100%;
-        height: 200px;
+        height: 150px;
     }
 
     .class-selector button {
         margin-top: 1.5rem;
         align-self: center;
     }
+
+    h1 {
+    font-size: 4rem;
+}
 }
