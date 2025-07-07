@@ -1,1 +1,67 @@
+<!--
+Main HMTL file
+index.html
+Used for the class selector screen & main game screen
+-->
 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Elden Souls - Choose Your Class</title>
+
+    <!--CSS Link-->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+
+    <!--Font Awesome Link-->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    
+</head>
+<body>
+    <div class="bonfire-bg">
+
+        <h1>Elden Souls</h1>
+
+        <p class="battle-info">Select your class:</p>
+
+        <form method="POST" action="{{ url_for('main.start') }}" class="class-selector">
+            
+
+            <div class="class-option">
+                <label>
+                    <input type="radio" name="class" value="Knight" required>
+                    <img src="{{ url_for('static', filename='images/classes/knight.png') }}" alt="Knight">
+                    <span><i class="fas fa-chess-knight"></i> Knight</span>
+                </label>
+            </div>
+
+            <div class="class-option">
+                <label>
+                    <input type="radio" name="class" value="Mage">
+                    <img src="{{ url_for('static', filename='images/classes/mage.png') }}" alt="Mage">
+                    <span><i class="fas fa-wand-magic-sparkles"></i> Mage</span>
+                </label>
+            </div>
+
+            <div class="class-option">
+                <label>
+                    <input type="radio" name="class" value="Rogue">
+                    <img src="{{ url_for('static', filename='images/classes/rogue.png') }}" alt="Rogue">
+                    <span><i class="fas fa-skull-crossbones"></i> Rogue</span>
+                </label>
+            </div>
+
+            <div class="class-option">
+                <label>
+                    <input type="radio" name="class" value="Archer">
+                    <img src="{{ url_for('static', filename='images/classes/archer.png') }}" alt="Archer">
+                    <span><i class="fas fa-bullseye"></i> Archer</span>
+                </label>
+            </div>
+
+            <button type="submit">Begin Journey</button>
+        </form>
+    </div>
+</body>
+</html>
