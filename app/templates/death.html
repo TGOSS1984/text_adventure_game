@@ -1,0 +1,30 @@
+<!--
+Death HTML file
+death.html
+Used for game over/you died screen with an option to restart
+-->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>You Died - Elden Souls</title>
+
+    <!--CSS Link-->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    
+</head>
+<body>
+    <div class="bonfire-bg">
+        <h1 style="color: crimson; font-size: 3rem;">YOU DIED</h1>
+        <p class="battle-info" style="font-style: italic; margin-bottom: 20px;">The flames fade... but your will endures.</p>
+
+        <!-- Restart game via POST to /start with current class -->
+        <form action="{{ url_for('main.start') }}" method="post">
+            <input type="hidden" name="class" value="{{ session['character']['char_class'] }}">
+            <button type="submit" style="padding: 10px 20px; font-weight: bold;">Restart</button>
+        </form>
+    </div>
+</body>
+</html>
