@@ -1,0 +1,59 @@
+<!--
+Battle HTML file
+battle.html
+Used for the battles in the game
+-->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Battle - Elden Souls</title>
+
+    <!--CSS Link-->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+
+    <!--Font Awesome Link-->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    
+    
+</head>
+<body>
+    <div class="bonfire-bg">
+        <h2>⚔️ Battle Begins</h2>
+        <p class="battle-info"><strong>You:</strong> {{ player_hp }}/{{ character.max_hp }} HP</p>
+        <p class="battle-info"><strong>{{ enemy.name }}:</strong> {{ enemy.hp }} HP</p>
+        <p class="battle-info">Estus Flasks: {{ session['estus'] }}</p>
+
+        {% if move_hint %}
+            <div class="lore-box" style="background-color: rgba(80,0,0,0.6); border-left: 4px solid crimson;">
+                <p><strong>Enemy Stance:</strong> {{ move_hint }}</p>
+            </div>
+        {% endif %}
+
+        {% if message %}
+            <div class="lore-box">
+                <p>{{ message }}</p>
+            </div>
+        {% endif %}
+
+        <form method="POST">
+
+            <button name="action" value="attack">
+                <i class="fas fa-hand-fist"></i> Attack
+            </button>
+            <button name="action" value="dodge">
+                <i class="fas fa-person-running"></i> Dodge
+            </button>
+            <button name="action" value="block">
+                <i class="fas fa-shield-halved"></i> Block
+            </button>
+            <button name="action" value="estus">
+                <i class="fas fa-flask"></i> Use Estus Flask
+            </button>
+
+        </form>
+    </div>
+</body>
+</html>
