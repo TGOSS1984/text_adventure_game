@@ -1,0 +1,52 @@
+<!--
+Game HTML file
+game.html
+Used for the story of the game and where the choices are seen
+-->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Elden Souls - Adventure</title>
+
+    <!--CSS Link-->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">    
+    
+</head>
+<body>
+    <div class="bonfire-bg">
+        <h2>Class: {{ character.name }} | HP: {{ hp }}/{{ character.max_hp }}</h2>
+        <p>HP: {{ hp }}/{{ character.max_hp }} ({{ (hp / character.max_hp * 100) | round(0) }}%)</p>
+        <progress value="{{ hp }}" max="{{ character.max_hp }}"></progress>
+        <div class="lore-box">
+            <p><strong>Story:</strong> {{ chapter.text }}</p>
+            {% if chapter.lore %}
+            <p class="lore"><em>{{ chapter.lore }}</em></p>
+            {% endif %}
+        </div>
+        {% if chapter.choices %}
+            <form method="POST">
+                {% for choice in chapter.choices %}
+                    <button name="choice" value="{{ choice }}">{{ choice.replace("_", " ").title() }}</button>
+                {% endfor %}
+            </form>
+        {% else %}
+
+        <div class="center-links">
+            <a href="{{ url_for('main.index') }}">Return to Title</a>
+        </div>
+        {% endif %}
+        <div class="menu">
+            <a href="{{ url_for('main.save') }}">Save</a> |
+            <a href="{{ url_for('main.load') }}">Load</a>
+        </div>
+        <div class="audio-controls" aria-label="Background music controls">
+            <button id="playMusic" aria-label="Play music">🔊 Play</button>
+            <button id="pauseMusic" aria-label="Pause music">🔇 Pause</button>
+        </div>
+    </div>
+    <script src="{{ url_for('static', filename='js/sound.js') }}"></script>
+</body>
+</html>
