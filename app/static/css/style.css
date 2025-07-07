@@ -1,0 +1,51 @@
+/*Main Font*/
+
+
+@import url('https://fonts.googleapis.com/css2?family=Bitter:ital,wght@0,100..900;1,100..900&family=Cinzel:wght@400..900&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Noto+Sans:ital,wght@0,100..900;1,100..900&display=swap');
+
+
+/*Title / H1 Font*/
+
+
+@font-face {
+    font-family: 'Mantinia';
+    src: url('../fonts/Mantinia.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+}
+
+
+html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+
+body {
+    font-family: 'Cinzel', serif;
+    background-color: #111;
+    color: #eee;
+    margin: 0;
+    padding: 20px;
+    background-image: url('../images/areas/bonfire.jpg');
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
+
+h1, h2 {
+    text-shadow: 2px 2px 4px #000;
+}
+
+
+h1 {
+    font-family: 'Mantinia', 'Cinzel', serif;
+    font-size: 5rem;
+}
+
+
+h2 {
+    font-size: 2rem;
+}
