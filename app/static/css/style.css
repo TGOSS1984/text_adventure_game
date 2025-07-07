@@ -121,6 +121,24 @@ a:hover {
     margin-top: 20px;
 }
 
+/*Enemy Img/Lore CSS*/
+
+.enemy-img {
+  max-width: 200px;
+  height: auto;
+  border: 2px solid #444;
+  border-radius: 12px;
+  box-shadow: 0 0 10px black;
+  margin-bottom: 1rem;
+}
+
+.enemy-lore {
+  max-width: 600px;
+  font-style: italic;
+  margin: 0 auto;
+  color: #ccc;
+}
+
 /* CSS Class Selector Styling */
 
 .class-selector {

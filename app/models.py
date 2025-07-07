@@ -31,10 +31,12 @@ class Character:
             return Character("Archer", 18, 8, 100)
 
 class Enemy:
-    def __init__(self, name, hp, attack):
+    def __init__(self, name, hp, attack, image=None, lore=None):
         """
-        Enemy with a name, HP, and attack power.
+        Enemy with a name, HP, attack power, optional image, and lore.
         """
         self.name = name
         self.hp = hp
         self.attack = attack
+        self.image = image
+        self.lore = lore

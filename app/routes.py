@@ -17,6 +17,7 @@ from .story import Story
 from .combat import BattleManager
 from .models import Character
 from .save_load import save_game, load_game
+from .models import Enemy
 import random
 
 main = Blueprint("main", __name__)
@@ -67,7 +68,16 @@ def game():
         if next_data.get("battle"):
             is_boss = next_data.get("boss", False)
             enemy = battle_manager.generate_enemy(boss=is_boss)
-            session["enemy"] = enemy.__dict__
+
+            # Store all relevant enemy attributes manually
+            session["enemy"] = {
+                "name": enemy.name,
+                "hp": enemy.hp,
+                "attack": enemy.attack,
+                "image": enemy.image,
+                "lore": enemy.lore
+            }
+
             session["enemy_is_boss"] = is_boss
             session["chapter_after_battle"] = next_chapter
             return redirect(url_for("main.battle"))
@@ -80,7 +90,16 @@ def game():
 @main.route("/battle", methods=["GET", "POST"])
 def battle():
     enemy_data = session.get("enemy", {})
-    enemy = type("Enemy", (object,), enemy_data)()
+    enemy_image = enemy_data.get("image") or "default.png"
+    enemy_lore = enemy_data.get("lore") or "An unknown entity lurks in the darkness."
+
+    enemy = Enemy(
+        name=enemy_data.get("name"),
+        hp=enemy_data.get("hp"),
+        attack=enemy_data.get("attack"),
+        image=enemy_image,
+        lore=enemy_lore
+    )
     character = session.get("character", {})
     player_hp = session.get("hp", 100)
     estus_count = session.get("estus", 0)

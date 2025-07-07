@@ -23,9 +23,19 @@ Used for the battles in the game
     <div class="bonfire-bg">
         <h2>⚔️ Battle Begins</h2>
         <p class="battle-info"><strong>You:</strong> {{ player_hp }}/{{ character.max_hp }} HP</p>
-        <p class="battle-info"><strong>{{ enemy.name }}:</strong> {{ enemy.hp }} HP</p>
         <p class="battle-info">Estus Flasks: {{ session['estus'] }}</p>
+        <p class="battle-info"><strong>{{ enemy.name }}:</strong> {{ enemy.hp }} HP</p>
 
+        <!-- Enemy Image + Lore Section -->
+        <div class="enemy-display" style="text-align: center; margin: 2rem 0;">
+            <img class="enemy-img" src="{{ url_for('static', filename='images/enemies/' + enemy.image) }}"
+                 alt="{{ enemy.name }}">
+                 
+            <p class="enemy-lore">
+                {{ enemy.lore }}
+            </p>
+        </div>
+        
         {% if move_hint %}
             <div class="lore-box" style="background-color: rgba(80,0,0,0.6); border-left: 4px solid crimson;">
                 <p><strong>Enemy Stance:</strong> {{ move_hint }}</p>

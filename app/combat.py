@@ -26,17 +26,53 @@ class BattleManager:
         If 'boss' is True, returns the final boss. Otherwise selects a random enemy from list.
         """
         if boss:
-            return Enemy("Cindergloom", 180, 25)
+            return Enemy(
+            name="Cindergloom",
+            hp=180,
+            attack=25,
+            image="cindergloom.png",
+            lore="The final Flame Lord, bound in cinders and regret. Born of divine fire and destined to consume the end of all things."
+        )
         else:
             enemies = [
-                {"name": "Hollow Knight", "hp": 80, "attack": 18},
-                {"name": "Ash Beast", "hp": 70, "attack": 15},
-                {"name": "Wraith", "hp": 60, "attack": 17},
-                {"name": "Ghoul", "hp": 65, "attack": 16},
-                {"name": "Fallen Soldier", "hp": 75, "attack": 14},
-            ]
-            e = np.random.choice(enemies)
-            return Enemy(e["name"], e["hp"], e["attack"])
+            {
+                "name": "Hollow Knight",
+                "hp": 80,
+                "attack": 18,
+                "image": "hollow_knight.png",
+                "lore": "Once noble, now a shell of oath and rust. Bound to duty, long after purpose has faded."
+            },
+            {
+                "name": "Ash Beast",
+                "hp": 70,
+                "attack": 15,
+                "image": "ash_beast.png",
+                "lore": "Forged in the crucibles beneath the mountain. Its bones smolder with endless rage."
+            },
+            {
+                "name": "Wraith",
+                "hp": 60,
+                "attack": 17,
+                "image": "wraith.png",
+                "lore": "A cursed soul slipping between realms. It strikes before shadows know it’s there."
+            },
+            {
+                "name": "Ghoul",
+                "hp": 65,
+                "attack": 16,
+                "image": "ghoul.png",
+                "lore": "Twisted by hunger and time. Claws etched from broken vows and burial iron."
+            },
+            {
+                "name": "Fallen Soldier",
+                "hp": 75,
+                "attack": 14,
+                "image": "fallen_soldier.png",
+                "lore": "He never left the battlefield. His sword still swings, though his war was lost centuries ago."
+            }
+        ]
+        e = np.random.choice(enemies)
+        return Enemy(e["name"], e["hp"], e["attack"], e["image"], e["lore"])
 
     def attack(self, player, enemy):
         """
