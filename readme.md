@@ -2,6 +2,10 @@
 
 **Elden Souls** is a web-based text adventure game inspired by *Dark Souls* and *Elden Ring*. Built with Python and Flask, the game features branching narratives, tactical combat, and a rich, atmospheric world. Players choose from four distinct character classes and embark on a perilous journey through cursed lands.
 
+[Github (repo) link to project](https://github.com/TGOSS1984/text_adventure_game)
+
+[Heroku Link to project](https://elden-souls-text-adventure-app-6406dec306fc.herokuapp.com/)
+
 ---
 
 ## Table of Contents
@@ -13,18 +17,17 @@
 - [Story Flowchart](#story-flowchart)
 - [Game Logic Overview](#game-logic-overview)
 - [Testing & PEP8](#testing--pep8)
-- [Deployment Options](#deployment-options)
+- [Deployment](#deployment)
   - [Deploy to Heroku](#deploy-to-heroku)
 - [Libraries Used & Rationale](#libraries-used--rationale)
 - [Known Issues & Future Enhancements](#known-issues--future-enhancements)
 - [Credits](#credits)
-- [License](#license)
 
 ---
 
 ## Project Purpose
 
-The goal of *Elden Souls* is to provide a lore-rich, interactive text-based adventure that combines storytelling with strategic combat. It showcases Python programming fundamentals, including OOP, data handling, user interaction, and web deployment using Flask. The game is designed to engage users in decision-making, exploration, and tactical battles, simulating the grim fantasy tone of *Elden Ring* and *Dark Souls*.
+The goal of *Elden Souls* is to provide a lore-rich, interactive text-based adventure that combines storytelling with strategic combat. It showcases Python programming fundamentals, including OOP, data handling, user interaction, and web deployment using Flask. The game is designed to engage users in decision-making, exploration, and tactical battles, simulating the grim fantasy tone of *Elden Ring* and *Dark Souls*. This project was also 
 
 ---
 
@@ -36,7 +39,8 @@ The goal of *Elden Souls* is to provide a lore-rich, interactive text-based adve
 - Boss fights and lore-driven enemy encounters
 - Bonfire system to rest and restore health/Estus
 - Save/Load functionality with session storage and JSON backup
-- Responsive Flask web interface with gothic-themed styling
+- Responsive Flask web interface with gothic-themed styling using html & CSS
+- This project was primarily for use of python but as I decided to add some visual style to it using flask I wanted to also add more immersion by adding some themed music whihc be manually controlled by the user 
 
 ---
 
@@ -64,6 +68,8 @@ elden_souls/
 ├── requirements.txt
 ├── run.py
 ├── README.md
+├── Procfile
+├── .python-version
 ├── .gitignore
 └── storyboard.md
 ```
@@ -152,8 +158,17 @@ Chapter 0: Intro
 
 ### Manual Testing
 
+**Notes**
+
 During development I struggled with Flask session handling — especially when writing unit tests that required active contexts. It took several iterations before I found a clean solution. Many google searches and reddit forums supported with troubleshooting. Some guidance was taken from online resources and AI-assisted tools for structuring markdown and troubleshooting Flask errors, but all content and logic were written and tested by myself.
 
+It was interesting to use Heroku for the first time & to troubleshoot new issues which lead me to  learn more about the importance of the project files/requirements.
+
+Initially, I had issues setting the project up in Heroku , when I first linked my project to github I received errors, after troubleshooting the errors were caused by not adding a python version file in my project files. After this fix I found another error – again after troubleshooting I discovered I required a Procfile to be created in my project along with some other requirements in the requirements.txt. After adding these things I  managed to successfully link & run my project in Heroku.
+
+**General Tests**
+
+- Throughout the project regular use of print statements were used to test functions
 - Verified form inputs for class selection — ensured radio buttons require a choice
 - Validated session-based story progression and choice-based routing
 - Tested story branches including edge cases like hidden path detection
@@ -168,33 +183,69 @@ During development I struggled with Flask session handling — especially when w
 
 ### PEP8 Compliance
 
-Code was linted using `pycodestyle`:
+## Code Quality & Linting
 
-```bash
-pip install pycodestyle
-pycodestyle app/ --max-line-length=100
-```
+Code throughout the project has been checked and cleaned to ensure it meets **PEP8 standards**.
 
-All modules are PEP8-compliant with no significant issues.
+### Tools Used
+
+- **`pycodestyle`** was used to identify PEP8 violations:  
+  Run `pip install pycodestyle` and  
+  `pycodestyle app/ --max-line-length=100`
+
+- **[pep8ci.herokuapp.com](https://pep8ci.herokuapp.com/#)** was used for manual checks.
+
+- **`black`** was installed and used to auto-format the project:  
+  Run `pip install black` and `black .`
+
+`black` helped normalize indentation, line length, and overall structure according to modern Python formatting conventions.
+
+### Issues Identified and Resolved
+
+- `E501`: **Line too long**
+- `E122`: **Continuation line missing indentation**
+- `E302`: **Expected 2 blank lines before top-level function/class**
+- `W291`: **Trailing whitespace**
+- `W293`: **Blank line contains whitespace**
+
+All modules were successfully cleaned and verified to be **PEP8-compliant**.
 
 ---
 
-## Deployment Options
+## Deployment
 
-### Replit
+### Options
+
+**Replit**
 
 - Upload project files to Replit
 - Add Flask to `packages`
 - Set `run.py` as main file
 
-### Render
+**Render**
 
 - Push code to GitHub
 - Connect GitHub repo to [Render.com](https://render.com)
 - Set build command: `pip install -r requirements.txt`
 - Set start command: `gunicorn run:app`
 
-### Deploy to Heroku
+### This Project
+
+**VSCode**
+
+- Code was written using VSCode
+- Folder structure was a bit more complex than what I have been used to, run.py , Readme, requirements, gitignore all exist in the main folder. All other python files exist within the app folder alogn with templates folder whihc contains the html, the static which contains the CSS/JS & image & sound assests.
+
+**GitHub**
+
+- A GitHub account was created
+- A new reposiory was created on GitHub by clicking the 'New' button. It was named and set as public.
+- A folder was created in VSCode and initialised as a Git repository
+- In VSCode the terminal was used to run commands to link the local project to the GitHub repository
+- Throughout the process of builing the website, commits & pushes were staged regularly using terminal commands such as 'git add .' , 'git-commit -m' & 'git push'
+- Host the project: Went to my GitHub repository, clicked settings > pages and selected the branch to publish, hit save and then GitHub generated a live link (link at top of readme)
+
+**Deploy to Heroku**
 
 1. **Create **`` in the root directory:
 
@@ -218,7 +269,7 @@ pip freeze > requirements.txt
    - Enable automatic deploys if desired
    - Click **Deploy Branch**
 
-5. **Open App** once deployed (e.g., `https://elden-souls.herokuapp.com`)
+5. **Open App** once deployed (`https://elden-souls-text-adventure-app-6406dec306fc.herokuapp.com/`)
 
 ---
 

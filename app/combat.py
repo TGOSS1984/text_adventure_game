@@ -1,7 +1,7 @@
 """
 combat.py
 
-Manages all battle-related logic 
+Manages all battle-related logic
 Includes mechanics for:
 - Enemy generation
 - Attack resolution
@@ -16,6 +16,7 @@ import numpy as np
 from .models import Enemy
 from flask import session
 
+
 class BattleManager:
     def __init__(self):
         pass  # No longer storing estus_flasks here
@@ -27,50 +28,50 @@ class BattleManager:
         """
         if boss:
             return Enemy(
-            name="Cindergloom",
-            hp=180,
-            attack=25,
-            image="cindergloom.png",
-            lore="The final Flame Lord, bound in cinders and regret. Born of divine fire and destined to consume the end of all things."
-        )
+                name="Cindergloom",
+                hp=180,
+                attack=25,
+                image="cindergloom.png",
+                lore="The final Flame Lord, bound in cinders and regret. Born of divine fire and destined to consume the end of all things.",
+            )
         else:
             enemies = [
-            {
-                "name": "Hollow Knight",
-                "hp": 80,
-                "attack": 18,
-                "image": "hollow_knight.png",
-                "lore": "Once noble, now a shell of oath and rust. Bound to duty, long after purpose has faded."
-            },
-            {
-                "name": "Ash Beast",
-                "hp": 70,
-                "attack": 15,
-                "image": "ash_beast.png",
-                "lore": "Forged in the crucibles beneath the mountain. Its bones smolder with endless rage."
-            },
-            {
-                "name": "Wraith",
-                "hp": 60,
-                "attack": 17,
-                "image": "wraith.png",
-                "lore": "A cursed soul slipping between realms. It strikes before shadows know it’s there."
-            },
-            {
-                "name": "Ghoul",
-                "hp": 65,
-                "attack": 16,
-                "image": "ghoul.png",
-                "lore": "Twisted by hunger and time. Claws etched from broken vows and burial iron."
-            },
-            {
-                "name": "Fallen Soldier",
-                "hp": 75,
-                "attack": 14,
-                "image": "fallen_soldier.png",
-                "lore": "He never left the battlefield. His sword still swings, though his war was lost centuries ago."
-            }
-        ]
+                {
+                    "name": "Hollow Knight",
+                    "hp": 80,
+                    "attack": 18,
+                    "image": "hollow_knight.png",
+                    "lore": "Once noble, now a shell of oath and rust. Bound to duty, long after purpose has faded.",
+                },
+                {
+                    "name": "Ash Beast",
+                    "hp": 70,
+                    "attack": 15,
+                    "image": "ash_beast.png",
+                    "lore": "Forged in the crucibles beneath the mountain. Its bones smolder with endless rage.",
+                },
+                {
+                    "name": "Wraith",
+                    "hp": 60,
+                    "attack": 17,
+                    "image": "wraith.png",
+                    "lore": "A cursed soul slipping between realms. It strikes before shadows know it’s there.",
+                },
+                {
+                    "name": "Ghoul",
+                    "hp": 65,
+                    "attack": 16,
+                    "image": "ghoul.png",
+                    "lore": "Twisted by hunger and time. Claws etched from broken vows and burial iron.",
+                },
+                {
+                    "name": "Fallen Soldier",
+                    "hp": 75,
+                    "attack": 14,
+                    "image": "fallen_soldier.png",
+                    "lore": "He never left the battlefield. His sword still swings, though his war was lost centuries ago.",
+                },
+            ]
         e = np.random.choice(enemies)
         return Enemy(e["name"], e["hp"], e["attack"], e["image"], e["lore"])
 
@@ -87,7 +88,7 @@ class BattleManager:
     def enemy_attack(self, player, action="attack"):
         """
         Randomly selects enemy's move: standard attack or a 'big hit'.
-        Damage is calculated differently depending on the move type. 
+        Damage is calculated differently depending on the move type.
         Added so that it may help the player to choose to dodge or defend rather than just attack every time.
         """
         move = np.random.choice(["attack", "big_hit"])
@@ -141,7 +142,7 @@ class BattleManager:
 
     def predict_enemy_move(self, player):
         """Predicts the enemy's next move for display purposes."""
-        
+
         move = np.random.choice(["attack", "big_hit"])
         if move == "big_hit":
             return "big_hit", "The enemy is preparing a massive attack!", None

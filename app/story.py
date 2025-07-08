@@ -4,6 +4,7 @@ story.py
 Handles all branching story logic, narrative & story triggers like battles etc. Maps choices to story paths
 """
 
+
 class Story:
     def __init__(self):
         self.chapter = 0
@@ -19,7 +20,7 @@ class Story:
                     "The bonfire beckons, not merely as warmth, but as a tether to the world’s last memory of light. Its embers spark and hiss, echoing voices long since consumed. This land was not always forsaken. It was sacred. And now, it calls for you."
                 ),
                 "choices": ["explore_throne", "descend_catacombs"],
-                "lore": "Limgrave was once the seat of the First Flamebearers — venerated stewards of sacred fire. They kindled light in a world of dusk, but their covenant was broken when the Pyric Betrayal scorched the last altar. Now only their shadows remain, tethered to ruin."
+                "lore": "Limgrave was once the seat of the First Flamebearers — venerated stewards of sacred fire. They kindled light in a world of dusk, but their covenant was broken when the Pyric Betrayal scorched the last altar. Now only their shadows remain, tethered to ruin.",
             },
             1: {
                 "text": (
@@ -32,7 +33,7 @@ class Story:
                 ),
                 "choices": ["fight_knight", "flee"],
                 "lore": "Hollow Knights were once the Watchers of the Rite — sworn to guard the passage between flesh and spirit. Their souls, unable to pass on, now rot in servitude beneath stone, forgotten even by death. The Catacombs were once pilgrimage grounds, where the dying sought the blessing of Last Light. Now, only ruin and the echo of war remain.",
-                "battle": True
+                "battle": True,
             },
             2: {
                 "text": (
@@ -45,7 +46,7 @@ class Story:
                 ),
                 "choices": ["approach_watcher", "hide"],
                 "lore": "The Watcher once stood beside the Flame Mother, guardian of the Ember Tree that healed the land. When her sacred fire was stolen, the Watcher was bound in grief and rot. Twisted by sorrow and betrayed faith, it lost all memory of devotion — only rage endures. The Grove itself is now a wound upon the world, pulsing with corrupted life.",
-                "battle": True
+                "battle": True,
             },
             3: {
                 "text": (
@@ -56,9 +57,8 @@ class Story:
                     "You may ascend into the forgotten heavens... or drift toward the chapel path, where prayers once soothed and now accuse."
                 ),
                 "choices": ["climb_tower", "side_path_chapel"],
-                "lore": "Raised by flamebound clerics to imprison a forgotten god, the tower's walls bear scars of war, ritual, and betrayal. Its foundations are etched with containment runes that now flicker faintly, suggesting their seal may soon break. Pilgrims once gathered here to seek visions — few ever returned sane."
+                "lore": "Raised by flamebound clerics to imprison a forgotten god, the tower's walls bear scars of war, ritual, and betrayal. Its foundations are etched with containment runes that now flicker faintly, suggesting their seal may soon break. Pilgrims once gathered here to seek visions — few ever returned sane.",
             },
-
             4: {
                 "text": (
                     "Atop the tower, the air thins to frost and fire. A shattered dome lets in a pale, storm-lit sky, where clouds churn like furious spirits. "
@@ -70,9 +70,8 @@ class Story:
                 "choices": ["fight_final_boss"],
                 "lore": "Cindergloom was born of the First Pyre, shaped in the forges of the divine and cursed by their fall. His flame does not warm. It does not burn. It consumes — will, memory, and soul alike. He is the reason the heavens no longer blaze.",
                 "battle": True,
-                "boss": True
+                "boss": True,
             },
-
             5: {
                 "text": (
                     "Silence. Your enemy lies broken. The air itself shudders in the wake of his fall. The flames dim but do not die — instead, they curl inward, waiting. Watching.\n\n"
@@ -82,9 +81,8 @@ class Story:
                     "No one shall guide you now. You are legend — not for what you fought, but for what you chose. The world waits."
                 ),
                 "choices": [],
-                "lore": "Every Age begins in brilliance and ends in ash. Some claim the flame is salvation. Others say it is a lie — a cycle that binds all souls to endless war. But what comes after ash? That has never been written. Until now."
+                "lore": "Every Age begins in brilliance and ends in ash. Some claim the flame is salvation. Others say it is a lie — a cycle that binds all souls to endless war. But what comes after ash? That has never been written. Until now.",
             },
-
             6: {
                 "text": (
                     "You enter the Chapel of Thorns, where silence grows like moss. Vines claw across broken pews, weaving through cracked mosaics that once depicted salvation.\n\n"
@@ -93,7 +91,7 @@ class Story:
                 ),
                 "choices": ["touch_relic", "leave_relic"],
                 "lore": "The Thorn Chapel was a place of forbidden faith — where healers defied the pyromancer lords, nurturing flame without destruction. It was sealed in bramble and branded heresy. Some say it still remembers peace. Few are allowed to feel it.",
-                "rest": True
+                "rest": True,
             },
             7: {
                 "text": (
@@ -106,9 +104,8 @@ class Story:
                 ),
                 "choices": ["confront_guardian"],
                 "lore": "The Forgotten Guardian once served the Tribunal of Light, enforcers of balance. When their creed fell to ruin, he remained — the last to remember a justice now lost. Some say he is blind. Others claim he sees too much.",
-                "battle": True
+                "battle": True,
             },
-
             8: {
                 "text": (
                     "The relic pulses with radiant breath, each beat echoing into the marrow of your bones. Symbols of flame and spirit swirl across its surface — not drawn, but alive.\n\n"
@@ -118,9 +115,8 @@ class Story:
                 ),
                 "choices": ["fight_final_boss"],
                 "lore": "Only those marked by the relic — forged by flame, yet untouched by rage — may pass through the Gate of Cinders. The relic is not a tool. It is a key, awakened by resolve. It marks not heroes, but those who endure.",
-                "battle": False
+                "battle": False,
             },
-
             9: {
                 "text": (
                     "Before you looms the Gate of Ash — a monolith scorched by centuries of flame and sorrow. Its surface crackles with veins of ember, pulsing like the last heartbeat of a dying god.\n\n"
@@ -129,10 +125,13 @@ class Story:
                     "To the right, stairs spiral into a bottomless dark, untouched by sun or memory. And ahead lies a ruined causeway littered with idol fragments and the bones of kneeling pilgrims.\n\n"
                     "Each breath here feels heavier. Each step, a choice that echoes beyond time."
                 ),
-                "choices": ["enter_flame_path", "descend_shadow_path", "investigate_ruins"],
-                "lore": "It is said the Ash Gate was forged from the remains of the First Flame, quenched and hammered by divine will. It judges all who approach. Few return. None return unchanged."
+                "choices": [
+                    "enter_flame_path",
+                    "descend_shadow_path",
+                    "investigate_ruins",
+                ],
+                "lore": "It is said the Ash Gate was forged from the remains of the First Flame, quenched and hammered by divine will. It judges all who approach. Few return. None return unchanged.",
             },
-
             10: {
                 "text": (
                     "You walk the flame-warped path. Ash swirls around you in choking spirals, and the ground cracks with every step, bleeding molten tears.\n\n"
@@ -142,7 +141,7 @@ class Story:
                 ),
                 "choices": ["press_forward"],
                 "lore": "The Flame Corridor once led to the Crucible Forge, where the Flamebearers tempered blades that could kill gods. But when the last smith succumbed to madness, the fires turned against their makers.",
-                "battle": True
+                "battle": True,
             },
             11: {
                 "text": (
@@ -155,9 +154,8 @@ class Story:
                 ),
                 "choices": ["press_forward"],
                 "lore": "The Shadow Hollow is where the First Sin was whispered into mortal ears. No light dares touch its core. What lies below is not evil — it is truth, unblinking and cruel.",
-                "battle": True
+                "battle": True,
             },
-
             12: {
                 "text": (
                     "You investigate the ruins, their stones blackened and half-swallowed by the earth. At the heart lies a collapsed shrine, choked in thorn and silence.\n\n"
@@ -166,9 +164,8 @@ class Story:
                     "The air around you shifts. Dust thickens. Shadows lengthen. The ruin seems to hold its breath."
                 ),
                 "choices": ["read_further", "leave_quietly"],
-                "lore": "The journal belonged to a penitent knight who sought absolution through reflection. What he found was not peace, but recognition — and a hunger staring back."
+                "lore": "The journal belonged to a penitent knight who sought absolution through reflection. What he found was not peace, but recognition — and a hunger staring back.",
             },
-
             13: {
                 "text": (
                     "You read the final entry: 'The mirror does not reflect — it remembers.'\n\n"
@@ -177,7 +174,7 @@ class Story:
                     "Behind the glass, something watches. It does not mimic. It judges."
                 ),
                 "choices": ["walk_away", "step_through"],
-                "lore": "The Mirror of Binding is said to trap the echoes of those who could not bear their truth. It does not lie. It reveals. But not all can survive revelation."
+                "lore": "The Mirror of Binding is said to trap the echoes of those who could not bear their truth. It does not lie. It reveals. But not all can survive revelation.",
             },
             14: {
                 "text": (
@@ -187,9 +184,8 @@ class Story:
                 ),
                 "choices": ["shatter_mirror", "return"],
                 "lore": "Avoiding the mirror is not escape. To deny it is to fracture your story — and perhaps your soul. Some claim the mirror remembers you forever, even if you forget it.",
-                "battle": False
+                "battle": False,
             },
-
             15: {
                 "text": (
                     "You step into the mirror’s echo. The world inverts — color drains, sound warps. You fall inward.\n\n"
@@ -199,9 +195,8 @@ class Story:
                 ),
                 "choices": ["fight_knight"],
                 "lore": "You cannot defeat what you refuse to face. The shadow has no mercy. It is not your enemy — it is your memory given form.",
-                "battle": True
+                "battle": True,
             },
-
             16: {
                 "text": (
                     "At the summit of the Abyssal Watchtower, light pierces the gloom like blades. Crumbling gargoyles watch from above, their mouths agape in silent scream.\n\n"
@@ -212,9 +207,8 @@ class Story:
                 ),
                 "choices": ["approach_final_gate"],
                 "lore": "This flame was kindled by the first Flamebearer who chose mercy over might. Its light does not blind. It forgives. Few recall their name. But soon, they may recall yours.",
-                "rest": True
+                "rest": True,
             },
-
             17: {
                 "text": (
                     "The Hollow Knight collapses, blade skittering across the stone. "
@@ -226,9 +220,8 @@ class Story:
                 ),
                 "choices": ["descend_catacombs", "flee"],
                 "lore": "Some warriors fight not for glory, but because it is all they remember. ",
-                "battle": True
+                "battle": True,
             },
-
             99: {
                 "text": (
                     "You step through the final gate, and the world shifts. Time unravels. Sound fades. The air thickens into fire, and yet your breath remains cold.\n\n"
@@ -241,9 +234,8 @@ class Story:
                 "choices": [],
                 "lore": "Cindergloom is not merely the final Flame Lord — he is flame given memory. When the gods fell, it was he who lit the pyres of their undoing. Bound neither by time nor fate, he waits only for one worthy enough to burn with him.",
                 "battle": True,
-                "boss": True
-            }
-
+                "boss": True,
+            },
         }
 
     def get_chapter(self, chapter_id):
@@ -273,6 +265,6 @@ class Story:
             "step_through": 15,
             "shatter_mirror": 3,
             "press_forward": 3,
-            "return": 3
+            "return": 3,
         }
         return mapping.get(choice, 0)

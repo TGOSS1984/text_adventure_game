@@ -5,6 +5,7 @@ Sets up the class stats
 Shows the player & enemy stats
 """
 
+
 class Character:
     def __init__(self, name, attack, defense, max_hp):
         """
@@ -29,6 +30,7 @@ class Character:
             return Character("Rogue", 20, 7, 95)
         elif class_name == "Archer":
             return Character("Archer", 18, 8, 100)
+
 
 class Enemy:
     def __init__(self, name, hp, attack, image=None, lore=None):
