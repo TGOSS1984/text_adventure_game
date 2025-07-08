@@ -46,6 +46,10 @@ The goal of *Elden Souls* is to provide a lore-rich, interactive text-based adve
 - Responsive Flask web interface with gothic-themed styling using html & CSS
 - This project was primarily for use of python but as I decided to add some visual style to it using flask I wanted to also add more immersion by adding some themed music whihc be manually controlled by the user 
 
+**Initial Wireframe Design/Concept for story screen**
+
+![Image from flask](app/static/images/screenshots/wireframe_mockup.PNG)
+
 ## Screenshot Examples of game
 
 **Story Screen**
