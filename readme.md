@@ -6,6 +6,10 @@
 
 [Heroku Link to project](https://elden-souls-text-adventure-app-6406dec306fc.herokuapp.com/)
 
+**Image from my flask web app**
+
+![Image from flask](app/static/images/screenshots/game_screen.PNG)
+
 ---
 
 ## Table of Contents
@@ -27,7 +31,7 @@
 
 ## Project Purpose
 
-The goal of *Elden Souls* is to provide a lore-rich, interactive text-based adventure that combines storytelling with strategic combat. It showcases Python programming fundamentals, including OOP, data handling, user interaction, and web deployment using Flask. The game is designed to engage users in decision-making, exploration, and tactical battles, simulating the grim fantasy tone of *Elden Ring* and *Dark Souls*. This project was also 
+The goal of *Elden Souls* is to provide a lore-rich, interactive text-based adventure that combines storytelling with strategic combat. It showcases Python programming fundamentals, including OOP, data handling, user interaction, and web deployment using Flask. The game is designed to engage users in decision-making, exploration, and tactical battles, simulating the grim fantasy tone of *Elden Ring* and *Dark Souls*. I began brainstorming this idea with the intent of making a fully backend python text adventure which would be run entirely on the console but decided I wanted to integrate some visual flair as well which led me down the route of creating the flask based web application, this was very challenging but ultimately rewarding to learn some of the new concepts.
 
 ---
 
@@ -41,6 +45,20 @@ The goal of *Elden Souls* is to provide a lore-rich, interactive text-based adve
 - Save/Load functionality with session storage and JSON backup
 - Responsive Flask web interface with gothic-themed styling using html & CSS
 - This project was primarily for use of python but as I decided to add some visual style to it using flask I wanted to also add more immersion by adding some themed music whihc be manually controlled by the user 
+
+## Screenshot Examples of game
+
+**Story Screen**
+
+![Image from flask](app/static/images/screenshots/story_screen.PNG)
+
+**Battle Screen**
+
+![Image from flask](app/static/images/screenshots/battle_screen.PNG)
+
+**Death Screen**
+
+![Image from flask](app/static/images/screenshots/death_screen.PNG)
 
 ---
 
@@ -162,6 +180,8 @@ Chapter 0: Intro
 
 During development I struggled with Flask session handling — especially when writing unit tests that required active contexts. It took several iterations before I found a clean solution. Many google searches and reddit forums supported with troubleshooting. Some guidance was taken from online resources and AI-assisted tools for structuring markdown and troubleshooting Flask errors, but all content and logic were written and tested by myself.
 
+Learning about flask syntax within hmtl was interesting as I learnt about how to bridge python together with html.
+
 It was interesting to use Heroku for the first time & to troubleshoot new issues which lead me to  learn more about the importance of the project files/requirements.
 
 Initially, I had issues setting the project up in Heroku , when I first linked my project to github I received errors, after troubleshooting the errors were caused by not adding a python version file in my project files. After this fix I found another error – again after troubleshooting I discovered I required a Procfile to be created in my project along with some other requirements in the requirements.txt. After adding these things I  managed to successfully link & run my project in Heroku.
@@ -180,6 +200,12 @@ Initially, I had issues setting the project up in Heroku , when I first linked m
 - Resolved bug where lore did not appear despite enemy being generated (fixed session persistence and template binding)
 - Investigated print/debug not appearing in console (clarified Flask prints show in terminal where server was started)
 - Fixed test failure using `session.get()` outside Flask context by mocking session in unit tests
+
+**Validators**
+
+- HTML tested in html validator (passed, learnt that flask syntax will be flagged as error so ran without)
+- CSS validator passed
+- JS tested in JSHint without issue
 
 ### PEP8 Compliance
 
@@ -286,9 +312,13 @@ pip freeze > requirements.txt
 ## Known Issues & Future Enhancements
 
 - Add audio feedback during combat (JS-sound integration)
+- Add background audio for each differetn area to add to the mood and aid atmosphere
 - Mobile UI improvements for full-screen image scaling
 - Implement character leveling and item inventory system
+- Add unique starting item for different classes
+- Evolve the battle system with deeper logic and more variety
 - Visual battle animations or transition effects
+- Add new imagery for different areas to improve immersion
 
 **Further Notes**
 
