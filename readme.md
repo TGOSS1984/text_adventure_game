@@ -40,6 +40,7 @@ The goal of *Elden Souls* is to provide a lore-rich, interactive text-based adve
 - 4 unique classes: Knight, Mage, Rogue, Archer — each with lore, stats, and a special item
 - Dynamic, branching storylines with hidden paths and multiple endings
 - Turn-based battle mechanics with attack, dodge, block, and Estus Flask healing
+- Random enemy encounters, can change per playthrough
 - Boss fights and lore-driven enemy encounters
 - Bonfire system to rest and restore health/Estus
 - Save/Load functionality with session storage and JSON backup
