@@ -335,7 +335,7 @@ A particularly tough moment was writing unit tests for Flask routes and session-
 
 Every chapter choice, battle flag, or session update was an opportunity to apply core Python logic. Seeing it all tie together in a working game — with visuals, story flow, and user interaction — was rewarding and has sharpened my skills significantly.
 
-While some sections (like the README formatting and diagrams) were polished with structured tools and best practices, all narrative, logic, battle handling, and user flow was built manually, tested, and refined iteratively.
+I found it helpful to use tools such as black to support with formatting of code but also running the code through the pep8 checker also supported my understanding of best practice with Python.
 
 ---
 
