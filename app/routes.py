@@ -107,6 +107,7 @@ def battle():
         attack=enemy_data.get("attack"),
         image=enemy_image,
         lore=enemy_lore,
+        is_boss=session.get("enemy_is_boss", False)
     )
     character = session.get("character", {})
     player_hp = session.get("hp", 100)

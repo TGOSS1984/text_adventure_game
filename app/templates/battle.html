@@ -20,7 +20,8 @@ Used for the battles in the game
     
     
 </head>
-<body>
+<body data-class="{{ character['name']|lower }}" data-boss="{{ 'true' if enemy.is_boss else 'false' }}">
+    <!-- DEBUG: character name is {{ character['name'] }} -->
     <div class="bonfire-bg">
         <h2>⚔️ Battle Begins</h2>
         <p class="battle-info"><strong>You:</strong> {{ player_hp }}/{{ character.max_hp }} HP</p>
@@ -49,22 +50,41 @@ Used for the battles in the game
             </div>
         {% endif %}
 
-        <form method="POST">
-
-            <button name="action" value="attack">
+        <form id="battleForm" method="POST">
+            <button type="submit" name="action" value="attack" class="battle-btn">
                 <i class="fas fa-hand-fist"></i> Attack
             </button>
-            <button name="action" value="dodge">
+            <button type="submit" name="action" value="dodge" class="battle-btn">
                 <i class="fas fa-person-running"></i> Dodge
             </button>
-            <button name="action" value="block">
+            <button type="submit" name="action" value="block" class="battle-btn">
                 <i class="fas fa-shield-halved"></i> Block
             </button>
-            <button name="action" value="estus">
+            <button type="submit" name="action" value="estus" class="battle-btn">
                 <i class="fas fa-flask"></i> Use Estus Flask
             </button>
-
         </form>
+        <div class="audio-controls" aria-label="Background music controls">
+            <button id="playMusic" aria-label="Play music">🔊 Play</button>
+            <button id="pauseMusic" aria-label="Pause music">🔇 Pause</button>
+        </div>
     </div>
+
+<!-- Class-specific Attack Sounds -->
+<audio id="attack-knight" src="{{ url_for('static', filename='sounds/sound_effects/attack/knight.mp3') }}"></audio>
+<audio id="attack-mage" src="{{ url_for('static', filename='sounds/sound_effects/attack/mage.mp3') }}"></audio>
+<audio id="attack-rogue" src="{{ url_for('static', filename='sounds/sound_effects/attack/rogue.mp3') }}"></audio>
+<audio id="attack-archer" src="{{ url_for('static', filename='sounds/sound_effects/attack/archer.mp3') }}"></audio>
+
+<!-- Generic Sound Effects -->
+<audio id="block" src="{{ url_for('static', filename='sounds/sound_effects/block_generic.mp3') }}"></audio>
+<audio id="dodge" src="{{ url_for('static', filename='sounds/sound_effects/dodge_generic.mp3') }}"></audio>
+<audio id="estus" src="{{ url_for('static', filename='sounds/sound_effects/estus_sip.mp3') }}"></audio>
+
+<!-- Background Music -->
+<audio id="music" loop></audio>
+
+<script src="{{ url_for('static', filename='js/battle_sounds.js') }}"></script>
+
 </body>
 </html>

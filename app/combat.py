@@ -33,6 +33,7 @@ class BattleManager:
                 attack=25,
                 image="cindergloom.png",
                 lore="The final Flame Lord, bound in cinders and regret. Born of divine fire and destined to consume the end of all things.",
+                is_boss=True
             )
         else:
             enemies = [

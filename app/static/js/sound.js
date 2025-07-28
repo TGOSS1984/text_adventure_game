@@ -11,11 +11,33 @@ document.addEventListener('DOMContentLoaded', function () {
     const playBtn = document.getElementById('playMusic');
     const pauseBtn = document.getElementById('pauseMusic');
 
+    // Restore previous music state if available
+    const musicState = localStorage.getItem('mainMusicState');
+    if (musicState === 'playing') {
+        audio.play().catch(e => console.warn("Autoplay blocked:", e));
+    }
+
+    // Play on page load by default (fallback)
+    audio.play()
+        .then(() => {
+            localStorage.setItem('mainMusicState', 'playing');
+        })
+        .catch(err => {
+            console.warn("Autoplay failed (user interaction required):", err);
+            // Show unmuted state but let user trigger play
+        });
+
+    // Button controls
     playBtn.addEventListener('click', () => {
-        audio.play().catch(e => console.log("Audio play blocked:", e));
+        audio.play().then(() => {
+            localStorage.setItem('mainMusicState', 'playing');
+        }).catch(e => console.warn("Play blocked:", e));
     });
 
     pauseBtn.addEventListener('click', () => {
         audio.pause();
+        localStorage.setItem('mainMusicState', 'paused');
     });
 });
+
+

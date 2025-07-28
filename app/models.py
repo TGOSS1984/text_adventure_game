@@ -33,7 +33,7 @@ class Character:
 
 
 class Enemy:
-    def __init__(self, name, hp, attack, image=None, lore=None):
+    def __init__(self, name, hp, attack, image=None, lore=None, is_boss=False):
         """
         Enemy with a name, HP, attack power, optional image, and lore.
         """
@@ -42,3 +42,4 @@ class Enemy:
         self.attack = attack
         self.image = image
         self.lore = lore
+        self.is_boss = is_boss
