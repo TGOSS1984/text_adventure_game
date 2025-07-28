@@ -20,7 +20,7 @@ Used for the battles in the game
     
     
 </head>
-<body data-class="{{ character['name']|lower }}" data-boss="{{ 'true' if enemy.is_boss else 'false' }}">
+<body class="{% if enemy.is_boss %}boss-mode{% else %}battle-mode{% endif %}" data-class="{{ character['name']|lower }}" data-boss="{{ 'true' if enemy.is_boss else 'false' }}">
     <!-- DEBUG: character name is {{ character['name'] }} -->
     <div class="bonfire-bg">
         <h2>⚔️ Battle Begins</h2>
