@@ -4,7 +4,7 @@ Manages the audio, used in game.html
 */
 
 document.addEventListener('DOMContentLoaded', function () {
-    const audio = new Audio('/static/sounds/music/intro.mp3');
+    const audio = new Audio('/static/sounds/music/main-theme.mp3');
     audio.loop = true;
     audio.volume = 0.3;
 

@@ -347,5 +347,6 @@ I found it helpful to use tools such as black to support with formatting of code
 - Fonts: Mantinia Font from font.download
 - Lore, design, and mechanics inspired by *FromSoftware* games
 - Images from Google images
+- Pixabay for sound effects
 
 ---
