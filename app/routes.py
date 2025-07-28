@@ -113,70 +113,67 @@ def battle():
     player_hp = session.get("hp", 100)
     estus_count = session.get("estus", 0)
     message = ""
-    move_hint = ""
 
-    # Predict enemy move at the start of GET or after POST turn
-    if request.method == "GET" or (
-        request.method == "POST" and "action" in request.form
-    ):
-        predicted_move, hint_msg, _ = battle_manager.enemy_attack(character)
-        move_hint = (
-            "The enemy is preparing a massive attack!"
-            if predicted_move == "big_hit"
-            else "The enemy is preparing a standard attack."
+    # GET: Predict next move and store in session
+    if request.method == "GET":
+        predicted_move, predicted_msg, _ = battle_manager.predict_enemy_move(character)
+        session["predicted_move"] = predicted_move
+        session["predicted_msg"] = predicted_msg
+        return render_template(
+            "battle.html",
+            enemy=enemy,
+            player_hp=player_hp,
+            character=character,
+            message=message,
+            move_hint=predicted_msg,
         )
 
-    if request.method == "POST":
-        action = request.form["action"]
+    # POST: Use the stored prediction
+    predicted_move = session.get("predicted_move")
+    move_hint = session.get("predicted_msg")
+    action = request.form["action"]
 
-        if action == "attack":
-            result, enemy.hp = battle_manager.attack(character, enemy)
-            message = result
-            if enemy.hp > 0:
-                move_type, warn_msg, dmg = battle_manager.enemy_attack(character)
-                player_hp, result = battle_manager.resolve_player_action(
-                    move_type, "none", dmg, player_hp
-                )
-                message += " " + warn_msg + " " + result
-
-        elif action in ["dodge", "block"]:
-            move_type, warn_msg, dmg = battle_manager.enemy_attack(character)
+    if action == "attack":
+        result, enemy.hp = battle_manager.attack(character, enemy)
+        message = result
+        if enemy.hp > 0:
+            _, warn_msg, dmg = battle_manager.enemy_attack(character, action=predicted_move)
             player_hp, result = battle_manager.resolve_player_action(
-                move_type, action, dmg, player_hp
+                predicted_move, "none", dmg, player_hp
             )
-            message = warn_msg + " " + result
+            message += " " + warn_msg + " " + result
 
-        elif action == "estus":
-            if estus_count > 0:
-                player_hp, message = battle_manager.use_estus(
-                    player_hp, character["max_hp"]
-                )
-                estus_count -= 1
-            else:
-                message = "You are out of Estus Flasks!"
-
-        if enemy.hp <= 0:
-            # If it was the boss, go to the ending chapter (5)
-            if session.get("enemy_is_boss"):
-                session["chapter"] = 5
-            else:
-                session["chapter"] = session.get("chapter_after_battle", 0)
-            return redirect(url_for("main.game"))
-
-        if player_hp <= 0:
-            return redirect(url_for("main.death"))
-
-        session["enemy"]["hp"] = enemy.hp
-        session["hp"] = player_hp
-        session["estus"] = estus_count
-
-        # Recalculate move_hint for next turn
-        predicted_move, hint_msg, _ = battle_manager.enemy_attack(character)
-        move_hint = (
-            "The enemy is preparing a massive attack!"
-            if predicted_move == "big_hit"
-            else "The enemy is preparing a standard attack."
+    elif action in ["dodge", "block"]:
+        _, warn_msg, dmg = battle_manager.enemy_attack(character, action=predicted_move)
+        player_hp, result = battle_manager.resolve_player_action(
+            predicted_move, action, dmg, player_hp
         )
+        message = warn_msg + " " + result
+
+    elif action == "estus":
+        if estus_count > 0:
+            player_hp, message = battle_manager.use_estus(player_hp, character["max_hp"])
+            estus_count -= 1
+        else:
+            message = "You are out of Estus Flasks!"
+
+    # Check battle outcome
+    if enemy.hp <= 0:
+        session["chapter"] = 5 if session.get("enemy_is_boss") else session.get("chapter_after_battle", 0)
+        return redirect(url_for("main.game"))
+
+    if player_hp <= 0:
+        return redirect(url_for("main.death"))
+
+    # Update session state
+    session["enemy"]["hp"] = enemy.hp
+    session["hp"] = player_hp
+    session["estus"] = estus_count
+
+    # Predict next move for next turn
+    next_move, next_msg, _ = battle_manager.predict_enemy_move(character)
+    session["predicted_move"] = next_move
+    session["predicted_msg"] = next_msg
 
     return render_template(
         "battle.html",
@@ -184,7 +181,7 @@ def battle():
         player_hp=player_hp,
         character=character,
         message=message,
-        move_hint=move_hint,
+        move_hint=next_msg,
     )
 
 

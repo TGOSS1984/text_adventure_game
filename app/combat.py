@@ -86,24 +86,29 @@ class BattleManager:
         enemy.hp -= dmg
         return f"You strike the {enemy.name} for {dmg} damage!", enemy.hp
 
-    def enemy_attack(self, player, action="attack"):
+    def enemy_attack(self, player, action=None):
         """
-        Randomly selects enemy's move: standard attack or a 'big hit'.
-        Damage is calculated differently depending on the move type.
-        Added so that it may help the player to choose to dodge or defend rather than just attack every time.
+        Uses the provided move or randomly selects one if not given.
+        Returns: move_type, warning_message, damage_amount
         """
-        move = np.random.choice(["attack", "big_hit"])
-        dmg = 0
-        msg = ""
+        if action not in ["attack", "big_hit", "flurry"]:
+            action = np.random.choice(["attack", "big_hit", "flurry"], p=[0.6, 0.25, 0.15])
 
-        if move == "big_hit":
+        if action == "flurry":
+            hits = np.random.randint(3, 5)
+            single_hit = player["defense"] // 4 + np.random.randint(5, 12)
+            dmg = hits * single_hit
+            msg = f"The enemy unleashes a flurry of {hits} strikes!"
+        elif action == "big_hit":
             dmg = player["defense"] // 2 + np.random.randint(10, 25)
             msg = "A massive attack is incoming!"
         else:
             dmg = player["defense"] // 3 + np.random.randint(5, 15)
             msg = "A swift strike!"
 
-        return move, msg, dmg
+        return action, msg, dmg
+
+
 
     def resolve_player_action(self, move_type, player_action, dmg, current_hp):
         """
@@ -143,9 +148,12 @@ class BattleManager:
 
     def predict_enemy_move(self, player):
         """Predicts the enemy's next move for display purposes."""
+        move = np.random.choice(["attack", "big_hit", "flurry"], p=[0.6, 0.25, 0.15])
 
-        move = np.random.choice(["attack", "big_hit"])
-        if move == "big_hit":
+        if move == "flurry":
+            return "flurry", "The enemy is angered and preparing a flurry of strikes!", None
+        elif move == "big_hit":
             return "big_hit", "The enemy is preparing a massive attack!", None
         else:
             return "attack", "The enemy is preparing a standard attack.", None
+
