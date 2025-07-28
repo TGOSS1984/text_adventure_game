@@ -242,7 +242,7 @@ a:hover {
     }
 
     .class-lore {
-    display: none;
+    display: none !important;
     }
 
     .lore-box {
