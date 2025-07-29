@@ -48,6 +48,7 @@ class Enemy:
         """
         self.name = name
         self.hp = hp
+        self.max_hp = hp
         self.attack = attack
         self.image = image
         self.lore = lore

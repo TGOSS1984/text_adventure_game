@@ -24,9 +24,19 @@ Used for the battles in the game
     <!-- DEBUG: character name is {{ character['name'] }} -->
     <div class="bonfire-bg">
         <h2>⚔️ Battle Begins</h2>
-        <p class="battle-info"><strong>You:</strong> {{ player_hp }}/{{ character.max_hp }} HP</p>
-        <p class="battle-info">Estus Flasks: {{ session['estus'] }}</p>
-        <p class="battle-info"><strong>{{ enemy.name }}:</strong> {{ enemy.hp }} HP</p>
+        <p class="battle-info">
+            <i class="fas fa-user-shield"></i> <strong>You:</strong> {{ player_hp }}/{{ character.max_hp }}
+            <i class="fas fa-heart" style="color: crimson;"></i>
+        </p>
+
+        <p class="battle-info">
+            <i class="fas fa-flask"></i> <strong>Estus Flasks:</strong> {{ session['estus'] }}
+        </p>
+
+        <p class="battle-info">
+            <i class="fas fa-skull-crossbones"></i> <strong>{{ enemy.name }}:</strong> {{ enemy.hp }}/{{ enemy.max_hp }}
+            <i class="fas fa-heart" style="color: crimson;"></i>
+        </p>
 
         <!-- Enemy Image + Lore Section -->
         <div class="enemy-display" style="text-align: center; margin: 2rem 0;">

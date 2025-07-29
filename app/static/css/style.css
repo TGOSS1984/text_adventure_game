@@ -54,7 +54,7 @@ span {
 }
 
 .battle-info {
-    text-shadow: 2px 2px 4px #000;
+    text-shadow: 0 0 6px #000, 2px 2px 10px #000;
     color: #f8f8f8;
     font-weight: bold;
     font-size: 1.2rem;
