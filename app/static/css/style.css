@@ -265,10 +265,36 @@ a:hover {
     }
 }
 
+/* Battle backgrounds for normal & boss enemy*/
+
 .battle-mode {
   background-image: url('../images/areas/undead_settlement.jpg') !important;
 }
 
 .boss-mode {
   background-image: url('../images/areas/ringed_city.jpg') !important;
+}
+
+/* Flurry Pulse Animation */
+@keyframes flurryPulse {
+  0%, 100% { opacity: 0; }
+  25%     { opacity: 0.6; }
+  50%     { opacity: 0; }
+  75%     { opacity: 0.6; }
+}
+
+#flurry-flash {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100vh;
+  width: 100vw;
+  background-color: red;
+  opacity: 0;
+  pointer-events: none;
+  z-index: 9999;
+}
+
+.flurry-animate {
+  animation: flurryPulse 1s ease-in-out;
 }

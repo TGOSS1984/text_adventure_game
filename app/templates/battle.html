@@ -40,7 +40,7 @@ Used for the battles in the game
         
         {% if move_hint %}
             <div class="lore-box" style="background-color: rgba(80,0,0,0.6); border-left: 4px solid crimson;">
-                <p><strong>Enemy Stance:</strong> {{ move_hint }}</p>
+                <p id="move-hint"><strong>Enemy Stance:</strong> {{ move_hint }}</p>
             </div>
         {% endif %}
 
@@ -69,6 +69,10 @@ Used for the battles in the game
             <button id="pauseMusic" aria-label="Pause music">🔇 Pause</button>
         </div>
     </div>
+
+    <!--For Flurry Flash on screen-->
+
+    <div id="flurry-flash"></div>
 
 <!-- Class-specific Attack Sounds -->
 <audio id="attack-knight" src="{{ url_for('static', filename='sounds/sound_effects/attack/knight.mp3') }}"></audio>

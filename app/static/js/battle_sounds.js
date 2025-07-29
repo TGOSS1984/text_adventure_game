@@ -105,5 +105,22 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 });
 
+// Battle Flurry flash/pulse
 
+function triggerFlurryFlash() {
+  const flash = document.getElementById('flurry-flash');
+  if (flash) {
+    flash.classList.add('flurry-animate');
+    setTimeout(() => {
+      flash.classList.remove('flurry-animate');
+    }, 1000);
+  }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  const moveHint = document.getElementById('move-hint');
+  if (moveHint && moveHint.innerText.toLowerCase().includes("flurry")) {
+    triggerFlurryFlash();
+  }
+});
 
