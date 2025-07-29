@@ -80,6 +80,7 @@ def game():
             session["enemy"] = {
                 "name": enemy.name,
                 "hp": enemy.hp,
+                "max_hp": enemy.hp,
                 "attack": enemy.attack,
                 "image": enemy.image,
                 "lore": enemy.lore,
@@ -111,6 +112,7 @@ def battle():
         lore=enemy_lore,
         is_boss=session.get("enemy_is_boss", False)
     )
+    enemy.max_hp = enemy_data.get("max_hp", enemy.hp)
     character = session.get("character", {})
     player_hp = session.get("hp", 100)
     estus_count = session.get("estus", 0)
