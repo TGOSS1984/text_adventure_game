@@ -222,6 +222,25 @@ a:hover {
     font-weight: bold;
 }
 
+/* Death Screen */
+
+.you-died {
+    width: 100vw; /* Full viewport width */
+    display: block;
+    padding: 1rem;
+    margin: 2rem 0 0 0;
+    color: #fff;
+    padding: 1rem;
+    text-align: center;
+    background: linear-gradient(
+        to right,
+        rgba(0, 0, 0, 0) 0%,         /* fully transparent at far left */
+        rgba(0, 0, 0, 0.6) 20%,      /* more solid towards center */
+        rgba(0, 0, 0, 0.6) 80%,      /* stays solid */
+        rgba(0, 0, 0, 0) 100%        /* fully transparent at far right */
+  );
+}
+
 @media (max-width: 768px) {
     .class-selector {
         flex-direction: column;
