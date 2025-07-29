@@ -15,6 +15,7 @@ class Character:
         self.attack = attack
         self.defense = defense
         self.max_hp = max_hp
+        self.class_name = name
 
     @staticmethod
     def create(class_name):

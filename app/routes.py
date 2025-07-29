@@ -46,7 +46,13 @@ def start():
         flash("Invalid character class.", "error")
         return redirect(url_for("main.index"))
 
-    session["character"] = character.__dict__
+    session["character"] = {
+        "name": character.name,
+        "attack": character.attack,
+        "defense": character.defense,
+        "max_hp": character.max_hp,
+        "class_name": character.class_name  # ✅ This ensures the class name is included
+    }
     session["chapter"] = 0
     session["hp"] = character.max_hp
     session["enemy"] = {}
