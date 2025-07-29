@@ -202,14 +202,22 @@ a:hover {
     color: #eee;
 }
 
-/* CSS highlighting selected class visually */
+/*Check specificity here*/
 
-.class-option input[type="radio"]:checked + img,
-.class-option input[type="radio"]:checked + span {
-    filter: drop-shadow(0 0 12px gold);
+.class-stats {
+    font-size: 0.9rem;
+    color: #ccc;
+    margin: 1rem 0;
+    line-height: 1.4;
 }
 
-.class-option input[type="radio"]:checked ~ span {
+/* CSS highlighting selected class visually */
+
+.class-option input[type="radio"]:checked ~ img,
+.class-option input[type="radio"]:checked ~ span,
+.class-option input[type="radio"]:checked ~ .class-stats span,
+.class-option input[type="radio"]:checked ~ .class-lore {
+    filter: drop-shadow(0 0 12px gold);
     color: gold;
     font-weight: bold;
 }

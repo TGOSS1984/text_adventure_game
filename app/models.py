@@ -30,6 +30,15 @@ class Character:
             return Character("Rogue", 20, 7, 95)
         elif class_name == "Archer":
             return Character("Archer", 18, 8, 100)
+        
+    @staticmethod
+    def get_class_stats():
+        return {
+            "Knight": Character("Knight", 15, 10, 125),
+            "Mage": Character("Mage", 25, 5, 85),
+            "Rogue": Character("Rogue", 20, 7, 95),
+            "Archer": Character("Archer", 18, 8, 100),
+        }
 
 
 class Enemy:

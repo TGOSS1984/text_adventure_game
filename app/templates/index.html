@@ -34,6 +34,12 @@ Used for the class selector screen & main game screen
                     <input type="radio" name="class" value="Knight" required>
                     <img src="{{ url_for('static', filename='images/classes/knight.png') }}" alt="Knight">
                     <span><i class="fas fa-chess-knight"></i> Knight</span>
+                    <!--Show class stats-->
+                    <div class="class-stats">
+                        <span><i class="fas fa-crosshairs"></i> Attack: {{ class_stats["Knight"].attack }}</span>
+                        <span><i class="fas fa-shield-alt"></i> Defense: {{ class_stats["Knight"].defense }}</span>
+                        <span><i class="fas fa-heart"></i> HP: {{ class_stats["Knight"].max_hp }}</span>
+                    </div>
                     <span class="class-lore">Once a sentinel of the Sunken Citadel, their oath was not broken — only forgotten. Clad in rusted honor, they march through death unbent.</span>
                 </label>
             </div>
@@ -43,6 +49,12 @@ Used for the class selector screen & main game screen
                     <input type="radio" name="class" value="Mage">
                     <img src="{{ url_for('static', filename='images/classes/mage.png') }}" alt="Mage">
                     <span><i class="fas fa-wand-magic-sparkles"></i> Mage</span>
+                    <!--Show class stats-->
+                    <div class="class-stats">
+                        <span><i class="fas fa-crosshairs"></i> Attack: {{ class_stats["Mage"].attack }}</span>
+                        <span><i class="fas fa-shield-alt"></i> Defense: {{ class_stats["Mage"].defense }}</span>
+                        <span><i class="fas fa-heart"></i> HP: {{ class_stats["Mage"].max_hp }}</span>
+                    </div>
                     <span class="class-lore">Bearer of forbidden glintfire, the Mage whispers truths carved in starlight. Each spell flung is a shard of a dream long devoured.</span>
                 </label>
             </div>
@@ -52,6 +64,12 @@ Used for the class selector screen & main game screen
                     <input type="radio" name="class" value="Rogue">
                     <img src="{{ url_for('static', filename='images/classes/rogue.png') }}" alt="Rogue">
                     <span><i class="fas fa-skull-crossbones"></i> Rogue</span>
+                    <!--Show class stats-->
+                    <div class="class-stats">
+                        <span><i class="fas fa-crosshairs"></i> Attack: {{ class_stats["Rogue"].attack }}</span>
+                        <span><i class="fas fa-shield-alt"></i> Defense: {{ class_stats["Rogue"].defense }}</span>
+                        <span><i class="fas fa-heart"></i> HP: {{ class_stats["Rogue"].max_hp }}</span>
+                    </div>
                     <span class="class-lore">Born in the shadow of the Ashen Spires, the Rogue strikes like regret — unseen, swift, and final. No name, no past, only the blade.</span>
                 </label>
             </div>
@@ -61,6 +79,12 @@ Used for the class selector screen & main game screen
                     <input type="radio" name="class" value="Archer">
                     <img src="{{ url_for('static', filename='images/classes/archer.png') }}" alt="Archer">
                     <span><i class="fas fa-bullseye"></i> Archer</span>
+                    <!--Show class stats-->
+                    <div class="class-stats">
+                        <span><i class="fas fa-crosshairs"></i> Attack: {{ class_stats["Archer"].attack }}</span>
+                        <span><i class="fas fa-shield-alt"></i> Defense: {{ class_stats["Archer"].defense }}</span>
+                        <span><i class="fas fa-heart"></i> HP: {{ class_stats["Archer"].max_hp }}</span>
+                    </div>
                     <span class="class-lore">From the ruins of Eldergrove they come, eyes hollow with distant wars. Each arrow loosed is a memory exiled into the dark.</span>
                 </label>
             </div>

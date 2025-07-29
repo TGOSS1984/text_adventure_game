@@ -27,7 +27,9 @@ battle_manager = BattleManager()
 
 @main.route("/")
 def index():
-    return render_template("index.html")
+    from .models import Character
+    class_stats = Character.get_class_stats()
+    return render_template("index.html", class_stats=class_stats)
 
 
 @main.route("/start", methods=["POST"])
