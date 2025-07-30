@@ -58,6 +58,7 @@ span {
     color: #f8f8f8;
     font-weight: bold;
     font-size: 1.2rem;
+    margin: 0.2rem;
 }
 
 .bonfire-bg {
@@ -99,10 +100,18 @@ progress {
 .lore-box {
     background-color: rgba(0,0,0,0.8);
     padding: 20px;
-    margin: 20px 0;
+    margin: 10px 0;
     border: 2px solid #444;
     border-radius: 10px;
     width: 50%;
+}
+
+/* For class image in game.html*/
+
+.class-image {
+  width: 60px;
+  height: auto;
+  filter: drop-shadow(2px 2px 6px black);
 }
 
 /* Save/Load/Return css*/
@@ -132,7 +141,7 @@ a:hover {
   border: 2px solid #444;
   border-radius: 12px;
   box-shadow: 0 0 10px black;
-  margin-bottom: 1rem;
+  margin-bottom: 0.5rem;
 }
 
 .enemy-lore {

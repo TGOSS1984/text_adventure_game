@@ -7,7 +7,7 @@ Shows the player & enemy stats
 
 
 class Character:
-    def __init__(self, name, attack, defense, max_hp):
+    def __init__(self, name, attack, defense, max_hp, image):
         """
         Sets up a character with name, attack power, defense, and max HP.
         """
@@ -15,6 +15,7 @@ class Character:
         self.attack = attack
         self.defense = defense
         self.max_hp = max_hp
+        self.image = image
         self.class_name = name
 
     @staticmethod
@@ -24,21 +25,21 @@ class Character:
         Each class has unique base stats.
         """
         if class_name == "Knight":
-            return Character("Knight", 15, 10, 125)
+            return Character("Knight", 15, 10, 125, "classes/knight.png")
         elif class_name == "Mage":
-            return Character("Mage", 25, 5, 85)
+            return Character("Mage", 25, 5, 85, "classes/mage.png")
         elif class_name == "Rogue":
-            return Character("Rogue", 20, 7, 95)
+            return Character("Rogue", 20, 7, 95, "classes/rogue.png")
         elif class_name == "Archer":
-            return Character("Archer", 18, 8, 100)
+            return Character("Archer", 18, 8, 100, "classes/archer.png")
         
     @staticmethod
     def get_class_stats():
         return {
-            "Knight": Character("Knight", 15, 10, 125),
-            "Mage": Character("Mage", 25, 5, 85),
-            "Rogue": Character("Rogue", 20, 7, 95),
-            "Archer": Character("Archer", 18, 8, 100),
+            "Knight": Character("Knight", 15, 10, 125, "knight.png"),
+            "Mage": Character("Mage", 25, 5, 85, "mage.png"),
+            "Rogue": Character("Rogue", 20, 7, 95, "rogue.png"),
+            "Archer": Character("Archer", 18, 8, 100, "archer.png"),
         }
 
 

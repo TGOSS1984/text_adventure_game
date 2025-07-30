@@ -13,12 +13,16 @@ Used for the story of the game and where the choices are seen
     <title>Elden Souls - Adventure</title>
 
     <!--CSS Link-->
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">    
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    
+    <!--Font Awesome Link-->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     
 </head>
 <body>
     <div class="bonfire-bg">
-        <h2>Class: {{ character.name }} | HP: {{ hp }}/{{ character.max_hp }}</h2>
+        <h2>Class: {{ character.name }} | HP: {{ hp }}/{{ character.max_hp }} <i class="fas fa-heart" style="color: crimson;"></i></h2>
+        <img src="{{ url_for('static', filename=character['image']) }}" alt="{{ character['class_name'] }}" class="class-image">
         <p>HP: {{ hp }}/{{ character.max_hp }} ({{ (hp / character.max_hp * 100) | round(0) }}%)</p>
         <progress value="{{ hp }}" max="{{ character.max_hp }}"></progress>
         <div class="lore-box">

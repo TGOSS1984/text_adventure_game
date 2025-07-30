@@ -51,7 +51,8 @@ def start():
         "attack": character.attack,
         "defense": character.defense,
         "max_hp": character.max_hp,
-        "class_name": character.class_name  # ✅ This ensures the class name is included
+        "class_name": character.class_name,  # ✅ This ensures the class name is included
+        "image": character.image
     }
     session["chapter"] = 0
     session["hp"] = character.max_hp
