@@ -93,15 +93,15 @@ class BattleManager:
         if action == "flurry":
             hits = np.random.randint(4, 6)  # More hits: 4–5
             single_hit = max(2, enemy.attack // 3) + np.random.randint(6, 10)
-            dmg = hits * single_hit - player["defense"] // 5
+            dmg = hits * single_hit - int(player["defense"] * 1.0)
             dmg = max(15, dmg)  # Raise min to reflect danger
             msg = f"The enemy unleashes a flurry of {hits} strikes!"
         elif action == "big_hit":
-            dmg = enemy.attack + np.random.randint(10, 20) - player["defense"] // 2
+            dmg = enemy.attack + np.random.randint(10, 20) - int(player["defense"] * 0.8)
             dmg = max(8, dmg)
             msg = "A massive attack is incoming!"
         else:
-            dmg = enemy.attack + np.random.randint(0, 10) - player["defense"] // 3
+            dmg = enemy.attack + np.random.randint(0, 10) - int(player["defense"] * 1.1)
             dmg = max(5, dmg)
             msg = "A swift strike!"
 
@@ -158,7 +158,7 @@ class BattleManager:
     def use_estus(self, hp, max_hp):
         """
         Uses an Estus Flask to heal the player.
-        Heals 60% of max HP and reduces flask count. Updates Flask session. Total flasks are currently 3.
+        Heals 70% of max HP and reduces flask count. Updates Flask session. Total flasks are currently 3.
         """
         estus = session.get("estus", 0)
         if estus > 0:
