@@ -127,8 +127,8 @@ class BattleManager:
         # Class-based block reduction ratios
         block_reduction = {
             "Knight": 0.25,
-            "Rogue": 0.4,
-            "Archer": 0.5,
+            "Rogue": 0.5,
+            "Archer": 0.4,
             "Mage": 0.5
         }
 

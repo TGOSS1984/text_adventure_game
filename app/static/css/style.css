@@ -69,6 +69,19 @@ span {
     text-align: center;
 }
 
+.icon-shadow {
+    width: 50px;
+    height: 50px;
+    vertical-align: middle;
+    margin-right: 1px;
+    filter: drop-shadow(4px 4px 10px white);
+}
+
+.icon-shadow:hover {
+    transform: scale(1.1);
+    transition: 0.2s ease;
+}
+
 /*CSS for buttons & progress bar*/
 
 button {

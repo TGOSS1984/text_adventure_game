@@ -30,7 +30,8 @@ Used for the battles in the game
         </p>
 
         <p class="battle-info">
-            <i class="fas fa-flask"></i> <strong>Estus Flasks:</strong> {{ session['estus'] }}
+            <img src="{{ url_for('static', filename='images/icons/estus.png') }}" alt="Estus Flask" class="icon-shadow">
+            <strong>Estus Flasks:</strong> {{ session['estus'] }}
         </p>
 
         <p class="battle-info">
