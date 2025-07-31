@@ -28,7 +28,7 @@ Used for the class selector screen & main game screen
 
         <form method="POST" action="{{ url_for('main.start') }}" class="class-selector">
             
-
+        <div class="class-options-wrapper">
             <div class="class-option">
                 <label>
                     <input type="radio" name="class" value="Knight" required>
@@ -88,8 +88,9 @@ Used for the class selector screen & main game screen
                     <span class="class-lore">From the ruins of Eldergrove they come, eyes hollow with distant wars. Each arrow loosed is a memory exiled into the dark.</span>
                 </label>
             </div>
+        </div>
 
-            <button type="submit">Begin Journey</button>
+            <button type="submit" class="begin-journey">Begin Journey</button>
         </form>
         <!-- Audio Controls (optional) -->
         <div class="audio-controls">

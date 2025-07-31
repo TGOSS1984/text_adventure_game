@@ -93,13 +93,17 @@ button {
     color: white;
     border: none;
     border-radius: 5px;
+    background-image: url(../images/icons/menu.PNG);
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
 }
 
 button:hover {
     background-color: crimson;
-    color: #fff;
+    color: white;
     transform: scale(1.05);
-    box-shadow: 0 0 10px rgba(255, 0, 0, 0.6);
+    box-shadow: 0 0 12px rgba(255, 0, 0, 0.6);
     cursor: pointer;
 }
 
@@ -176,10 +180,22 @@ a:hover {
 
 .class-selector {
     display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
+    flex-direction: column;
+    align-items: center;
     gap: 1.5rem;
     margin-top: 20px;
+}
+
+.class-options-wrapper {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 2rem;
+    margin-bottom: 2rem;
+}
+
+.begin-journey {
+    font-size: 1.2rem;
 }
 
 .class-lore {

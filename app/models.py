@@ -36,10 +36,10 @@ class Character:
     @staticmethod
     def get_class_stats():
         return {
-            "Knight": Character("Knight", 15, 10, 125, "knight.png"),
-            "Mage": Character("Mage", 25, 5, 85, "mage.png"),
-            "Rogue": Character("Rogue", 20, 7, 95, "rogue.png"),
-            "Archer": Character("Archer", 18, 8, 100, "archer.png"),
+            "Knight": Character("Knight", 15, 11, 125, "knight.png"),
+            "Mage": Character("Mage", 25, 6, 85, "mage.png"),
+            "Rogue": Character("Rogue", 20, 8, 95, "rogue.png"),
+            "Archer": Character("Archer", 18, 9, 100, "archer.png"),
         }
 
 
