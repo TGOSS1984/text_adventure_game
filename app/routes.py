@@ -150,7 +150,7 @@ def battle():
         if enemy.hp > 0:
             _, warn_msg, dmg = battle_manager.enemy_attack(character, enemy, action=predicted_move)
             player_hp, result = battle_manager.resolve_player_action(
-                predicted_move, "none", dmg, player_hp
+                predicted_move, "none", dmg, player_hp, character
             )
             message += " " + warn_msg + " " + result
 
