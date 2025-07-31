@@ -25,13 +25,13 @@ class Character:
         Each class has unique base stats.
         """
         if class_name == "Knight":
-            return Character("Knight", 15, 10, 125, "classes/knight.png")
+            return Character("Knight", 15, 11, 125, "classes/knight.png")
         elif class_name == "Mage":
-            return Character("Mage", 25, 5, 85, "classes/mage.png")
+            return Character("Mage", 25, 6, 85, "classes/mage.png")
         elif class_name == "Rogue":
-            return Character("Rogue", 20, 7, 95, "classes/rogue.png")
+            return Character("Rogue", 20, 8, 95, "classes/rogue.png")
         elif class_name == "Archer":
-            return Character("Archer", 18, 8, 100, "classes/archer.png")
+            return Character("Archer", 18, 9, 100, "classes/archer.png")
         
     @staticmethod
     def get_class_stats():

@@ -162,7 +162,7 @@ class BattleManager:
         """
         estus = session.get("estus", 0)
         if estus > 0:
-            healed = int(max_hp * 0.6)
+            healed = int(max_hp * 0.7)
             hp = min(hp + healed, max_hp)
             session["estus"] = estus - 1
             return hp, f"You drink from the Estus Flask and recover {healed} HP."
