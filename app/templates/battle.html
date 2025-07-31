@@ -38,6 +38,10 @@ Used for the battles in the game
             <i class="fas fa-heart" style="color: crimson;"></i>
         </p>
 
+        <p class="battle-info">
+            <i class="fas fa-bolt"></i> <strong>{{ enemy.name }} Attack:</strong> {{ enemy.attack }}
+        </p>
+
         <!-- Enemy Image + Lore Section -->
         <div class="enemy-display" style="text-align: center; margin: 2rem 0;">
             <img class="enemy-img" src="{{ url_for('static', filename='images/enemies/' + enemy.image) }}"

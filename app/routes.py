@@ -148,14 +148,14 @@ def battle():
         result, enemy.hp = battle_manager.attack(character, enemy)
         message = result
         if enemy.hp > 0:
-            _, warn_msg, dmg = battle_manager.enemy_attack(character, action=predicted_move)
+            _, warn_msg, dmg = battle_manager.enemy_attack(character, enemy, action=predicted_move)
             player_hp, result = battle_manager.resolve_player_action(
                 predicted_move, "none", dmg, player_hp
             )
             message += " " + warn_msg + " " + result
 
     elif action in ["dodge", "block"]:
-        _, warn_msg, dmg = battle_manager.enemy_attack(character, action=predicted_move)
+        _, warn_msg, dmg = battle_manager.enemy_attack(character, enemy, action=predicted_move)
         player_hp, result = battle_manager.resolve_player_action(
             predicted_move, action, dmg, player_hp
         )
