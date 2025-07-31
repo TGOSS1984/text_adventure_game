@@ -108,28 +108,52 @@ class BattleManager:
         return action, msg, dmg
 
 
-    def resolve_player_action(self, move_type, player_action, dmg, current_hp):
+    def resolve_player_action(self, move_type, player_action, dmg, current_hp, player):
         """
-        Resolves the player's defensive action (dodge, block, or none) against the enemy's move.
-        Calculates new HP and returns result message.
+        Resolves player's action: dodge, block, or none.
+        Applies class-based modifiers for dodge and block.
         """
+        class_name = player.get("class_name", "Knight")  # Default fallback
         result = ""
+
+        # Class-based dodge chances
+        dodge_chances = {
+            "Knight": 0.3,
+            "Mage": 0.7,
+            "Rogue": 0.8,
+            "Archer": 0.6
+        }
+
+        # Class-based block reduction ratios
+        block_reduction = {
+            "Knight": 0.25,
+            "Rogue": 0.4,
+            "Archer": 0.5,
+            "Mage": 0.5
+        }
+
         if player_action == "dodge":
-            success = np.random.rand() < 0.6
+            success_chance = dodge_chances.get(class_name, 0.6)
+            success = np.random.rand() < success_chance
             if success:
                 result = "You dodged the attack completely!"
                 return current_hp, result
             else:
                 current_hp -= dmg
                 result = f"You failed to dodge and took {dmg} damage."
+
         elif player_action == "block":
-            blocked = int(dmg / 2)
-            current_hp -= blocked
-            result = f"You blocked the hit and took {blocked} damage."
+                reduction_ratio = block_reduction.get(class_name, 0.5)
+                blocked = int(dmg * reduction_ratio)
+                current_hp -= blocked
+                result = f"You blocked the hit and took {blocked} damage."
+
         else:  # no defense
             current_hp -= dmg
             result = f"You took {dmg} damage."
+
         return current_hp, result
+
 
     def use_estus(self, hp, max_hp):
         """
