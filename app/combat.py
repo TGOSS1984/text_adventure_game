@@ -72,6 +72,13 @@ class BattleManager:
                     "image": "fallen_soldier.png",
                     "lore": "He never left the battlefield. His sword still swings, though his war was lost centuries ago.",
                 },
+                {
+                    "name": "Mimic",
+                    "hp": 95,
+                    "attack": 20,
+                    "image": "mimic.png",
+                    "lore": "Once guardians of forgotten vaults, Mimics were cursed by greed — not their own, but that of those who sought what lay within. Now they hunger not for gold, but for the breath of the living. To gaze upon one and see only a chest is to invite ruin. Their patience is ancient. Their hunger, endless.",
+                },
             ]
         e = np.random.choice(enemies)
         return Enemy(e["name"], e["hp"], e["attack"], e["image"], e["lore"])
