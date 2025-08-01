@@ -1,10 +1,50 @@
+# === Python ===
 __pycache__/
+*.py[cod]
+*.egg-info/
+*.log
+
+# === Virtual environments ===
+.venv/
+env/
+venv/
+
+# === Flask local data ===
+instance/
+*.sqlite3
+*.db
 savegame.json
+
+# === Secrets & config ===
 .env
+env.py
+creds.json
+
+# === Build artifacts ===
+build/
+dist/
+
+# === Heroku deployment files (DO NOT IGNORE) ===
+!Procfile
+!requirements.txt
+!runtime.txt
+
+# === IDE / Editor files ===
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# === OS-generated files ===
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# === GitHub Pages (optional) ===
+# Uncomment if use /docs for Pages and want to exclude it from Flask repo
+# /docs/
+
+# === Crash dumps (if relevant to system) ===
 core.Microsoft*
 core.mongo*
 core.python*
-env.py
-*.py[cod]
-.venv/
-creds.json
