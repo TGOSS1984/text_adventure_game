@@ -1,0 +1,9 @@
+{
+  "id": 15,
+  "text": "You step into the mirror’s echo. The world inverts — color drains, sound warps. You fall inward.\n\nBefore you stands your shadow, unbound by flesh or fear. It is not a reflection. It is what remains when all illusions are burned away.\n\nIt remembers every failure. Every cruelty. Every doubt. It moves before you do, with grace honed by your regret.\n\nIt does not hate you. It knows you. And it rises to end you.",
+  "choices": ["fight_knight"],
+  "lore": "You cannot defeat what you refuse to face. The shadow has no mercy. It is not your enemy — it is your memory given form.",
+  "battle": true,
+  "boss": false,
+  "rest": false
+}

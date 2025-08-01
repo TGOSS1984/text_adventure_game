@@ -1,0 +1,9 @@
+{
+  "id": 2,
+  "text": "You flee into the Crimson Grove. The canopy above burns in eternal autumn, crimson leaves like falling blood. The trees groan with age, their twisted limbs clawing at the heavens as if mourning the sun.\n\nThe ground pulses beneath your boots — warm, alive, almost breathing. Roots shift and writhe as though remembering what it meant to walk. A rotten scent hangs in the still air: not death, but decay steeped in betrayal.\n\nSuddenly, the silence breaks. From the heights of the treetops, a shape plummets — all bone and twisted root. The Crimson Watcher lands before you. Once noble, now monstrous, its eyes glow like dying coals. Its jaw unhinges, leaking soot and ash. It emits no sound of speech. Only a wrath that predates language.",
+  "choices": ["approach_watcher", "hide"],
+  "lore": "The Watcher once stood beside the Flame Mother, guardian of the Ember Tree that healed the land. When her sacred fire was stolen, the Watcher was bound in grief and rot. Twisted by sorrow and betrayed faith, it lost all memory of devotion — only rage endures. The Grove itself is now a wound upon the world, pulsing with corrupted life.",
+  "battle": true,
+  "boss": false,
+  "rest": false
+}

@@ -1,0 +1,12 @@
+{
+  "id": 53,
+  "text": "This is the placeholder text for chapter 53.",
+  "choices": [
+    "choice_a",
+    "choice_b"
+  ],
+  "lore": "Lore for chapter 53.",
+  "battle": false,
+  "boss": false,
+  "rest": false
+}

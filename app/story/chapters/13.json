@@ -1,0 +1,9 @@
+{
+  "id": 13,
+  "text": "You read the final entry: 'The mirror does not reflect — it remembers.'\n\nThe wind stops. The world narrows. At the ruin’s edge stands a cracked mirror, bound in roots and boundless dread.\n\nAs you approach, your reflection falters, twisting into shapes of moments you never lived — or buried long ago.\n\nBehind the glass, something watches. It does not mimic. It judges.",
+  "choices": ["walk_away", "step_through"],
+  "lore": "The Mirror of Binding is said to trap the echoes of those who could not bear their truth. It does not lie. It reveals. But not all can survive revelation.",
+  "battle": false,
+  "boss": false,
+  "rest": false
+}

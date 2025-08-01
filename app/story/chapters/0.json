@@ -1,0 +1,9 @@
+{
+  "id": 0,
+  "text": "As a newly risen soul in the forsaken lands, you awaken amidst the ruin of Limgrave. Shadows stir beyond the old stones, as if the land itself remembers agony. The air reeks of soot and sorrow, each breath a memory not your own. A lone bonfire flickers nearby — its flames dance with whispers of forgotten oaths and lost kings.\n\nFragments of who you were claw at your thoughts. You once stood defiant before the Ash Lords, wielding blade and flame. Their kingdoms now lie buried in cinders. Yet something darker rises — older, patient, watching. You must press forward. Names echo through the void, and though you have forgotten yours, the world has not.\n\nLimgrave stretches in broken majesty before you — a land cracked open by war and time. Towering battlements lie crumbled and half-sunken into marshes that weep ash. Statues of forgotten heroes lean in ruin, their stone eyes blind and hollow. In the distance, you glimpse a skyline jagged with the silhouettes of ancient fortresses, long overtaken by nature’s fury.\n\nThe bonfire beckons, not merely as warmth, but as a tether to the world’s last memory of light. Its embers spark and hiss, echoing voices long since consumed. This land was not always forsaken. It was sacred. And now, it calls for you.",
+  "choices": ["explore_throne", "descend_catacombs"],
+  "lore": "Limgrave was once the seat of the First Flamebearers — venerated stewards of sacred fire. They kindled light in a world of dusk, but their covenant was broken when the Pyric Betrayal scorched the last altar. Now only their shadows remain, tethered to ruin.",
+  "battle": false,
+  "boss": false,
+  "rest": false
+}

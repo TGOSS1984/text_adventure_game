@@ -1,0 +1,9 @@
+{
+  "id": 17,
+  "text": "The Hollow Knight collapses, blade skittering across the stone. Its armor crumbles to rust and ash, the last breath of duty exhaled in silence.\n\nAround you, the catacombs seem to sigh — a release of ancient tension. Runes that once shimmered with vigilance now flicker and fade. You stand alone, but not unwatched. Somewhere in the dark, something has taken notice.\n\nThe path ahead lies open now — a tunnel leading deeper into the dark, or back toward the surface and the flicker of the bonfire. The choice is yours, but you feel the weight of unseen eyes pressing forward with you.",
+  "choices": ["descend_catacombs", "flee"],
+  "lore": "Some warriors fight not for glory, but because it is all they remember.",
+  "battle": true,
+  "boss": false,
+  "rest": false
+}

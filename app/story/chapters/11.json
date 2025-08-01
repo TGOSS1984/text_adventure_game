@@ -1,0 +1,9 @@
+{
+  "id": 11,
+  "text": "You descend into the Shadow Hollow, a place where light surrenders and time forgets.\n\nThe silence here is sentient. Whispers slither between the stones, and unseen eyes blink from the veil of dark.\n\nThe walls bleed a dim, sickly glow — not from torches, but from memories imprinted into the stone. Names you’ve never heard stir in your mind like nightmares half-remembered.\n\nDeeper still, the shadows converge. Something old moves beyond sight, stirring not with malice, but with hunger. You have come too far to turn away.",
+  "choices": ["press_forward"],
+  "lore": "The Shadow Hollow is where the First Sin was whispered into mortal ears. No light dares touch its core. What lies below is not evil — it is truth, unblinking and cruel.",
+  "battle": true,
+  "boss": false,
+  "rest": false
+}

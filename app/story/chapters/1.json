@@ -1,0 +1,9 @@
+{
+  "id": 1,
+  "text": "The Catacombs of Dust swallow all light. The air is thick with ancient grief. Faded runes line the cracked stone, whispering of a time when death was sacred — not feared. You descend into the dark with cautious breath, each step stirring motes of forgotten decay.\n\nPillars carved in the likeness of saints and martyrs crumble beside you, their faces eroded by time and silence. Broken offerings — rusted weapons, shattered charms — litter the walkways. You feel them watching: spirits who remember honor, now reduced to restless ash.\n\nA Hollow Knight emerges from shadow — a remnant of oath and anguish. Bound in rust and regret, his armor sighs with every motion. His grip is firm upon a fractured blade, and though his eyes see nothing, he knows only the rhythm of battle. There is no plea. No hesitation. Only the instinct to defend a tomb long lost to memory.",
+  "choices": ["fight_knight", "flee"],
+  "lore": "Hollow Knights were once the Watchers of the Rite — sworn to guard the passage between flesh and spirit. Their souls, unable to pass on, now rot in servitude beneath stone, forgotten even by death. The Catacombs were once pilgrimage grounds, where the dying sought the blessing of Last Light. Now, only ruin and the echo of war remain.",
+  "battle": true,
+  "boss": false,
+  "rest": false
+}

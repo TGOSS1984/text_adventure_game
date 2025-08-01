@@ -1,0 +1,9 @@
+{
+  "id": 16,
+  "text": "At the summit of the Abyssal Watchtower, light pierces the gloom like blades. Crumbling gargoyles watch from above, their mouths agape in silent scream.\n\nA bonfire burns at the altar — pale gold, unwavering, untouched by wind or time.\n\nYou kneel. The warmth washes over you, dissolving wounds and memory alike.\n\nThe path behind fades. The path ahead glows. The final gate waits, pulsing like a heartbeat. But you are no longer who you were.\n\nYou are ready.",
+  "choices": ["approach_final_gate"],
+  "lore": "This flame was kindled by the first Flamebearer who chose mercy over might. Its light does not blind. It forgives. Few recall their name. But soon, they may recall yours.",
+  "battle": false,
+  "boss": false,
+  "rest": true
+}

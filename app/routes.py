@@ -13,7 +13,7 @@ The routes combine with the story, combat, models files to move the gameplay alo
 """
 
 from flask import Blueprint, render_template, request, redirect, url_for, session, flash
-from .story import Story
+from app.story.story_engine import Story
 from .combat import BattleManager
 from .models import Character
 from .save_load import save_game, load_game

@@ -1,0 +1,9 @@
+{
+  "id": 3,
+  "text": "You approach the Abyssal Watchtower. It looms like a jagged blade cleaving the sky, each stone slick with ancient rain and forgotten blood. The tower hums — not with sound, but with time unraveling.\n\nMist coils at its base like dying breath. Cracked banners flutter on rusted iron poles, depicting faded sigils of gods long dethroned. Statues of cloaked sentinels line the approach, their eyes hollowed by centuries of sorrow. One clutches a scroll. Another, a rusted blade. All face inward — toward something no one dares name.\n\nThe great doors groan as they part, spilling cold air thick with incense and dust. You step into darkness lined with cracked stained glass and shattered iconography. Above, the tower spirals endlessly, its peak lost in shifting gloom.\n\nYou may ascend into the forgotten heavens... or drift toward the chapel path, where prayers once soothed and now accuse.",
+  "choices": ["climb_tower", "side_path_chapel"],
+  "lore": "Raised by flamebound clerics to imprison a forgotten god, the tower's walls bear scars of war, ritual, and betrayal. Its foundations are etched with containment runes that now flicker faintly, suggesting their seal may soon break. Pilgrims once gathered here to seek visions — few ever returned sane.",
+  "battle": false,
+  "boss": false,
+  "rest": false
+}

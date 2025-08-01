@@ -1,0 +1,9 @@
+{
+  "id": 14,
+  "text": "You turn away, but the mirror is not done with you. The air grows dense — not with threat, but with gravity.\n\nDust swirls as if in protest. The ground hums with withheld judgment.\n\nYour name is whispered from the dark, not as a greeting — but as a sentence. Behind you, the mirror cracks. Not from impact. From longing.",
+  "choices": ["shatter_mirror", "return"],
+  "lore": "Avoiding the mirror is not escape. To deny it is to fracture your story — and perhaps your soul. Some claim the mirror remembers you forever, even if you forget it.",
+  "battle": false,
+  "boss": false,
+  "rest": false
+}

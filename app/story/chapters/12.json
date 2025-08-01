@@ -1,0 +1,9 @@
+{
+  "id": 12,
+  "text": "You investigate the ruins, their stones blackened and half-swallowed by the earth. At the heart lies a collapsed shrine, choked in thorn and silence.\n\nAmidst the rubble, you find a journal — bound in scorched leather, its clasps rusted shut. Pages fall apart as you touch them, brittle with age. Yet some words endure.\n\n'I saw the mirror. It saw me back. I was not ready.'\n\nThe air around you shifts. Dust thickens. Shadows lengthen. The ruin seems to hold its breath.",
+  "choices": ["read_further", "leave_quietly"],
+  "lore": "The journal belonged to a penitent knight who sought absolution through reflection. What he found was not peace, but recognition — and a hunger staring back.",
+  "battle": false,
+  "boss": false,
+  "rest": false
+}
