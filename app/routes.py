@@ -18,6 +18,7 @@ from .combat import BattleManager
 from .models import Character
 from .save_load import save_game, load_game
 from .models import Enemy
+from .enemies import BOSSES
 import random
 
 main = Blueprint("main", __name__)
@@ -81,7 +82,9 @@ def game():
         # Battle detection for next chapter
         if next_data.get("battle"):
             is_boss = next_data.get("boss", False)
-            enemy = battle_manager.generate_enemy(boss=is_boss)
+            boss_name = next_data.get("boss_name") if is_boss else None
+            enemy = battle_manager.generate_enemy(boss=is_boss, boss_name=boss_name)
+
 
             # Store all relevant enemy attributes manually
             session["enemy"] = {
