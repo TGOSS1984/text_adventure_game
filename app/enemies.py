@@ -53,5 +53,11 @@ BOSSES = {
         "attack": 25,
         "image": "cindergloom.png",
         "lore": "The final Flame Lord, bound in cinders and regret. Born of divine fire and destined to consume the end of all things."
+    },
+    "Lothric and Lorian": {
+        "hp": 200,
+        "attack": 28,
+        "image": "lothric_lorian.png",
+        "lore": "Twin princes of fading flame. One silent and seething, the other bound to a cursed destiny of rekindling."
     }
 }
