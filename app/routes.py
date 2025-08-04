@@ -65,18 +65,15 @@ def start():
 @main.route("/game", methods=["GET", "POST"])
 def game():
     if request.method == "POST":
-        # Get the selected choice and determine the next chapter
         choice = request.form["choice"]
         next_chapter = story.choose_path(choice)
         next_data = story.get_chapter(next_chapter)
 
-        # Check for battle trigger in the upcoming chapter
         if next_data.get("battle"):
             is_boss = next_data.get("boss", False)
             boss_name = next_data.get("boss_name") if is_boss else None
             enemy = battle_manager.generate_enemy(boss=is_boss, boss_name=boss_name)
 
-            # Store enemy attributes in session manually
             session["enemy"] = {
                 "name": enemy.name,
                 "hp": enemy.hp,
@@ -90,26 +87,28 @@ def game():
             session["chapter_after_battle"] = next_chapter
             return redirect(url_for("main.battle"))
         else:
-            # Update current chapter and reload game view
             session["chapter"] = next_chapter
             return redirect(url_for("main.game"))
 
-    # Load current chapter from session
+    # GET method
     chapter = session.get("chapter", 0)
     data = story.get_chapter(chapter)
 
-    # Bonfire/rest logic — trigger HP & Estus reset if flagged
-    if data.get("rest"):
+    # ✅ Bonfire/rest logic (with redirect so flash works)
+    if data.get("rest") and not session.get("rested_here"):
         session["hp"] = session["character"]["max_hp"]
         session["estus"] = 3
-        flash("You rest at the bonfire. HP and Estus Flasks restored.", "info")
+        flash("🔥 You rest at the bonfire. HP and Estus Flasks restored.", "info")
+        session["rested_here"] = True  # prevent infinite flash loop
+        return redirect(url_for("main.game"))
 
-    # Fetch updated HP for rendering
+    session["rested_here"] = False  # reset on any non-rest chapter
     hp = session.get("hp", session["character"]["max_hp"])
 
     return render_template(
         "game.html", chapter=data, hp=hp, character=session["character"]
     )
+
 
 
 @main.route("/battle", methods=["GET", "POST"])
