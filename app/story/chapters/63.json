@@ -1,10 +1,10 @@
 {
   "id": 63,
-  "text": "This is the placeholder text for chapter 63.",
+  "text": "You fade into the Spectral Woods, where time and reality blur at the edges. The trees here are impossibly tall, draped in shrouds of hanging moss that glisten as if wet with tears. Shadows move independently of light, drifting like thoughts unspoken. Each step feels like trespass — the ground soft, the leaves whispering secrets you cannot quite hear.\n\nAt the forest’s edge lies an altar covered in bone charms and dried petals. A child’s voice echoes faintly — a lullaby in a tongue you do not know, and yet remember. Something lingers here, not hostile, but burdened by unfinished grief. The trees lean closer as you pass, as if to listen… or to warn.",
   "choices": [
-    "final_choice"
+    "follow_whispers_in_the_trees"
   ],
-  "lore": "Lore for chapter 63.",
+  "lore": "Long ago, the Spectral Woods were home to the Veilwalkers — druids who communed with the dead and listened for messages in the winds between worlds. When the Cycle broke, their forest remained half-tethered to the realm of spirits, a place where echoes and regrets took root in soil.",
   "battle": false,
   "boss": false,
   "rest": false

@@ -1,9 +1,11 @@
 {
   "id": 10,
-  "text": "You walk the flame-warped path. Ash swirls around you in choking spirals, and the ground cracks with every step, bleeding molten tears.\n\nThe corridor hums with pressure and pain, its stone scorched black by forgotten rites. Bones, melted into slag, line the edges like offerings to an angry god.\n\nFrom the heart of the ruin comes a bellow — ancient, wounded, full of fury. A colossal figure lumbers forward, dripping magma, bones blackened and fused with iron.\n\nThis was once a smith. Now, it forges only death.",
-  "choices": ["press_forward"],
-  "lore": "The Flame Corridor once led to the Crucible Forge, where the Flamebearers tempered blades that could kill gods. But when the last smith succumbed to madness, the fires turned against their makers.",
-  "battle": true,
+  "text": "Stone gives way to silence. You pass into the catacombs through an arch graven with countless names—all scratched out. The air here tastes of dust and finality. Skulls line the passageways like sentinels, some cracked, others weeping tar-black ichor. Your steps echo, but something else echoes back—half a second too late.\n\nA mural along the wall depicts the sundering of the world. The Flame rising, then crumbling. A figure cloaked in ash stands alone, arms outstretched over a broken earth. No name. No crown. Just purpose carved in fire. Deeper into the dark, the tomb calls.",
+  "choices": [
+    "descend_the_winding_ossuary"
+  ],
+  "lore": "The Hollow Catacombs were carved during the First Fracture, when the world above collapsed and the dead refused to stay buried. It is said every path here bends toward the soul's last memory, and not all who walk them are truly dead.",
+  "battle": false,
   "boss": false,
   "rest": false
 }

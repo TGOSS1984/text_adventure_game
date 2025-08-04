@@ -1,10 +1,10 @@
 {
   "id": 42,
-  "text": "This is the placeholder text for chapter 42.",
+  "text": "You cross the bridge beyond the sentinel's throne—a narrow expanse of fused iron suspended over a chasm of roaring flame. On the far side, a door stands untouched by heat or time. Symbols etched in a forgotten tongue flicker briefly as you pass.\n\nThe bridge groans under your steps. Not from strain—but from memory. As if it recalls all who failed before. You walk faster, chased not by flame, but by unseen eyes lingering in the smoke.",
   "choices": [
-    "final_choice"
+    "tear_through_the_thornveil"
   ],
-  "lore": "Lore for chapter 42.",
+  "lore": "The Molten Divide was the boundary between creation and abandonment. Only those who passed the Sentinel's judgment were permitted to walk this path—though many did so already dead.",
   "battle": false,
   "boss": false,
   "rest": false

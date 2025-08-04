@@ -1,9 +1,11 @@
 {
   "id": 1,
-  "text": "The Catacombs of Dust swallow all light. The air is thick with ancient grief. Faded runes line the cracked stone, whispering of a time when death was sacred — not feared. You descend into the dark with cautious breath, each step stirring motes of forgotten decay.\n\nPillars carved in the likeness of saints and martyrs crumble beside you, their faces eroded by time and silence. Broken offerings — rusted weapons, shattered charms — litter the walkways. You feel them watching: spirits who remember honor, now reduced to restless ash.\n\nA Hollow Knight emerges from shadow — a remnant of oath and anguish. Bound in rust and regret, his armor sighs with every motion. His grip is firm upon a fractured blade, and though his eyes see nothing, he knows only the rhythm of battle. There is no plea. No hesitation. Only the instinct to defend a tomb long lost to memory.",
-  "choices": ["fight_knight", "flee"],
-  "lore": "Hollow Knights were once the Watchers of the Rite — sworn to guard the passage between flesh and spirit. Their souls, unable to pass on, now rot in servitude beneath stone, forgotten even by death. The Catacombs were once pilgrimage grounds, where the dying sought the blessing of Last Light. Now, only ruin and the echo of war remain.",
-  "battle": true,
+  "text": "The earth is soft beneath your boots, ashen and cracked from centuries of smoldering sorrow. You step cautiously through the ruined courtyard of the Ashen Ruins. What was once a bastion of the Flamebearers now lies drowned in silence, choked by creeping vines and ember-choked winds. Statues of forgotten sentinels stare blankly toward the horizon, their swords long dulled by time.\n\nFaint markings on the stone whisper of a forgotten oath, half-buried by soot and moss. The Flame did not die here—it was consumed. And something darker rose in its place. Ahead, two paths reveal themselves: one winding toward a charred boneyard, the other downward into what seems like a broken cathedral swallowed by the land.",
+  "choices": [
+    "search_the_scorched_bones"
+  ],
+  "lore": "The Flamebearers' First Bastion was struck down in the Hour of Betrayal. Some say it was not the enemy that broke their gates, but the betrayal of flame itself—an ember that turned against its master.",
+  "battle": false,
   "boss": false,
   "rest": false
 }

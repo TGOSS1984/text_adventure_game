@@ -1,9 +1,11 @@
 {
   "id": 7,
-  "text": "You descend into the Underglare Tomb, where shadow and light war without end. The walls shimmer with false reflections — echoes of faces not your own. The deeper you tread, the more your thoughts turn against you.\n\nAt the tomb’s center lies a dais cracked by time, above which floats the Forgotten Guardian. His form is cloaked in brittle armor and unspoken law. The stone beneath him has worn smooth from centuries of vigil.\n\nHe does not ask why you are here. He does not question fate. He simply raises his axe.\n\nOne word breaks the stillness: 'Judgment.'",
-  "choices": ["confront_guardian"],
-  "lore": "The Forgotten Guardian once served the Tribunal of Light, enforcers of balance. When their creed fell to ruin, he remained — the last to remember a justice now lost. Some say he is blind. Others claim he sees too much.",
-  "battle": true,
+  "text": "You kneel, and the bonfire sparks to life—not with warmth, but with memory. Visions flood your senses: a tower collapsing into a sea of embers, a crown melting onto a skull, a chorus of unseen voices chanting in a forgotten tongue. The fire knows you, or at least remembers what you were.\n\nA figure flickers in the flame—a knight cloaked in shadows, chained to a throne of rusted iron. You cannot hear its words, but you feel its grief. Then it vanishes, and you are alone again. The flame dims, but within you something kindles: resolve, or perhaps a curse that cannot be named.",
+  "choices": [
+    "confront_the_ashen_knight"
+  ],
+  "lore": "Each bonfire is a tether to an echo. The Ashen Knight was once a bearer of Light, but fell when the flames he swore to defend demanded blood instead of faith. His spirit lingers, bound to trial and remembrance.",
+  "battle": false,
   "boss": false,
-  "rest": false
+  "rest": true
 }

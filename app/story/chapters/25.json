@@ -1,12 +1,11 @@
 {
   "id": 25,
-  "text": "This is the placeholder text for chapter 25.",
+  "text": "The stone splits beneath your feet, revealing a fissure that glows with molten light. It is not flame—it is memory made liquid, old wars still boiling in the blood of the world. You kneel beside it, and the heat does not burn.\n\nYou place your hand above the crack. Visions pour forth: a child cast into flame, a crown melted down and reforged, a tower falling in reverse. The bonfire beside the fissure flickers, and your Estus grows warm again. Rest comes, but not peace.",
   "choices": [
-    "choice_a",
-    "choice_b"
+    "duel_the_ember_tyrant"
   ],
-  "lore": "Lore for chapter 25.",
+  "lore": "The magma beneath the Peaks is said to be the world's first sorrow—formed when the Flame was wounded and bled through the earth. Those who sleep near it often awaken changed. Or never awaken at all.",
   "battle": false,
   "boss": false,
-  "rest": false
+  "rest": true
 }

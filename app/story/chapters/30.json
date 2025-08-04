@@ -1,11 +1,11 @@
 {
   "id": 30,
-  "text": "This is the placeholder text for chapter 30.",
+  "text": "The gorge drops steeply into a place untouched by sun. You descend by root and stone, hands grasping at what little stability remains. The sound of water echoes below, but it is not water—it is thicker, older.\n\nBones line the gorge walls, pinned by thorns and melted coins. One skull bears a crown of salt. Another, still warm. The path forks here, yet each direction feels as though it leads deeper into something that should never have been opened.",
   "choices": [
-    "final_choice"
+    "step_through_the_whispering_fog"
   ],
-  "lore": "Lore for chapter 30.",
+  "lore": "The Eastern Gorge was carved when the Worldroot wept. Some say it bleeds not rock, but regret. Its walls remember every soul that fell within—and judge those who pass in silence.",
   "battle": false,
   "boss": false,
-  "rest": true
+  "rest": false
 }

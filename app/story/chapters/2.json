@@ -1,8 +1,10 @@
 {
   "id": 2,
-  "text": "You flee into the Crimson Grove. The canopy above burns in eternal autumn, crimson leaves like falling blood. The trees groan with age, their twisted limbs clawing at the heavens as if mourning the sun.\n\nThe ground pulses beneath your boots — warm, alive, almost breathing. Roots shift and writhe as though remembering what it meant to walk. A rotten scent hangs in the still air: not death, but decay steeped in betrayal.\n\nSuddenly, the silence breaks. From the heights of the treetops, a shape plummets — all bone and twisted root. The Crimson Watcher lands before you. Once noble, now monstrous, its eyes glow like dying coals. Its jaw unhinges, leaking soot and ash. It emits no sound of speech. Only a wrath that predates language.",
-  "choices": ["approach_watcher", "hide"],
-  "lore": "The Watcher once stood beside the Flame Mother, guardian of the Ember Tree that healed the land. When her sacred fire was stolen, the Watcher was bound in grief and rot. Twisted by sorrow and betrayed faith, it lost all memory of devotion — only rage endures. The Grove itself is now a wound upon the world, pulsing with corrupted life.",
+  "text": "The boneyard reeks of burnt marrow and bitter steel. Scattered remnants of knights lie twisted, their armor melted into their bones. Something passed through here—a storm of fire and fury that left no survivors, only echoes. Amidst the rubble, you disturb a mound of scorched remains.\n\nIt rises.\n\nFrom the ash, a shambling construct of armor and embers lashes out with forgotten rage. It carries no banner, speaks no oath—only the will to destroy what breathes. The air grows hot and heavy. You must ready your weapon.",
+  "choices": [
+    "wander_deeper_into_the_ash"
+  ],
+  "lore": "In the final siege, the Pyrekin betrayed their own. Bound by flame, they turned on the Flamebearers in a pact sealed with blood. Their husks now wander—warriors without cause, guardians without memory.",
   "battle": true,
   "boss": false,
   "rest": false

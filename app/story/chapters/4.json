@@ -1,9 +1,11 @@
 {
   "id": 4,
-  "text": "Atop the tower, the air thins to frost and fire. A shattered dome lets in a pale, storm-lit sky, where clouds churn like furious spirits. The altar is cracked and scorched, once sacred, now desecrated. Blackened bones lie strewn in ceremonial patterns, as if a ritual was interrupted — or completed.\n\nLightning dances across shattered symbols etched into the stone. Runes meant to bind now flicker with instability. And in the silence, a tremor begins. From the gloom beyond the altar, he rises.\n\nCindergloom. Last of the Flame Lords. His body is wrought of molten iron and dying starfire, wrapped in a tattered cloak of living ash. His face is a mask of charred bone, his gaze searing with ancient hatred.\n\nHe speaks no words. He needs none. This is not a duel. It is a reckoning.",
-  "choices": ["fight_final_boss"],
-  "lore": "Cindergloom was born of the First Pyre, shaped in the forges of the divine and cursed by their fall. His flame does not warm. It does not burn. It consumes — will, memory, and soul alike. He is the reason the heavens no longer blaze.",
-  "battle": true,
-  "boss": true,
+  "text": "A damp haze clings to your skin as you descend. The stench becomes unbearable—the rot of centuries soaked into the land. You step into the marsh, where every footfall is a squelch of mud and something softer. Shadows move in the reeds. Eyes blink from hollows in trees twisted by time.\n\nThis is no natural swamp. The land itself resents your presence. Long-forgotten rituals echo here—fragments of prayers to gods that never answered. You must press forward, into the Weeping Marsh.",
+  "choices": [
+    "wade_into_the_weeping_marsh"
+  ],
+  "lore": "The Weeping Marsh was once sacred to the Moss-Priests, keepers of rot and rebirth. But their prayers curdled when the Flame refused to die. They were swallowed by their own offerings.",
+  "battle": false,
+  "boss": false,
   "rest": false
 }

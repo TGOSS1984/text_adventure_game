@@ -1,9 +1,13 @@
 {
   "id": 8,
-  "text": "The relic pulses with radiant breath, each beat echoing into the marrow of your bones. Symbols of flame and spirit swirl across its surface — not drawn, but alive.\n\nThe chamber hums with anticipation. Faint whispers — in languages older than the flame — reverberate through the stone. Runes once hidden blaze into view, outlining a sealed passage you had not noticed before.\n\nAs you step back, the air thickens. A hidden gate grinds open at the base of the tower, revealing a passage veiled in golden mist.\n\nYou do not feel fear. Only inevitability. Destiny has found its shape — and it wears your shadow.",
-  "choices": ["fight_final_boss"],
-  "lore": "Only those marked by the relic — forged by flame, yet untouched by rage — may pass through the Gate of Cinders. The relic is not a tool. It is a key, awakened by resolve. It marks not heroes, but those who endure.",
-  "battle": false,
-  "boss": false,
+  "text": "The armored figure emerges from the flame’s dying glow, dragging a sword too large for any mortal hand. Eyes like smoldering coals stare through a helm fused to flesh. He does not speak—he remembers, and you are part of that memory. The air thickens with heat and sorrow.\n\nThe Ashen Knight fights not to kill you, but to see if you are worthy. Each strike echoes with the cries of a fallen kingdom, each step a remnant of his long penance. To move forward, you must prove yourself through fire, or become another cinder beneath his blade.",
+  "choices": [
+    "wade_into_the_weeping_marsh",
+    "slip_into_the_hollow_catacombs",
+    "scale_the_obsidian_peaks"
+  ],
+  "lore": "The Ashen Knight once stood at the edge of the world and defied the dark. When the Cycle demanded his flame, he refused. For that defiance, he was cursed to remain between death and remembrance—slaying those who sought his path until one worthy soul kindles it anew.",
+  "battle": true,
+  "boss": true,
   "rest": false
 }

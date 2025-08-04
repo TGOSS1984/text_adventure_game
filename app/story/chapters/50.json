@@ -1,12 +1,11 @@
 {
   "id": 50,
-  "text": "This is the placeholder text for chapter 50.",
+  "text": "After the battle, the veil recedes. You kneel beneath a sky of polished black stone that reflects no stars — only your face, fractured by flame. The Abyss recedes, not in defeat, but in recognition.\n\nYou are marked now. Not as victor, but as *vessel.* The flame has grown thin, stretched across too many betrayals. And yet, it clings to you. A memory rekindled. A wound reopened.\n\nThere is still one path forward — into the Silent Citadel.",
   "choices": [
-    "choice_a",
-    "choice_b"
+    "approach_the_silent_citadel"
   ],
-  "lore": "Lore for chapter 50.",
+  "lore": "Legends say the obsidian sky was the mirror of the gods, now inverted by their fall. Those who kneel beneath it are judged by flame, not deed — and often found wanting.",
   "battle": false,
-  "boss": true,
+  "boss": false,
   "rest": true
 }

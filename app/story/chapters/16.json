@@ -1,9 +1,13 @@
 {
   "id": 16,
-  "text": "At the summit of the Abyssal Watchtower, light pierces the gloom like blades. Crumbling gargoyles watch from above, their mouths agape in silent scream.\n\nA bonfire burns at the altar — pale gold, unwavering, untouched by wind or time.\n\nYou kneel. The warmth washes over you, dissolving wounds and memory alike.\n\nThe path behind fades. The path ahead glows. The final gate waits, pulsing like a heartbeat. But you are no longer who you were.\n\nYou are ready.",
-  "choices": ["approach_final_gate"],
-  "lore": "This flame was kindled by the first Flamebearer who chose mercy over might. Its light does not blind. It forgives. Few recall their name. But soon, they may recall yours.",
+  "text": "You emerge from the Serpent’s hollow with breath that tastes like rust and rot. The mist thickens as if recoiling from what you’ve done. Shapes flicker at the edges of your vision—half-formed things that vanish when looked at. Somewhere ahead, the air thins, the silence breaks.\n\nA voice—not heard but felt—whispers, 'You have opened the first gate. Now walk the dream that forgets.' The land ahead changes subtly, as though you walk across memories rather than earth. Roads fade. Trees lean closer. And the stars no longer match the sky you knew.",
+  "choices": [
+    "enter_the_yawning_crypt",
+    "drop_into_a_lower_passage",
+    "climb_toward_flickering_light"
+  ],
+  "lore": "The mist between realms was once called 'The Breath of the First Flame.' It guards the path between realities. Only those who carry echoes of broken vows may pass without losing themselves. But not without cost.",
   "battle": false,
   "boss": false,
-  "rest": true
+  "rest": false
 }

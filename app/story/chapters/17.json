@@ -1,9 +1,11 @@
 {
   "id": 17,
-  "text": "The Hollow Knight collapses, blade skittering across the stone. Its armor crumbles to rust and ash, the last breath of duty exhaled in silence.\n\nAround you, the catacombs seem to sigh — a release of ancient tension. Runes that once shimmered with vigilance now flicker and fade. You stand alone, but not unwatched. Somewhere in the dark, something has taken notice.\n\nThe path ahead lies open now — a tunnel leading deeper into the dark, or back toward the surface and the flicker of the bonfire. The choice is yours, but you feel the weight of unseen eyes pressing forward with you.",
-  "choices": ["descend_catacombs", "flee"],
-  "lore": "Some warriors fight not for glory, but because it is all they remember.",
-  "battle": true,
+  "text": "The air grows cold and metallic as you descend. Bones line the walls like bricks, skulls cracked and scorched. Each step echoes with the weight of those buried not once, but many times. The ossuary winds deep, too deep for any natural catacomb.\n\nYou pass murals carved in relief—depictions of battles long forgotten, of knights burning, of towers crumbling in reverse. In one, a figure kneels before a flame that weeps. Its face is erased. You feel a strange familiarity with the gesture.\n\nThe deeper you go, the less certain you are that time exists here at all.",
+  "choices": [
+    "traverse_the_broken_graves"
+  ],
+  "lore": "The Winding Ossuary was shaped by the Ashen Monks—those who chose to remember every death so others could forget. When the Cycle bent backward, the monks sealed themselves in, their memories too sharp to burn.",
+  "battle": false,
   "boss": false,
   "rest": false
 }

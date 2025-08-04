@@ -1,12 +1,11 @@
 {
   "id": 67,
-  "text": "This is the placeholder text for chapter 67.",
+  "text": "As you echo through the hollow heights, the tower seems to breathe with your presence. The very walls pulse faintly, as though alive. At the tower’s summit chamber, you find a massive obsidian mirror — cracked, yet still reflecting. You see not your form, but possibilities — dozens of versions of yourself, some cloaked in flame, others in shadow, some kneeling, others crowned.\n\nA shrouded figure kneels before the mirror. Their body is blurred, identity indistinct — yet when they speak, the voice is your own. 'To ascend is not to rise. It is to remember what you chose to forget.' As you move forward, the figure fades into embers, and the mirror shatters, releasing a gust of unseen force.",
   "choices": [
-    "choice_a",
-    "choice_b"
+    "rest_beneath_the_singing_spire"
   ],
-  "lore": "Lore for chapter 67.",
-  "battle": false,
+  "lore": "Legends claim the tower was built atop an echo-well — a wound in reality where the past bleeds through. Those who gaze too long into the Spire Mirror have vanished, their souls scattered across potential futures. Some say they wander still, seeking the version of themselves that might have been whole.",
+  "battle": true,
   "boss": false,
   "rest": false
 }

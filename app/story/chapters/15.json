@@ -1,9 +1,12 @@
 {
   "id": 15,
-  "text": "You step into the mirror’s echo. The world inverts — color drains, sound warps. You fall inward.\n\nBefore you stands your shadow, unbound by flesh or fear. It is not a reflection. It is what remains when all illusions are burned away.\n\nIt remembers every failure. Every cruelty. Every doubt. It moves before you do, with grace honed by your regret.\n\nIt does not hate you. It knows you. And it rises to end you.",
-  "choices": ["fight_knight"],
-  "lore": "You cannot defeat what you refuse to face. The shadow has no mercy. It is not your enemy — it is your memory given form.",
-  "battle": true,
-  "boss": false,
+  "text": "A ripple crosses the marsh. Then another. The water stills, as though the world itself holds breath. And then it comes—vast, sinuous, its eyes milky with knowledge too long held. The Mireborn Serpent rises not with hunger, but with sorrow.\n\nIts voice booms into your thoughts without sound: 'I saw the fire that devours all thrones. I saw the last crown cracked open by grief. I see you… bearer of ash, breaker of memory…' And then, it strikes, not to consume, but to be ended.\n\nThe battle is brutal, but not cruel. It is a ritual. A release.",
+  "choices": [
+    "push_on_through_the_mist",
+    "circle_back_to_hollow_catacombs"
+  ],
+  "lore": "To see the end is a blessing only to those strong enough to forget it. The Mireborn Serpent bore witness to the Cycle’s first death and chose madness over silence. Its defeat unshackles an ancient whisper carried now in your bones.",
+  "battle": false,
+  "boss": true,
   "rest": false
 }

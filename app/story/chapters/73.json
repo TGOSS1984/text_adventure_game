@@ -1,12 +1,11 @@
 {
   "id": 73,
-  "text": "This is the placeholder text for chapter 73.",
+  "text": "You descend into Screaming Dark, where even the echoes refuse to follow. The stair spirals endlessly downward, carved into obsidian veined with flickering fire. Your torch dims, swallowed by the oppressive black, but a deeper light pulses below — not illumination, but memory turned to flame.\n\nAs you descend, the air thickens with ancient despair. At intervals, the walls widen into viewing chambers, each holding spectral forms in frozen agony: warriors striking down comrades, children clutching empty dolls, kings weeping before ash-thrones. This place does not trap the dead. It imprisons moments too painful to forget.",
   "choices": [
-    "choice_a",
-    "choice_b"
+    "rest_in_the_void_chamber"
   ],
-  "lore": "Lore for chapter 73.",
-  "battle": false,
+  "lore": "The Screaming Dark is a relic of the first war against the Unkindled, when time itself fractured. Here, memory becomes matter, and pain becomes prison. Only those who face their own echo may walk onward — though most never return the same.",
+  "battle": true,
   "boss": false,
   "rest": false
 }

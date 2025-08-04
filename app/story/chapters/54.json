@@ -1,11 +1,11 @@
 {
   "id": 54,
-  "text": "This is the placeholder text for chapter 54.",
+  "text": "Cold replaces flame. The Frostbound Gallery is lined with portraits covered in frost and sorrow. Each depicts a version of you — some with crown, others with mask, a few broken or aflame. They line the corridor like judges.\n\nAt the gallery’s end lies a brazier, unlit for centuries. As you near it, frost melts from your skin — not with heat, but with recognition. The flame *knows* you. It remembers, even if you do not.",
   "choices": [
-    "final_choice"
+    "offer_ashes_to_the_flame"
   ],
-  "lore": "Lore for chapter 54.",
+  "lore": "The Gallery was once a vault of futures — paths the flame saw but never allowed. When the cycle was broken, the gallery froze. It now shows what was *lost*, not what might have been.",
   "battle": false,
   "boss": false,
-  "rest": false
+  "rest": true
 }

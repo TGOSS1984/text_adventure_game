@@ -1,11 +1,11 @@
 {
   "id": 51,
-  "text": "This is the placeholder text for chapter 51.",
+  "text": "Steel clashes with shadow. The Abyss Watcher moves like smoke in flame — never fully real, yet his blade strikes with memory's weight. He speaks not in words, but in the silence between cuts, showing you visions: a covenant broken, a fire stolen, a name erased from all records.\n\nEach blow exchanged is a confession. Each dodge, a denial. This is no mere duel — it is a reckoning. The Watcher is not your enemy. He is your *echo*. To defeat him is to face your own betrayal of the First Flame.",
   "choices": [
-    "final_choice"
+    "approach_the_silent_citadel"
   ],
-  "lore": "Lore for chapter 51.",
-  "battle": false,
-  "boss": false,
+  "lore": "There was once a flame-bearer who led the others into betrayal, believing that fire must be free, not chained. The Abyss Watcher remembers him — and sees him now reborn in you.",
+  "battle": true,
+  "boss": true,
   "rest": false
 }

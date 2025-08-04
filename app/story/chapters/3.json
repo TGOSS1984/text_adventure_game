@@ -1,8 +1,13 @@
 {
   "id": 3,
-  "text": "You approach the Abyssal Watchtower. It looms like a jagged blade cleaving the sky, each stone slick with ancient rain and forgotten blood. The tower hums — not with sound, but with time unraveling.\n\nMist coils at its base like dying breath. Cracked banners flutter on rusted iron poles, depicting faded sigils of gods long dethroned. Statues of cloaked sentinels line the approach, their eyes hollowed by centuries of sorrow. One clutches a scroll. Another, a rusted blade. All face inward — toward something no one dares name.\n\nThe great doors groan as they part, spilling cold air thick with incense and dust. You step into darkness lined with cracked stained glass and shattered iconography. Above, the tower spirals endlessly, its peak lost in shifting gloom.\n\nYou may ascend into the forgotten heavens... or drift toward the chapel path, where prayers once soothed and now accuse.",
-  "choices": ["climb_tower", "side_path_chapel"],
-  "lore": "Raised by flamebound clerics to imprison a forgotten god, the tower's walls bear scars of war, ritual, and betrayal. Its foundations are etched with containment runes that now flicker faintly, suggesting their seal may soon break. Pilgrims once gathered here to seek visions — few ever returned sane.",
+  "text": "Ash clings to your boots like a second skin as you tread deeper. The wind here carries whispers—some mournful, some mocking. You pass rows of pyres long extinguished, each bearing the sigil of forgotten houses. The path narrows between jagged spires of obsidian glass, their surfaces cracked with ancient heat.\n\nTwo smells mingle in the air now: rot and something older, fainter... a promise broken. The landscape splits ahead. You sense danger in either direction, but one path beckons with the scent of decay, the other with the pull of unkindled flame.",
+  "choices": [
+    "follow_the_stench_of_rot",
+    "descend_into_the_tomb_mouth",
+    "climb_the_forgotten_ledge",
+    "kneel_before_the_flame"
+  ],
+  "lore": "In the age before light, it was said that every ruin bore the mark of its last truth. Here in the Ashlands, those who walked deeper rarely returned—drawn toward roots of something far more ancient than the Flame.",
   "battle": false,
   "boss": false,
   "rest": false

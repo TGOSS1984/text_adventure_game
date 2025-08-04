@@ -1,12 +1,11 @@
 {
   "id": 70,
-  "text": "This is the placeholder text for chapter 70.",
+  "text": "You cross the Lava Tomb, a corridor of glassed stone and searing mist. The floor glows with molten cracks, and the shadows on the walls twitch and pulse with lives of their own. As you press on, you find twisted statues fused into the cavern walls — knights, nobles, and beasts alike, their faces locked in expressions of agony or awe. It is said that this place remembers those who perish within.\n\nA great gate looms ahead, sealed with flame-sigils and draconic script. Beneath it, a brazier lies cold, surrounded by a circle of burnt offerings: blades, bones, and fragments of gold crowns. To pass, something must be left behind. Something precious. A flicker of fire rises as you reach toward your pouch, uncertain of what you’re about to surrender.",
   "choices": [
-    "choice_a",
-    "choice_b"
+    "collapse_near_ember_altar"
   ],
-  "lore": "Lore for chapter 70.",
-  "battle": false,
+  "lore": "The Lava Tomb served as the final trial for those seeking the Flame’s blessing. The Pyrecrowned were said to cast away all identity before passage, their names consumed in the blaze. In return, they were reborn as weapons of will — or cinders of regret.",
+  "battle": true,
   "boss": false,
-  "rest": true
+  "rest": false
 }

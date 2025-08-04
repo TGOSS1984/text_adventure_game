@@ -1,12 +1,11 @@
 {
   "id": 64,
-  "text": "This is the placeholder text for chapter 64.",
+  "text": "The whispers grow stronger as you press deeper into the trees. They weave around your thoughts like vines, tightening and blooming. At times you see shapes flit just beyond sight — pale silhouettes, some crawling, some drifting, all watching. You come upon a grove where a single tree stands scorched, its bark etched with runes that flicker faintly in your periphery.\n\nYou kneel near the base, brushing aside ash to find a charm of woven silver wire. As your fingers close around it, you hear a voice — yours, but twisted, from a moment that never was: 'You lit the fire once. Will you do so again?' When you rise, the whispers are silent… for now.",
   "choices": [
-    "choice_a",
-    "choice_b"
+    "ignite_the_ghostfire"
   ],
-  "lore": "Lore for chapter 64.",
-  "battle": true,
+  "lore": "The grove marks the site of the Spectral Concord — a pact between the living and the dead to keep the Cycle turning. But the Concord was broken in the Era of Fracture, when one Veilwalker lit the ghostfire to hold back the dark… and never returned.",
+  "battle": false,
   "boss": false,
   "rest": false
 }

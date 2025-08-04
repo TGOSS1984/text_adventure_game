@@ -1,11 +1,11 @@
 {
   "id": 45,
-  "text": "This is the placeholder text for chapter 45.",
+  "text": "The roots twist violently, dragging you into a hollow where centuries of decay have formed a throne of bones and bark. A tree pulses above, its trunk fused with a figure—neither living nor fully dead. Eyes bloom across the bark. She watches.\n\nThe Thorn Matriarch rises, her limbs cracking like dead branches. She was queen once, now judge. Her voice echoes inside your skull: 'You seek flame… yet bring rot.' Her verdict is war.",
   "choices": [
-    "final_choice"
+    "face_the_thorn_matriarch"
   ],
-  "lore": "Lore for chapter 45.",
+  "lore": "The Matriarch ruled when flame and forest were one. But she refused the Ashen Pact, and for it, was rooted in her grove. She waits not to be freed—but to be understood… or destroyed.",
   "battle": false,
   "boss": false,
-  "rest": false
+  "rest": true
 }

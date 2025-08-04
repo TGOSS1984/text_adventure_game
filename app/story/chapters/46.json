@@ -1,12 +1,11 @@
 {
   "id": 46,
-  "text": "This is the placeholder text for chapter 46.",
+  "text": "She rises fully now, her bark-skin creaking with ancient pain. Thorns sprout where fingers once were, and vines lash as though alive with fury. The Thorn Matriarch does not roar or scream—her silence is worse, filled with judgment and memory.\n\nThe grove twists around her, forming a battlefield of roots and regrets. To strike her is to wound the forest. To fall is to feed it. Somewhere in the whispers of leaves, a truth flutters — you are not the first flame-bearer to trespass here, but you may be the last.",
   "choices": [
-    "choice_a",
-    "choice_b"
+    "climb_toward_the_second_crossroads"
   ],
-  "lore": "Lore for chapter 46.",
-  "battle": false,
-  "boss": false,
+  "lore": "Bound by her own roots, the Matriarch is both tomb and guardian of forgotten pacts. She remembers the Flamebearers before they were ash, and their betrayal still blooms in her bark.",
+  "battle": true,
+  "boss": true,
   "rest": false
 }

@@ -1,11 +1,11 @@
 {
   "id": 60,
-  "text": "This is the placeholder text for chapter 60.",
+  "text": "You plunge into the drowned road, a half-sunken path flanked by skeletal trees and ruins that groan with waterlogged age. The air is thick with brine and rot, every step sinking into muck that clings like memory. The silence here is oppressive, broken only by the occasional drip of unseen water and distant, gurgling echoes that seem too rhythmic to be natural.\n\nCrumbling homes lean askew beneath the weight of the marsh, their windows like blind eyes staring into forgotten yesterdays. Statues of saints eroded to near-animalistic forms weep dark trails into the mud. There’s a strange stillness, as though this village mourns something beyond death — as though it remembers. You feel watched, not by creatures, but by the land itself.",
   "choices": [
-    "final_choice"
+    "confront_the_sunken_dead"
   ],
-  "lore": "Lore for chapter 60.",
-  "battle": true,
+  "lore": "The Drowned Village was once a settlement built on sacred waters. Its priests believed the flood was a divine punishment, yet they clung to their rites even as the tides swallowed their altars. Some say their chants still echo beneath the surface, binding the dead to the silt below.",
+  "battle": false,
   "boss": false,
-  "rest": true
+  "rest": false
 }

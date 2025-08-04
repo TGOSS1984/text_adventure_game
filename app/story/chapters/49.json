@@ -1,12 +1,11 @@
 {
   "id": 49,
-  "text": "This is the placeholder text for chapter 49.",
+  "text": "You pass through a curtain of glimmering mist. Beyond lies a shrine of obsidian, shattered and reassembled in impossible geometry. Figures kneel before broken altars, unmoving. They do not breathe. Their faces are yours.\n\nA figure steps from behind the shrine. Cloaked in ragged flame and wrapped in broken seals, the Abyss Watcher levels a rusted blade at your heart. 'The first flame was stolen. And now the last must burn,' he intones.\n\nYou realize this fight is not for victory. It is for *truth.*",
   "choices": [
-    "choice_a",
-    "choice_b"
+    "kneel_beneath_the_obsidian_sky"
   ],
-  "lore": "Lore for chapter 49.",
-  "battle": false,
-  "boss": false,
+  "lore": "The Abyss Watcher was once the Keeper of First Light. But when the Flamebearers broke the pact, he chose exile within shadow. He remembers what the world has chosen to forget — and guards it with unyielding fury.",
+  "battle": true,
+  "boss": true,
   "rest": false
 }

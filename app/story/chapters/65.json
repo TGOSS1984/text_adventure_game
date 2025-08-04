@@ -1,12 +1,11 @@
 {
   "id": 65,
-  "text": "This is the placeholder text for chapter 65.",
+  "text": "You approach the center of the grove where a rusted brazier lies half-buried beneath fallen leaves. With a spark drawn from your Estus Flask, you kindle the ghostfire. It erupts in cold azure, casting the woods in eerie light. Shadows flee from the blaze, and in their absence, you glimpse spectral figures lining the glade — soldiers, children, scholars — each holding a part of you.\n\nOne raises a hand and speaks without sound, and your mind reels with fractured memory: a war you didn’t fight, a love you didn’t lose, a throne you never sat. The ghostfire does not warm you, but it illuminates truth too raw to bear. And still, you press onward, its ember tethered to your soul.",
   "choices": [
-    "choice_a",
-    "choice_b"
+    "slip_beneath_the_moss_veil"
   ],
-  "lore": "Lore for chapter 65.",
+  "lore": "Ghostfire was once used to pierce the veil and commune with the ‘Unremembered’ — souls not claimed by flame nor void. It is said those who light it walk both worlds, bound neither to life nor death. But the burden is great, for with vision comes memory, and with memory comes sorrow.",
   "battle": false,
   "boss": false,
-  "rest": false
+  "rest": true
 }

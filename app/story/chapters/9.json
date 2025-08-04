@@ -1,12 +1,10 @@
 {
   "id": 9,
-  "text": "Before you looms the Gate of Ash — a monolith scorched by centuries of flame and sorrow. Its surface crackles with veins of ember, pulsing like the last heartbeat of a dying god.\n\nThree paths stretch from its base, each radiating a distinct dread.\n\nTo the left, a trail of molten rock winds into flame-choked valleys, where the air sings with heat and despair.\n\nTo the right, stairs spiral into a bottomless dark, untouched by sun or memory. And ahead lies a ruined causeway littered with idol fragments and the bones of kneeling pilgrims.\n\nEach breath here feels heavier. Each step, a choice that echoes beyond time.",
+  "text": "The marsh swells around your legs like a grasping hand. Blackened reeds part reluctantly as you move, disturbed by your very presence. Strange shapes drift beneath the surface—some bones, some perhaps not. The cries of unseen birds echo like mourning hymns across the stagnant waters.\n\nAncient stone altars lie half-submerged, covered in glyphs that pulse faintly when you near. The marsh remembers those who came before, and it does not welcome you. Far off, a ripple cuts across the water—too large for any natural beast. Something waits, beneath the veil of rot.",
   "choices": [
-    "enter_flame_path",
-    "descend_shadow_path",
-    "investigate_ruins"
+    "step_beneath_the_hanging_moss"
   ],
-  "lore": "It is said the Ash Gate was forged from the remains of the First Flame, quenched and hammered by divine will. It judges all who approach. Few return. None return unchanged.",
+  "lore": "The Weeping Marsh was once known as the Vale of Vows, where the Moss-Priests gave up their names to feed the First Flame. Their altars now weep for what was lost, and whisper only to the forgotten.",
   "battle": false,
   "boss": false,
   "rest": false

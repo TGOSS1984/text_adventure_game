@@ -1,11 +1,11 @@
 {
   "id": 48,
-  "text": "This is the placeholder text for chapter 48.",
+  "text": "A spiraling descent into darkness greets you. The air grows heavy, wet, and full of whispers that slither past your ears. Stone gives way to something older — not carved, but grown. You step onto a floor of black crystal, and your reflection in it moves a half-second late.\n\nThis is the Abyss. Not death, but memory made real. Every step further is a shedding of self. Voices call to you — not to stop, but to *remember*. What you were. What *you did*.",
   "choices": [
-    "final_choice"
+    "step_beyond_the_veil"
   ],
-  "lore": "Lore for chapter 48.",
-  "battle": true,
+  "lore": "The Abyss is not a place, but a scar left behind by the first sundering of flame. Those who enter risk becoming echoes — shadows of will without name. Yet sometimes, the echoes speak truths the living cannot.",
+  "battle": false,
   "boss": false,
   "rest": false
 }

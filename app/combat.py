@@ -33,8 +33,12 @@ class BattleManager:
         if boss:
             name = boss_name or "Cindergloom"
             data = BOSSES.get(name)
+
             if not data:
-                raise ValueError(f"Boss '{name}' not found.")
+                print(f"[WARN] Boss '{name}' not found. Defaulting to Cindergloom.")
+                name = "Cindergloom"
+                data = BOSSES[name]
+
             return Enemy(
                 name=name,
                 hp=data["hp"],

@@ -1,11 +1,11 @@
 {
   "id": 36,
-  "text": "This is the placeholder text for chapter 36.",
+  "text": "You follow a path etched by wind and regret along the cliff's edge. The sea below is not water but shadow—rolling and shifting with whispers of things that should not breathe. Above, carrion birds circle, but none dare land.\n\nIn a hollow beneath the rocks, you find crude markings carved by a shaking hand. A warning, or perhaps a prayer: 'They sleep above the silence. Do not wake them.' You move on, the air colder than before, the silence heavier.",
   "choices": [
-    "final_choice"
+    "sneak_into_iron_bastion"
   ],
-  "lore": "Lore for chapter 36.",
-  "battle": true,
+  "lore": "These cliffs were once spines of titans, broken during the War of Sundering. Their bones form the foundation of Iron Bastion—a fortress built upon forgotten guilt.",
+  "battle": false,
   "boss": false,
   "rest": false
 }

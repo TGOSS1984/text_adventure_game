@@ -1,12 +1,11 @@
 {
   "id": 74,
-  "text": "This is the placeholder text for chapter 74.",
+  "text": "You find momentary stillness in the Void Chamber, an impossibly vast cavern suspended in silence. The walls ripple like water, reflecting not your face but your fears. A single bonfire flickers at the center, dim and wavering, barely enough to hold the darkness at bay.\n\nHere, time ceases to function. Wounds neither heal nor worsen. Even your thoughts grow still. Across the chamber lies a sealed archway, its stone covered in glyphs long erased. A throne of fractured mirrors sits beside it, and within the shards you glimpse other versions of yourself — triumphant, broken, monstrous. The flame here offers no warmth, only reflection.",
   "choices": [
-    "choice_a",
-    "choice_b"
+    "return_to_the_shattered_hall"
   ],
-  "lore": "Lore for chapter 74.",
+  "lore": "The Void Chamber was never built. It was remembered. Whispers say it is the last breath of a dying god, made solid. Those who linger too long vanish from history, as though they never were. But some say that’s a kind of peace.",
   "battle": false,
   "boss": false,
-  "rest": false
+  "rest": true
 }

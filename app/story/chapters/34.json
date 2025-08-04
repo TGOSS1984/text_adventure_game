@@ -1,12 +1,11 @@
 {
   "id": 34,
-  "text": "This is the placeholder text for chapter 34.",
+  "text": "You strike flint, but the brazier resists. Only when you cut your palm and feed it blood does the flame catch—green and silent. It casts no heat, but the ground trembles with its birth. Chains rattle in the distance. Doors groan open unseen.\n\nThe flame reveals carvings on the walls—scenes of cities swallowed by vine, oceans weeping upward, and a crownless king devoured by his throne. One word is repeated in each mural: 'Remnant.'",
   "choices": [
-    "choice_a",
-    "choice_b"
+    "unshackle_the_lord_of_chains"
   ],
-  "lore": "Lore for chapter 34.",
+  "lore": "The Brazier of Ruin burns with the sorrow of ten thousand unfulfilled pacts. It is not fire, but memory masquerading as flame. The chained god it served is long dead—or dreaming still.",
   "battle": false,
   "boss": false,
-  "rest": false
+  "rest": true
 }

@@ -1,8 +1,10 @@
 {
   "id": 13,
-  "text": "You read the final entry: 'The mirror does not reflect — it remembers.'\n\nThe wind stops. The world narrows. At the ruin’s edge stands a cracked mirror, bound in roots and boundless dread.\n\nAs you approach, your reflection falters, twisting into shapes of moments you never lived — or buried long ago.\n\nBehind the glass, something watches. It does not mimic. It judges.",
-  "choices": ["walk_away", "step_through"],
-  "lore": "The Mirror of Binding is said to trap the echoes of those who could not bear their truth. It does not lie. It reveals. But not all can survive revelation.",
+  "text": "The ground beneath your feet squelches with each step, the mud thick and reluctant to release you. Stone pylons lean at odd angles, remnants of an ancient bridge that now sinks into the mire. Every few paces, a whisper rides the wind—no words, just yearning.\n\nYou pass a statue of a woman holding a bowl, her face long eroded. The bowl overflows with dark water that never spills. Just before you turn away, you think you see something shift within it—your face, burning.\n\nThen it’s gone. You move on.",
+  "choices": [
+    "rest_among_drowned_bones"
+  ],
+  "lore": "The Sinking Path once led to the Temple of Reeds, where pilgrims would offer their memories to lighten the burden of flame. Those who lingered too long forgot why they came, and sank without a trace.",
   "battle": false,
   "boss": false,
   "rest": false

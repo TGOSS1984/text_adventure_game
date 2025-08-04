@@ -1,11 +1,10 @@
 {
   "id": 43,
-  "text": "This is the placeholder text for chapter 43.",
+  "text": "Vines hang like nooses from crumbling arches as you enter the Thornveil—a corridor of ancient flora choked by corruption. Every branch seems to recoil at your presence, every leaf whispers things you once buried. The path narrows, but the thorns part for you.\n\nThis was once sacred—perhaps still is. A place where blood was spilled not in war, but in ritual. The air smells of wet bark and memory. You press on, past the threshold where green turns black.",
   "choices": [
-    "choice_a",
-    "choice_b"
+    "step_into_the_vine_maze"
   ],
-  "lore": "Lore for chapter 43.",
+  "lore": "The Thornveil marks the border of the Cradle of Thorns, where the old forest queens bound their spirits into root and soil. It is said they still linger, feeding on trespassers.",
   "battle": false,
   "boss": false,
   "rest": false

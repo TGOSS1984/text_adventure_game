@@ -1,8 +1,11 @@
 {
   "id": 0,
-  "text": "As a newly risen soul in the forsaken lands, you awaken amidst the ruin of Limgrave. Shadows stir beyond the old stones, as if the land itself remembers agony. The air reeks of soot and sorrow, each breath a memory not your own. A lone bonfire flickers nearby — its flames dance with whispers of forgotten oaths and lost kings.\n\nFragments of who you were claw at your thoughts. You once stood defiant before the Ash Lords, wielding blade and flame. Their kingdoms now lie buried in cinders. Yet something darker rises — older, patient, watching. You must press forward. Names echo through the void, and though you have forgotten yours, the world has not.\n\nLimgrave stretches in broken majesty before you — a land cracked open by war and time. Towering battlements lie crumbled and half-sunken into marshes that weep ash. Statues of forgotten heroes lean in ruin, their stone eyes blind and hollow. In the distance, you glimpse a skyline jagged with the silhouettes of ancient fortresses, long overtaken by nature’s fury.\n\nThe bonfire beckons, not merely as warmth, but as a tether to the world’s last memory of light. Its embers spark and hiss, echoing voices long since consumed. This land was not always forsaken. It was sacred. And now, it calls for you.",
-  "choices": ["explore_throne", "descend_catacombs"],
-  "lore": "Limgrave was once the seat of the First Flamebearers — venerated stewards of sacred fire. They kindled light in a world of dusk, but their covenant was broken when the Pyric Betrayal scorched the last altar. Now only their shadows remain, tethered to ruin.",
+  "text": "The world ends not with a roar, but with ash. You awaken upon a bed of scorched bones and shattered memory, as the cold winds of Limgrave slice through the ruin. The sky above weeps embers, and every breath you take is drawn from the lungs of something long dead. The bonfire nearby crackles faintly—its light weak, but ancient. Around you, remnants of a shattered age lie buried beneath soot.\n\nYou do not remember your name. Only the scream of steel on steel, a crumbling keep, and a crown burning red in a sea of black. The echo of a great betrayal claws at the edges of your consciousness. Something calls you onward—not for redemption, nor revenge, but something older. The Cycle stirs again, and you have been chosen to tread its cursed rhythm once more.",
+  "choices": [
+    "step_into_the_smoldering_remains",
+    "dive_into_the_drowned_road"
+  ],
+  "lore": "In ages past, the Flame was kindled not by kings but by the nameless. Their legacy is written in ash and forgotten bones. Limgrave was the first to fall in the War of Thorns, its spires consumed by the Breathless Fire. Only the Flame remembers what the world has chosen to forget.",
   "battle": false,
   "boss": false,
   "rest": false

@@ -1,11 +1,11 @@
 {
   "id": 32,
-  "text": "This is the placeholder text for chapter 32.",
+  "text": "You crawl beneath the canopy of roots, bark slick with ichor and time. Branches groan above as if alive, watching, waiting. Something stirs beneath the earth—breathing, pulsing. You pass ancient corpses entangled in the roots, some still armored, some still breathing.\n\nOne hand reaches toward you from the soil, fingers twisted into a spiral. A message is carved in a language you should not know: 'Feed the rot or become it.' The roots shift and guide you onward, not out of mercy—but memory.",
   "choices": [
-    "choice_a",
-    "choice_b"
+    "collapse_near_the_old_cairn",
+    "slip_beneath_the_moss_veil"
   ],
-  "lore": "Lore for chapter 32.",
+  "lore": "These roots belong not to a tree, but to the Heartwood—a sentient remnant of the world's first growth. It remembers every soul who’s ever trod its shade and binds them with love too old to be kind.",
   "battle": true,
   "boss": false,
   "rest": false

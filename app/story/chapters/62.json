@@ -1,12 +1,11 @@
 {
   "id": 62,
-  "text": "This is the placeholder text for chapter 62.",
+  "text": "You reach the waterlogged shrine, a crumbled sanctum choked with vines and barnacles. Its central brazier, long extinguished, remains a monument to the faith drowned beneath these tides. As you draw near, the shrine pulses faintly, as though remembering warmth. With effort, you kindle it anew.\n\nThe flames rise with a hiss, steaming off the encroaching water and sending vapor spiraling into the fog. A fleeting vision flashes through the fire — a crowned figure weeping blood into the sea. Then nothing. The shrine grows still, but you feel lighter, your wounds soothed by the sacred flicker of remembrance.",
   "choices": [
-    "choice_a",
-    "choice_b"
+    "rejoin_the_path_of_ash"
   ],
-  "lore": "Lore for chapter 62.",
+  "lore": "This shrine belonged to the Tidebound, a sect who believed fire could survive even in water — that faith could ignite even the drowned. Their teachings were banned as heresy. But the Flame remembers all who kneel to it, no matter how deep they fall.",
   "battle": false,
   "boss": false,
-  "rest": false
+  "rest": true
 }
