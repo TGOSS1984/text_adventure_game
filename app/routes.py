@@ -58,7 +58,7 @@ def start():
     session["chapter"] = 0
     session["hp"] = character.max_hp
     session["enemy"] = {}
-    session["estus"] = 3
+    session["estus"] = 5
     return redirect(url_for("main.game"))
 
 
@@ -68,6 +68,9 @@ def game():
         choice = request.form["choice"]
         next_chapter = story.choose_path(choice)
         next_data = story.get_chapter(next_chapter)
+
+        # ✅ Overwrite session["choices"]
+        session["choices"] = next_data.get("choices", [])
 
         if next_data.get("battle"):
             is_boss = next_data.get("boss", False)
@@ -97,7 +100,7 @@ def game():
     # ✅ Bonfire/rest logic (with redirect so flash works)
     if data.get("rest") and not session.get("rested_here"):
         session["hp"] = session["character"]["max_hp"]
-        session["estus"] = 3
+        session["estus"] = 5
         flash("🔥 You rest at the bonfire. HP and Estus Flasks restored.", "info")
         session["rested_here"] = True  # prevent infinite flash loop
         return redirect(url_for("main.game"))

@@ -5,7 +5,7 @@
     "step_into_the_vine_maze"
   ],
   "lore": "The Thornveil marks the border of the Cradle of Thorns, where the old forest queens bound their spirits into root and soil. It is said they still linger, feeding on trespassers.",
-  "battle": false,
+  "battle": true,
   "boss": false,
   "rest": false
 }

@@ -9,4 +9,6 @@ class Story:
         return load_chapter(chapter_id)
 
     def choose_path(self, choice):
+        print(f"🧭 Received choice: {choice}")
+        print(f"📍 Mapping result: {self.choice_map.get(choice)}")
         return self.choice_map.get(choice, 0)

@@ -2,7 +2,8 @@
   "id": 17,
   "text": "The air grows cold and metallic as you descend. Bones line the walls like bricks, skulls cracked and scorched. Each step echoes with the weight of those buried not once, but many times. The ossuary winds deep, too deep for any natural catacomb.\n\nYou pass murals carved in relief—depictions of battles long forgotten, of knights burning, of towers crumbling in reverse. In one, a figure kneels before a flame that weeps. Its face is erased. You feel a strange familiarity with the gesture.\n\nThe deeper you go, the less certain you are that time exists here at all.",
   "choices": [
-    "traverse_the_broken_graves"
+    "traverse_the_broken_graves",
+    "wander_the_echoing_hall"
   ],
   "lore": "The Winding Ossuary was shaped by the Ashen Monks—those who chose to remember every death so others could forget. When the Cycle bent backward, the monks sealed themselves in, their memories too sharp to burn.",
   "battle": false,

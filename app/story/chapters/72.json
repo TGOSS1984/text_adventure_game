@@ -5,7 +5,7 @@
     "descend_into_screaming_dark"
   ],
   "lore": "The Echoing Hall was once the vault of the Vowbound Choir, singers whose voices wove protection into the world’s fabric. When the Flame waned, their songs soured, twisting into echoes that fed on sorrow. It is said they still sing — but now they sing only of endings.",
-  "battle": false,
+  "battle": true,
   "boss": false,
   "rest": false
 }

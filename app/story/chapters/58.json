@@ -1,11 +1,13 @@
 {
   "id": 58,
-  "text": "This is the placeholder text for chapter 58.",
+  "text": "Central Hub Connection Point : Chapel of Thorns",
   "choices": [
-    "choice_a",
-    "choice_b"
+    "ascend_the_northern_stair",
+    "venture_down_the_eastern_gorge",
+    "fade_into_the_spectral_woods",
+    "slip_south_through_bramble"
   ],
-  "lore": "Lore for chapter 58.",
+  "lore": "Lore here",
   "battle": false,
   "boss": false,
   "rest": false

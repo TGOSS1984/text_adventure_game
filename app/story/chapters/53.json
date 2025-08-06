@@ -2,8 +2,7 @@
   "id": 53,
   "text": "You step into the throne hall, shattered by time. Stone benches lie broken. The throne, once golden, is now rusted iron. Chains dangle from the ceiling like the remnants of forgotten oaths. \n\nThe room is not empty. Flickers of flame twist in the air, taking the shape of those who once knelt here — warlords, saints, traitors. They do not attack. They *watch*. The court of ashes has returned for its final witness: you.",
   "choices": [
-    "cross_the_frostbound_gallery",
-    "enter_citadel_s_fractured_gate"
+    "cross_the_frostbound_gallery"
   ],
   "lore": "The shattered court is where the Council of Flame fell to madness. They split the First Flame in desperation, fracturing not just fire — but memory itself. Now, the court waits for one who might restore or end it.",
   "battle": true,

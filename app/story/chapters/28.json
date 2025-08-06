@@ -2,8 +2,7 @@
   "id": 28,
   "text": "You push open the great door, and a cacophony greets you. Not sound—but memory. The hall is vast and hollow, its ceiling cracked like a skull. Shadows move where light should fall. Rusted chains sway, yet no wind stirs.\n\nThe floor is littered with offerings: blood-caked talismans, broken swords, whispers etched into parchment. A great bell lies fallen in the center, cracked and silent. Yet your ears ring. Something here was once sacred—something that refused to die.",
   "choices": [
-    "cross_the_splintered_drawbridge",
-    "wander_the_echoing_hall"
+    "cross_the_splintered_drawbridge"
   ],
   "lore": "The Echoing Hall was the birthplace of the Bell Covenant, an order that believed only suffering could echo across the void to awaken the true flame. They were right—but not in the way they hoped.",
   "battle": true,

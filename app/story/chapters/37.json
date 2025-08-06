@@ -5,7 +5,7 @@
     "march_through_rusted_gates"
   ],
   "lore": "Iron Bastion was once the last refuge of the Forgelords, smiths who bound souls into steel. Their legacy remains in the cursed armor worn by its silent sentinels, and the song that never ends.",
-  "battle": false,
+  "battle": true,
   "boss": false,
   "rest": false
 }

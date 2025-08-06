@@ -2,8 +2,7 @@
   "id": 29,
   "text": "You cross the drawbridge slowly—it groans and sags with every step. Beneath you, a chasm yawns, filled not with darkness, but a swirling mist of screams. Something writhes far below, its form too vast to comprehend.\n\nMidway, the wood beneath your feet gives way. You lurch forward, catching yourself. As you pull up, you glimpse a symbol carved into the bridge plank: a spiral flame consuming a crown. The bridge holds, but your certainty does not.",
   "choices": [
-    "light_the_brazier_of_ruin",
-    "return_to_the_shattered_hall"
+    "light_the_brazier_of_ruin"
   ],
   "lore": "The drawbridge once connected the Shattered Keep to the world beyond. Now, it serves as a threshold between remembrance and loss. Those who fall are said to relive their greatest failure—forever.",
   "battle": false,

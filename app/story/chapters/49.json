@@ -5,7 +5,7 @@
     "kneel_beneath_the_obsidian_sky"
   ],
   "lore": "The Abyss Watcher was once the Keeper of First Light. But when the Flamebearers broke the pact, he chose exile within shadow. He remembers what the world has chosen to forget — and guards it with unyielding fury.",
-  "battle": true,
-  "boss": true,
+  "battle": false,
+  "boss": false,
   "rest": false
 }

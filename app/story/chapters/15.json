@@ -6,7 +6,7 @@
     "circle_back_to_hollow_catacombs"
   ],
   "lore": "To see the end is a blessing only to those strong enough to forget it. The Mireborn Serpent bore witness to the Cycle’s first death and chose madness over silence. Its defeat unshackles an ancient whisper carried now in your bones.",
-  "battle": false,
+  "battle": true,
   "boss": true,
   "rest": false
 }

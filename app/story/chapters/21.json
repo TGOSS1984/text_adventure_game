@@ -3,7 +3,8 @@
   "text": "From the depths of silence, he comes. The Grave Warden. Cloaked in chains of memory, helm sealed with bone. His lantern burns not with fire, but with the flicker of forsaken names. With each step, the catacomb trembles, whispering the names of those you’ve forgotten.\n\nHe does not speak, yet your soul hears him: 'You bear the ember of betrayal. You walk paths already burned. I was the last to turn away from the flame, and now I guard its grief.'\n\nHe draws a great blade etched with runes long vanished from the tongues of men. The fight is not for victory, but for remembrance.",
   "choices": [
     "climb_toward_flickering_light",
-    "return_to_obsidian_peaks"
+    "return_to_obsidian_peaks",
+    "enter_the_keep"
   ],
   "lore": "The Grave Warden was once First Sentinel to the Ash Lords. When they fell, he remained to bury their sins. He is both mourner and judge. To pass him is to inherit what he could not bear to carry.",
   "battle": true,

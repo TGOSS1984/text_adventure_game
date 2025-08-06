@@ -1,12 +1,11 @@
 {
   "id": 59,
-  "text": "This is the placeholder text for chapter 59.",
+  "text": "The Old Cairn",
   "choices": [
-    "choice_a",
-    "choice_b"
+    "rouse_the_pale_drake"
   ],
   "lore": "Lore for chapter 59.",
   "battle": false,
   "boss": false,
-  "rest": false
+  "rest": true
 }

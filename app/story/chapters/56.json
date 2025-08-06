@@ -1,12 +1,12 @@
 {
   "id": 56,
-  "text": "This is the placeholder text for chapter 56.",
+  "text": "Ember Tyrant",
   "choices": [
-    "choice_a",
-    "choice_b"
+    "pass_through_the_arch_of_ash",
+    "drop_into_a_lower_passage"
   ],
   "lore": "Lore for chapter 56.",
   "battle": true,
-  "boss": false,
+  "boss": true,
   "rest": false
 }
