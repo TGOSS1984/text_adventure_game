@@ -2,7 +2,7 @@
   "id": 6,
   "text": "The ledge is slick with old soot and frozen rain, the remnants of long-dead storms that once battered these heights. With each handhold, the rock crumbles a little more, as though resisting your ascent. When you finally pull yourself over the rim, a broken sky greets you—a horizon of jagged peaks where molten veins pulse faintly beneath obsidian crust.\n\nYou stand at the threshold of the Obsidian Peaks, a realm once forged by dragons and fire-shapers. The air is thinner here, filled with heatless embers and the scent of burnt offerings. Below, the lands you crossed already feel distant, like memories burned away.",
   "choices": [
-    "scale_the_obsidian_peaks"
+    "tread_the_ashen_slope"
   ],
   "lore": "The Obsidian Peaks were once a crucible where Flamebound warriors were tempered. But their forges now lie silent. Some say the fire turned inward, and the peaks themselves were cursed to remember the screams of every soul burned there.",
   "battle": false,
