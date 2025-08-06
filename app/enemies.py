@@ -65,5 +65,11 @@ BOSSES = {
         "attack": 28,
         "image": "ashen_knight.png",
         "lore": ""
+    },
+    "Pale Drake": {
+        "hp": 200,
+        "attack": 28,
+        "image": "pale_drake.png",
+        "lore": ""
     }
 }

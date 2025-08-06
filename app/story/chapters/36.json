@@ -8,5 +8,6 @@
   "lore": "These cliffs were once spines of titans, broken during the War of Sundering. Their bones form the foundation of Iron Bastion—a fortress built upon forgotten guilt.",
   "battle": true,
   "boss": true,
+  "boss_name": "Pale Drake",
   "rest": false
 }
