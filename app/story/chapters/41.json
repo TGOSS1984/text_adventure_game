@@ -7,5 +7,6 @@
   "lore": "Forged by the Forgelords to guard the Furnace Crown, the Sentinel has outlived its purpose. Bound to duty by soul-iron links, it waits only for a worthy bearer of its flame to fall—or rise.",
   "battle": true,
   "boss": true,
+  "boss_name": "The Blacksteel Sentinel",
   "rest": false
 }

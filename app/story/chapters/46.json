@@ -7,5 +7,6 @@
   "lore": "Bound by her own roots, the Matriarch is both tomb and guardian of forgotten pacts. She remembers the Flamebearers before they were ash, and their betrayal still blooms in her bark.",
   "battle": true,
   "boss": true,
+  "boss_name": "The Thorn Matriarch",
   "rest": false
 }

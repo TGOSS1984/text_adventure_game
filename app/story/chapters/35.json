@@ -7,5 +7,6 @@
   "lore": "The Lord of Chains was once the Warden of Balance, who chose to bind himself when the first flame waned. Legends say he holds one half of the secret to the Cycle's end—but will never speak it.",
   "battle": true,
   "boss": true,
+  "boss_name": "The Lord of Chains",
   "rest": false
 }

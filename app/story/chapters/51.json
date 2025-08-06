@@ -7,5 +7,6 @@
   "lore": "There was once a flame-bearer who led the others into betrayal, believing that fire must be free, not chained. The Abyss Watcher remembers him — and sees him now reborn in you.",
   "battle": true,
   "boss": true,
+  "boss_name": "The Abyss Watcher",
   "rest": false
 }

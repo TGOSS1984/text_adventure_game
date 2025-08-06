@@ -71,5 +71,47 @@ BOSSES = {
         "attack": 28,
         "image": "pale_drake.png",
         "lore": ""
+    },
+    "The Lord of Chains": {
+        "hp": 200,
+        "attack": 28,
+        "image": "the_lord_of_chains.png",
+        "lore": ""
+    },
+    "The Ember Tyrant": {
+        "hp": 200,
+        "attack": 28,
+        "image": "the_ember_tyrant.png",
+        "lore": ""
+    },
+    "The Mireborn Serpent": {
+        "hp": 200,
+        "attack": 28,
+        "image": "the_mireborn_serpent.png",
+        "lore": ""
+    },
+    "The Gravewarden": {
+        "hp": 200,
+        "attack": 28,
+        "image": "the_gravewarden.png",
+        "lore": ""
+    },
+    "The Abyss Watcher": {
+        "hp": 200,
+        "attack": 28,
+        "image": "the_abyss_watcher.png",
+        "lore": ""
+    },
+    "The Thorn Matriarch": {
+        "hp": 200,
+        "attack": 28,
+        "image": "the_thorn_matriarch.png",
+        "lore": ""
+    },
+    "The Blacksteel Sentinel": {
+        "hp": 200,
+        "attack": 28,
+        "image": "the_blacksteel_sentinel.png",
+        "lore": ""
     }
 }

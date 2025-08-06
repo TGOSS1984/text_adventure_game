@@ -9,5 +9,6 @@
   "lore": "The Grave Warden was once First Sentinel to the Ash Lords. When they fell, he remained to bury their sins. He is both mourner and judge. To pass him is to inherit what he could not bear to carry.",
   "battle": true,
   "boss": true,
+  "boss_name": "The Gravewarden",
   "rest": false
 }

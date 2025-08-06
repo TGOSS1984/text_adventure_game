@@ -8,5 +8,6 @@
   "lore": "Lore for chapter 56.",
   "battle": true,
   "boss": true,
+  "boss_name": "The Ember Tyrant",
   "rest": false
 }
