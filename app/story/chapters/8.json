@@ -9,5 +9,6 @@
   "lore": "The Ashen Knight once stood at the edge of the world and defied the dark. When the Cycle demanded his flame, he refused. For that defiance, he was cursed to remain between death and remembrance—slaying those who sought his path until one worthy soul kindles it anew.",
   "battle": true,
   "boss": true,
+  "boss_name": "Ashen Knight",
   "rest": false
 }

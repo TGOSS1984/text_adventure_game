@@ -59,5 +59,11 @@ BOSSES = {
         "attack": 28,
         "image": "lothric_lorian.png",
         "lore": "Twin princes of fading flame. One silent and seething, the other bound to a cursed destiny of rekindling."
+    },
+    "Ashen Knight": {
+        "hp": 200,
+        "attack": 28,
+        "image": "ashen_knight.png",
+        "lore": ""
     }
 }
