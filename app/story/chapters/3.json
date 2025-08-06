@@ -3,7 +3,7 @@
   "text": "Ash clings to your boots like a second skin as you tread deeper. The wind here carries whispers—some mournful, some mocking. You pass rows of pyres long extinguished, each bearing the sigil of forgotten houses. The path narrows between jagged spires of obsidian glass, their surfaces cracked with ancient heat.\n\nTwo smells mingle in the air now: rot and something older, fainter... a promise broken. The landscape splits ahead. You sense danger in either direction, but one path beckons with the scent of decay, the other with the pull of unkindled flame.",
   "choices": [
     "follow_the_stench_of_rot",
-    "descend_into_the_tomb_mouth",
+    "descend_into_the_tombmouth",
     "climb_the_forgotten_ledge",
     "kneel_before_the_flame"
   ],
