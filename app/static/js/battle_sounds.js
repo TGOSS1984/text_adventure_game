@@ -87,7 +87,34 @@ document.addEventListener('DOMContentLoaded', () => {
         case 'attack': playAttackSound(playerClass); break;
         case 'block': playBlockSound(); break;
         case 'dodge': playDodgeSound(); break;
-        case 'estus': playEstusSound(); break;
+        case 'estus':
+          playEstusSound();
+
+          // Healing Flash
+          const healingFlash = document.getElementById('healing-flash');
+          if (healingFlash) {
+            healingFlash.classList.add("active");
+            setTimeout(() => healingFlash.classList.remove("active"), 700);
+          }
+
+          // Bubble Animation
+          const bubbleContainer = document.getElementById('bubble-container');
+          if (bubbleContainer) {
+            for (let i = 0; i < 15; i++) {
+              const bubble = document.createElement('div');
+              bubble.classList.add('bubble');
+              bubble.style.left = Math.random() * 100 + 'vw';
+              const size = Math.random() * 15 + 10;
+              bubble.style.width = `${size}px`;
+              bubble.style.height = `${size}px`;
+              bubbleContainer.appendChild(bubble);
+
+              setTimeout(() => bubble.remove(), 3000);
+            }
+          }
+
+          break;
+
       }
 
       // Save music playback position before reload
@@ -123,4 +150,3 @@ document.addEventListener('DOMContentLoaded', () => {
     triggerFlurryFlash();
   }
 });
-
