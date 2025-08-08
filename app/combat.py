@@ -117,10 +117,10 @@ class BattleManager:
 
         # Class-based dodge chances
         dodge_chances = {
-            "Knight": 0.3,
-            "Mage": 0.7,
-            "Rogue": 0.8,
-            "Archer": 0.6
+            "Knight": 0.2,
+            "Mage": 0.6,
+            "Rogue": 0.7,
+            "Archer": 0.5
         }
 
         # Class-based block reduction ratios
