@@ -73,7 +73,7 @@ class Character:
             return Character("Knight", 15, 15, 135, "classes/knight.png",
                              crit_chance=0.20, crit_multiplier=1.5)
         elif class_name == "Mage":
-            return Character("Mage", 25, 6, 95, "classes/mage.png",
+            return Character("Mage", 28, 6, 95, "classes/mage.png",
                              crit_chance=0.30, crit_multiplier=1.5)
         elif class_name == "Rogue":
             return Character("Rogue", 20, 8, 105, "classes/rogue.png",
@@ -87,7 +87,7 @@ class Character:
         return {
             "Knight": Character("Knight", 15, 15, 135, "knight.png",
                                 crit_chance=0.20, crit_multiplier=1.5),
-            "Mage": Character("Mage", 25, 6, 95, "mage.png",
+            "Mage": Character("Mage", 28, 6, 95, "mage.png",
                               crit_chance=0.30, crit_multiplier=1.5),
             "Rogue": Character("Rogue", 20, 8, 105, "rogue.png",
                                crit_chance=0.40, crit_multiplier=1.5),

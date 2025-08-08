@@ -203,6 +203,36 @@ progress {
     }
 }
 
+/* Bonfire flicker with image overlay */
+.bonfire-pulse::after {
+  content: "";
+  position: absolute;
+  inset: 0;             /* center in viewport (because parent is fixed) */
+  margin: auto;
+  width: 90vmin;
+  height: 90vmin;
+  background: url("../images/icons/flame.png") no-repeat center / contain;
+  pointer-events: none;
+  opacity: 0;
+  transform: scale(0.9);
+  filter: drop-shadow(0 0 12px rgba(255,140,0,0.35));
+}
+
+/* Pulse the image in sync with the overlay */
+.bonfire-pulse.active::after {
+  animation: sigilPulse 4s ease-out forwards;
+}
+
+/* Gentle opacity/scale pulse to match fireFlicker timing beats */
+@keyframes sigilPulse {
+  0%   { opacity: 0.85; transform: scale(1.00); }
+  25%  { opacity: 0.70; transform: scale(1.03); }
+  50%  { opacity: 0.55; transform: scale(1.06); }
+  75%  { opacity: 0.40; transform: scale(1.08); }
+  100% { opacity: 0;    transform: scale(1.10); }
+}
+
+
 /*CSS for Lore Box*/
 
 .lore-box {
