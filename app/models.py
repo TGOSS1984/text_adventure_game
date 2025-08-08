@@ -7,6 +7,29 @@ Shows the player & enemy stats
 
 
 class Character:
+        # --- NEW: centralised class modifiers ---
+    DODGE = {
+        "Knight": 0.2,
+        "Mage": 0.6,
+        "Rogue": 0.7,
+        "Archer": 0.5,
+    }
+    # Damage taken multiplier while blocking (0.25 => take 25% of damage)
+    BLOCK_MULT = {
+        "Knight": 0.25,
+        "Rogue": 0.5,
+        "Archer": 0.4,
+        "Mage": 0.5,
+    }
+
+    @classmethod
+    def get_dodge(cls, class_name: str) -> float:
+        return cls.DODGE.get(class_name, 0.6)
+
+    @classmethod
+    def get_block_mult(cls, class_name: str) -> float:
+        return cls.BLOCK_MULT.get(class_name, 0.5)
+
     def __init__(self, name, attack, defense, max_hp, image,
                  crit_chance: float = 0.0, crit_multiplier: float = 1.0):
         """
@@ -21,6 +44,9 @@ class Character:
         # NEW
         self.crit_chance = crit_chance        # e.g., 0.20 for 20%
         self.crit_multiplier = crit_multiplier  # e.g., 1.2
+        # --- NEW: expose defensive profile on the instance ---
+        self.dodge_chance = self.get_dodge(self.class_name)
+        self.block_multiplier = self.get_block_mult(self.class_name)
 
     def as_dict(self):
         """Convenient for storing in session cleanly."""
@@ -33,6 +59,8 @@ class Character:
             "image": self.image,
             "crit_chance": self.crit_chance,
             "crit_multiplier": self.crit_multiplier,
+            "dodge_chance": self.dodge_chance,           # NEW
+            "block_multiplier": self.block_multiplier,   # NEW
         }
 
     @staticmethod

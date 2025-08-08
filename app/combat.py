@@ -16,6 +16,7 @@ import numpy as np
 from .models import Enemy
 from flask import session
 from .enemies import ENEMIES, BOSSES
+from .models import Enemy, Character   # <-- add Character here
 
 
 class BattleManager:
@@ -115,24 +116,11 @@ class BattleManager:
         class_name = player.get("class_name", "Knight")  # Default fallback
         result = ""
 
-        # Class-based dodge chances
-        dodge_chances = {
-            "Knight": 0.2,
-            "Mage": 0.6,
-            "Rogue": 0.7,
-            "Archer": 0.5
-        }
-
-        # Class-based block reduction ratios
-        block_reduction = {
-            "Knight": 0.25,
-            "Rogue": 0.5,
-            "Archer": 0.4,
-            "Mage": 0.5
-        }
 
         if player_action == "dodge":
-            success_chance = dodge_chances.get(class_name, 0.6)
+            # NEW: pull dodge chance from Character
+            success_chance = Character.get_dodge(class_name)
+            success = np.random.rand() < success_chance
             success = np.random.rand() < success_chance
             if success:
                 result = "You dodged the attack completely!"
@@ -142,7 +130,8 @@ class BattleManager:
                 result = f"You failed to dodge and took {dmg} damage."
 
         elif player_action == "block":
-                reduction_ratio = block_reduction.get(class_name, 0.5)
+                # NEW: pull block multiplier from Character
+                reduction_ratio = Character.get_block_mult(class_name)
                 blocked = int(dmg * reduction_ratio)
                 current_hp -= blocked
                 result = f"You blocked the hit and took {blocked} damage."
