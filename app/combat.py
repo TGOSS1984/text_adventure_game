@@ -91,7 +91,7 @@ class BattleManager:
             action = np.random.choice(["attack", "big_hit", "flurry"], p=[0.6, 0.25, 0.15])
 
         if action == "flurry":
-            hits = np.random.randint(4, 6)  # More hits: 4–5
+            hits = np.random.randint(3, 6)  # More hits: 3–5
             single_hit = max(2, enemy.attack // 3) + np.random.randint(6, 10)
             dmg = hits * single_hit - int(player["defense"] * 1.0)
             dmg = max(15, dmg)  # Raise min to reflect danger
