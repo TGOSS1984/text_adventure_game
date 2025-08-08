@@ -432,7 +432,7 @@ a:hover {
   background-image: url('../images/areas/ringed_city.jpg') !important;
 }
 
-/* Flurry Pulse Animation */
+/* Flurry Pulse Animation (unchanged timing) */
 @keyframes flurryPulse {
   0%, 100% { opacity: 0; }
   25%     { opacity: 0.6; }
@@ -440,21 +440,65 @@ a:hover {
   75%     { opacity: 0.6; }
 }
 
-#flurry-flash {
-  position: fixed;
-  top: 0;
-  left: 0;
-  height: 100vh;
-  width: 100vw;
-  background-color: red;
-  opacity: 0;
-  pointer-events: none;
-  z-index: 9999;
+/* PNG burst/scale animation */
+@keyframes flurryBurst {
+  0%   { transform: scale(0.6); opacity: 0; }
+  15%  { opacity: 1; }
+  45%  { transform: scale(1.2); opacity: 1; }
+  70%  { transform: scale(1.0); opacity: 0.85; }
+  100% { transform: scale(1.4); opacity: 0; }
 }
 
+#flurry-flash {
+  position: fixed;
+  inset: 0;
+  height: 100vh;
+  width: 100vw;
+
+  /* Use semi-transparent red so the PNG shows through */
+  background-color: rgba(255, 0, 0, 0.55);
+
+  opacity: 0;                /* this drives your flash fade */
+  pointer-events: none;
+  z-index: 9999;
+
+  /* perf */
+  will-change: opacity;
+}
+
+/* Pseudo-element for the PNG burst */
+#flurry-flash::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: url("../images/icons/flurry.png");
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: contain;
+
+  opacity: 0;               /* independent fade for the PNG */
+  transform: scale(0.6);
+  will-change: transform, opacity;
+  pointer-events: none;
+}
+
+/* Trigger both animations together */
 .flurry-animate {
   animation: flurryPulse 1s ease-in-out;
 }
+.flurry-animate::after {
+  animation: flurryBurst 1s ease-out;
+}
+
+/* Accessibility: respect reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .flurry-animate,
+  .flurry-animate::after {
+    animation: none;
+    opacity: 0; /* or set to a small static value if desired */
+  }
+}
+
 
 /* Estus healing green flash */
 
