@@ -53,7 +53,9 @@ def start():
         "defense": character.defense,
         "max_hp": character.max_hp,
         "class_name": character.class_name,  # ✅ This ensures the class name is included
-        "image": character.image
+        "image": character.image,
+        "crit_chance": getattr(character, "crit_chance", 0.0),       # NEW
+        "crit_multiplier": getattr(character, "crit_multiplier", 1.0) # NEW
     }
     session["chapter"] = 0
     session["hp"] = character.max_hp

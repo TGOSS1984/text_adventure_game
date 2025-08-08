@@ -62,11 +62,28 @@ class BattleManager:
         """
         Player's attack on the enemy.
         Damage is based on player's attack minus a small random amount.
+        Crit multiplier is applied BEFORE randomness so a crit is always stronger than any normal hit.
         """
-        dmg = player["attack"] - np.random.randint(0, 6)
-        dmg = max(5, dmg)
+        # Crit roll (safe defaults if fields are missing)
+        crit_chance = float(player.get("crit_chance", 0.0))
+        crit_multiplier = float(player.get("crit_multiplier", 1.0))
+        is_crit = np.random.rand() < crit_chance
+
+        # Apply multiplier to the ATTACK STAT before randomness
+        base_attack = player["attack"] * crit_multiplier if is_crit else player["attack"]
+
+        # Keep your original randomness + min clamp
+        dmg = base_attack - np.random.randint(0, 6)
+        dmg = max(5, int(round(dmg)))
+
         enemy.hp -= dmg
-        return f"You strike the {enemy.name} for {dmg} damage!", enemy.hp
+
+        if is_crit:
+            msg = f"💥 Critical hit! You strike the {enemy.name} for {dmg} damage!"
+        else:
+            msg = f"You strike the {enemy.name} for {dmg} damage!"
+
+        return msg, enemy.hp
 
     def enemy_attack(self, player, enemy, action=None):
         if action not in ["attack", "big_hit", "flurry"]:

@@ -39,6 +39,7 @@ Used for the class selector screen & main game screen
                         <span><i class="fas fa-crosshairs"></i> Attack: {{ class_stats["Knight"].attack }}</span>
                         <span><i class="fas fa-shield-alt"></i> Defense: {{ class_stats["Knight"].defense }}</span>
                         <span><i class="fas fa-heart"></i> HP: {{ class_stats["Knight"].max_hp }}</span>
+                        <span><i class="fas fa-bullseye"></i> Crit Chance: {{ (class_stats["Knight"].crit_chance * 100) | round(0) }}%</span>
                     </div>
                     <span class="class-lore">Once a sentinel of the Sunken Citadel, their oath was not broken — only forgotten. Clad in rusted honor, they march through death unbent.</span>
                 </label>
@@ -54,6 +55,7 @@ Used for the class selector screen & main game screen
                         <span><i class="fas fa-crosshairs"></i> Attack: {{ class_stats["Mage"].attack }}</span>
                         <span><i class="fas fa-shield-alt"></i> Defense: {{ class_stats["Mage"].defense }}</span>
                         <span><i class="fas fa-heart"></i> HP: {{ class_stats["Mage"].max_hp }}</span>
+                        <span><i class="fas fa-bullseye"></i> Crit Chance: {{ (class_stats["Mage"].crit_chance * 100) | round(0) }}%</span>
                     </div>
                     <span class="class-lore">Bearer of forbidden glintfire, the Mage whispers truths carved in starlight. Each spell flung is a shard of a dream long devoured.</span>
                 </label>
@@ -69,6 +71,7 @@ Used for the class selector screen & main game screen
                         <span><i class="fas fa-crosshairs"></i> Attack: {{ class_stats["Rogue"].attack }}</span>
                         <span><i class="fas fa-shield-alt"></i> Defense: {{ class_stats["Rogue"].defense }}</span>
                         <span><i class="fas fa-heart"></i> HP: {{ class_stats["Rogue"].max_hp }}</span>
+                        <span><i class="fas fa-bullseye"></i> Crit Chance: {{ (class_stats["Rogue"].crit_chance * 100) | round(0) }}%</span>
                     </div>
                     <span class="class-lore">Born in the shadow of the Ashen Spires, the Rogue strikes like regret — unseen, swift, and final. No name, no past, only the blade.</span>
                 </label>
@@ -84,6 +87,7 @@ Used for the class selector screen & main game screen
                         <span><i class="fas fa-crosshairs"></i> Attack: {{ class_stats["Archer"].attack }}</span>
                         <span><i class="fas fa-shield-alt"></i> Defense: {{ class_stats["Archer"].defense }}</span>
                         <span><i class="fas fa-heart"></i> HP: {{ class_stats["Archer"].max_hp }}</span>
+                        <span><i class="fas fa-bullseye"></i> Crit Chance: {{ (class_stats["Archer"].crit_chance * 100) | round(0) }}%</span>
                     </div>
                     <span class="class-lore">From the ruins of Eldergrove they come, eyes hollow with distant wars. Each arrow loosed is a memory exiled into the dark.</span>
                 </label>
