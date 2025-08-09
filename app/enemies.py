@@ -58,6 +58,34 @@ ENEMIES = [
         "image": "hollow_weaver.png",
         "lore": "She once whispered to the stars, but now her voice is lost, drowned in the silent screams of forgotten realms, weaving forbidden spells from the threads of the void, forever searching for a way to reclaim her soul.",
     },
+    {
+        "name": "Thornveil Knight",
+        "hp": 140,
+        "attack": 17,
+        "image": "thornveil_knight.png",
+        "lore": "Clad in armor wrought from living briar, the Thornveil Knight serves as both warden and herald of the Thorn Matriarch. Each plate is etched with the sigils of the chapel’s lost saints, now half-buried beneath creeping thorns that bloom crimson in the presence of blood",
+    },
+    {
+        "name": "Echoing Knight",
+        "hp": 135,
+        "attack": 17,
+        "image": "echoing_knight.png",
+        "lore": "The Echoing Knight rides where no breath stirs, his helm absent and his neck a hollow column of shadow. In life, his voice was the clarion call that led armies to triumph; in death, it has become a curse, resounding still through the iron plates that encase him",
+    },
+    {
+        "name": "The Mourning Veil",
+        "hp": 115,
+        "attack": 20,
+        "image": "the_mourning_veil.png",
+        "lore": "They drift as one through the places where the veil between worlds thins, two shades bound by a death they did not choose. The elder bears the Reaping Sickle, her strokes wide and patient, harvesting the souls that dare linger. The younger moves swift as shadow, her dagger slipping between ribs before her form dissolves into mist.",
+    },
+    {
+        "name": "Carrion Hound",
+        "hp": 65,
+        "attack": 16,
+        "image": "carrion_hound.png",
+        "lore": "Once a loyal hound, now little more than sinew and spite, its hide hangs in tatters, crawling with blackened sores that weep foul ichor. The stench of rot precedes it, carried on ragged breaths that rasp like tearing cloth",
+    },
 ]
 
 # Boss enemies — key is the boss name
