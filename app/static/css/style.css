@@ -289,6 +289,11 @@ a:hover {
   margin: 0 auto;
   color: whitesmoke;
   text-shadow: 4px 4px 8px #000;
+  background-image: url('../images/icons/menu.png');
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
+  padding: 10px;
 }
 
 /* Play/Pause Controls*/
