@@ -1,13 +1,13 @@
 {
   "id": 58,
-  "text": "Central Hub Connection Point : Chapel of Thorns",
+  "text": "The Chapel of Thorns rises from the earth like a wound that will not heal, its spires strangled in coils of living briar. Shattered stained glass scatters crimson light across the floor, each shard reflecting a different path. The air is thick with the scent of wilted roses and old blood, and somewhere deep within, you hear the slow, deliberate toll of a bell. Four archways yawn in the gloom—each a promise, each a peril—and the weight of choice settles upon you like a crown of thorns.",
   "choices": [
     "ascend_the_northern_stair",
     "venture_down_the_eastern_gorge",
     "fade_into_the_spectral_woods",
     "slip_south_through_bramble"
   ],
-  "lore": "Lore here",
+  "lore": "Once a place of worship to a forgotten saint, the Chapel of Thorns became a crossroads of fate when its last keeper wove the briars into a living ward. Pilgrims and warriors alike came seeking its blessing, only to find themselves lost in the labyrinth of paths that spiral from its heart. Some say the chapel itself listens, guiding each soul toward the road they deserve rather than the one they desire.",
   "battle": false,
   "boss": false,
   "rest": false
