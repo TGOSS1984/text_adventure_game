@@ -49,68 +49,68 @@ ENEMIES = [
 # Boss enemies — key is the boss name
 BOSSES = {
     "Cindergloom": {
-        "hp": 180,
-        "attack": 25,
+        "hp": 250,
+        "attack": 30,
         "image": "cindergloom.png",
         "lore": "The final Flame Lord, bound in cinders and regret. Born of divine fire and destined to consume the end of all things."
     },
     "Lothric and Lorian": {
         "hp": 200,
-        "attack": 28,
+        "attack": 22,
         "image": "lothric_lorian.png",
         "lore": "Twin princes of fading flame. One silent and seething, the other bound to a cursed destiny of rekindling."
     },
     "Ashen Knight": {
-        "hp": 200,
-        "attack": 28,
+        "hp": 290,
+        "attack": 24,
         "image": "ashen_knight.png",
         "lore": ""
     },
     "Pale Drake": {
-        "hp": 200,
+        "hp": 250,
         "attack": 28,
         "image": "pale_drake.png",
         "lore": ""
     },
     "The Lord of Chains": {
-        "hp": 200,
-        "attack": 28,
+        "hp": 220,
+        "attack": 25,
         "image": "the_lord_of_chains.png",
         "lore": ""
     },
     "The Ember Tyrant": {
-        "hp": 200,
-        "attack": 28,
+        "hp": 400,
+        "attack": 22,
         "image": "the_ember_tyrant.png",
         "lore": ""
     },
     "The Mireborn Serpent": {
-        "hp": 200,
-        "attack": 28,
+        "hp": 230,
+        "attack": 25,
         "image": "the_mireborn_serpent.png",
         "lore": ""
     },
     "The Gravewarden": {
-        "hp": 200,
-        "attack": 28,
+        "hp": 250,
+        "attack": 24,
         "image": "the_gravewarden.png",
         "lore": ""
     },
     "The Abyss Watcher": {
-        "hp": 200,
-        "attack": 28,
+        "hp": 270,
+        "attack": 26,
         "image": "the_abyss_watcher.png",
         "lore": ""
     },
     "The Thorn Matriarch": {
-        "hp": 200,
-        "attack": 28,
+        "hp": 240,
+        "attack": 25,
         "image": "the_thorn_matriarch.png",
         "lore": ""
     },
     "The Blacksteel Sentinel": {
-        "hp": 200,
-        "attack": 28,
+        "hp": 300,
+        "attack": 23,
         "image": "the_blacksteel_sentinel.png",
         "lore": ""
     }

@@ -209,8 +209,9 @@ progress {
   position: absolute;
   inset: 0;             /* center in viewport (because parent is fixed) */
   margin: auto;
-  width: 90vmin;
-  height: 90vmin;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: contain;
   background: url("../images/icons/flame.png") no-repeat center / contain;
   pointer-events: none;
   opacity: 0;
@@ -274,7 +275,7 @@ a:hover {
 /*Enemy Img/Lore CSS*/
 
 .enemy-img {
-  max-width: 200px;
+  max-width: 400px;
   height: auto;
   border: 2px solid #444;
   border-radius: 12px;
@@ -286,7 +287,8 @@ a:hover {
   max-width: 600px;
   font-style: italic;
   margin: 0 auto;
-  color: #ccc;
+  color: whitesmoke;
+  text-shadow: 4px 4px 8px #000;
 }
 
 /* Play/Pause Controls*/
@@ -322,6 +324,7 @@ a:hover {
 
 .class-lore {
     font-style: italic;
+    font-size: 0.9rem;
 }
 
 .class-option {
@@ -357,7 +360,6 @@ a:hover {
 
 .class-option span {
     display: block;
-    font-size: 1rem;
     margin-top: 0.5rem;
     color: #eee;
 }
@@ -365,8 +367,7 @@ a:hover {
 /*Check specificity here*/
 
 .class-stats {
-    font-size: 0.9rem;
-    color: #ccc;
+    font-size: 0.8rem;
     margin: 1rem 0;
     line-height: 1.4;
 }
@@ -434,7 +435,7 @@ a:hover {
     }
 
     .enemy-img {
-    max-width: 100px;
+    max-width: 200px;
     }
 
     .class-lore {
