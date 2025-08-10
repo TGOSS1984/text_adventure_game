@@ -39,7 +39,14 @@ Used for the story of the game and where the choices are seen
         {% endwith %}
 
         <div class="lore-box">
-            <img src="{{ url_for('static', filename='images/icons/tome.png') }}" alt="Tome" class="icon-shadow">
+            <img 
+                src="{% if is_rest %}
+                        {{ url_for('static', filename='images/icons/rest_tome.png') }}
+                     {% else %}
+                        {{ url_for('static', filename='images/icons/tome.png') }}
+                     {% endif %}"
+                alt="Tome"
+                class="icon-shadow">
             <p><strong>Story:</strong> {{ chapter.text }}</p>
             {% if chapter.lore %}
             <p class="lore"><em>{{ chapter.lore }}</em></p>
