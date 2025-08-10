@@ -86,6 +86,13 @@ ENEMIES = [
         "image": "carrion_hound.png",
         "lore": "Once a loyal hound, now little more than sinew and spite, its hide hangs in tatters, crawling with blackened sores that weep foul ichor. The stench of rot precedes it, carried on ragged breaths that rasp like tearing cloth",
     },
+    {
+        "name": "Chitinous Widow",
+        "hp": 95,
+        "attack": 18,
+        "image": "chitinous_widow.png",
+        "lore": "Beneath the hollow catacombs, where light dare not trespass, she weaves a lattice of bone and sinew. Once a priestess of the Pale Faith, she was entombed for crimes unspoken, her body reshaped by venom and shadow.",
+    },
 ]
 
 # Boss enemies — key is the boss name
