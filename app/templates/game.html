@@ -19,7 +19,7 @@ Used for the story of the game and where the choices are seen
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     
 </head>
-<body>
+<body class="{% if is_rest %}rest-bg{% endif %}"> <!-- override for bg change if rest area-->
 
     <div class="bonfire-bg">
         <h2>Class: {{ character.name }} | HP: {{ hp }}/{{ character.max_hp }} <i class="fas fa-heart" style="color: crimson;"></i></h2>

@@ -33,6 +33,11 @@ body {
     min-height: 100vh;
 }
 
+/* Rest override */
+body.rest-bg {
+  background-image: url('../images/areas/bonfire2.jpg'); /* the rest image */
+}
+
 h1, h2 {
     text-shadow: 2px 2px 4px #000;
 }

@@ -123,9 +123,12 @@ def game():
     hp = session.get("hp", session["character"]["max_hp"])
 
     return render_template(
-        "game.html", chapter=data, hp=hp, character=session["character"]
+        "game.html",
+        chapter=data,
+        hp=hp,
+        character=session["character"],
+        is_rest=bool(data.get("rest", False))  # Pass rest flag to template
     )
-
 
 
 @main.route("/battle", methods=["GET", "POST"])
