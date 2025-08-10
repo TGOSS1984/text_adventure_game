@@ -226,6 +226,13 @@ def battle():
 def death():
     return render_template("death.html")
 
+@main.route("/restart", methods=["POST"])
+def restart():
+    # Blow away all game state so we land on the class selector cleanly
+    session.clear()
+    # (Optional) belt-and-braces if any framework flashes linger
+    session.pop("_flashes", None)
+    return redirect(url_for("main.index"))
 
 @main.route("/save")
 def save():

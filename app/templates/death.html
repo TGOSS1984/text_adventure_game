@@ -21,11 +21,11 @@ Used for game over/you died screen with an option to restart
         <h1 class="you-died" style="color: crimson; font-size: 3rem;">YOU DIED</h1>
         <p class="battle-info" style="font-style: italic; margin-bottom: 20px;">The flames fade... but your will endures.</p>
 
-        <!-- Restart game via POST to /start with current class -->
-        <form action="{{ url_for('main.start') }}" method="post">
-            <input type="hidden" name="class" value="{{ session['character']['char_class'] }}">
+        <!-- Restart game via POST - back to class selection screen -->
+        <form action="{{ url_for('main.restart') }}" method="post">
             <button type="submit" style="padding: 10px 20px; font-weight: bold;">Restart</button>
         </form>
+
     </div>
 </body>
 </html>
