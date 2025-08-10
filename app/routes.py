@@ -35,9 +35,10 @@ def index():
 
 @main.route("/start", methods=["POST"])
 def start():
-    char_class = request.form.get("class") or session.get("character", {}).get(
-        "char_class"
-    )
+    # Normalize the posted value
+    posted = (request.form.get("class") or "").strip()
+    char_class = posted or session.get("character", {}).get("char_class")
+
     if not char_class:
         flash("Class not selected or missing. Please return to the main menu.", "error")
         return redirect(url_for("main.index"))
@@ -52,16 +53,27 @@ def start():
         "attack": character.attack,
         "defense": character.defense,
         "max_hp": character.max_hp,
-        "class_name": character.class_name,  # ✅ This ensures the class name is included
+        "class_name": character.class_name,
         "image": character.image,
-        "crit_chance": getattr(character, "crit_chance", 0.0),       # NEW
-        "crit_multiplier": getattr(character, "crit_multiplier", 1.0) # NEW
+        "crit_chance": getattr(character, "crit_chance", 0.0),
+        "crit_multiplier": getattr(character, "crit_multiplier", 1.0),
+        "char_class": char_class,  # keep source-of-truth in session too
     }
     session["chapter"] = 0
     session["hp"] = character.max_hp
     session["enemy"] = {}
     session["estus"] = 5
+
+    # 🔑 Clear any leftover flashes so none leak into /game
+    session.pop("_flashes", None)
+
     return redirect(url_for("main.game"))
+
+@main.after_request
+def no_cache(resp):
+    # Prevent the browser from showing an old page (with an old flash) from cache
+    resp.headers["Cache-Control"] = "no-store"
+    return resp
 
 
 @main.route("/game", methods=["GET", "POST"])
