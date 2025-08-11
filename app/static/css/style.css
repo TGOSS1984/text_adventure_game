@@ -298,7 +298,7 @@ a:hover {
   background-size: cover;
   background-repeat: no-repeat;
   background-position: center;
-  padding: 10px;
+  padding: 10px 10px;
 }
 
 /* Play/Pause Controls*/
