@@ -14,7 +14,8 @@
 /*Main Body & Header Styling*/
 
 html, body {
-    height: 100%;
+    min-height: 100%;
+    height: auto;
     margin: 0;
     padding: 0;
 }
@@ -30,13 +31,14 @@ body {
     background-repeat: no-repeat;
     background-position: center;
     background-attachment: fixed;
-    min-height: 100vh;
+    min-height: 100%;
+    height:auto;
 }
 
 /* Override for class selector page to use video */
 body.home-page {
     background: none; /* Remove static background */
-    overflow: hidden; /* Prevent scroll bars from video overflow */
+    overflow: auto;       /* allow scroll */
 }
 
 /* Video fills viewport responsively */
@@ -48,17 +50,7 @@ body.home-page #bg-video {
     height: 100vh;  /* Full viewport height */
     object-fit: cover; /* Crop while keeping aspect ratio */
     z-index: -1;    /* Behind all content */
-}
-
-/* Optional dark overlay */
-body.home-page .overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    background: rgba(0,0,0,0.3);
-    z-index: -1;
+    pointer-events: none;  /* don’t block scrolling/taps */
 }
 
 /* Keep your content readable */
@@ -499,6 +491,27 @@ a:hover {
     .battle-info {
     font-size: 1rem;
     }
+
+    /*Media Query for class selector page, static image fall-back*/
+
+     /* Don’t render the video on small screens */
+  #bg-video {
+    display: none;
+  }
+
+  /* Use a static image as the page background */
+  body.home-page {
+    background: url("../images/areas/video_placeholder.jpg") center / cover no-repeat;
+    background-attachment: scroll;  /* explicit mobile-safe */
+    min-height: 100dvh;
+    height: auto;
+  }
+  /* extra safety for mobile*/ 
+  html.home-page, body.home-page {
+    background: url("../images/areas/video_placeholder.jpg") center / cover no-repeat;
+    background-attachment: scroll;
+  }
+
 }
 
 /* Battle backgrounds for normal & boss enemy*/
