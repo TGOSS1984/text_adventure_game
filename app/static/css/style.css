@@ -33,9 +33,43 @@ body {
     min-height: 100vh;
 }
 
+/* Override for class selector page to use video */
+body.home-page {
+    background: none; /* Remove static background */
+    overflow: hidden; /* Prevent scroll bars from video overflow */
+}
+
+/* Video fills viewport responsively */
+body.home-page #bg-video {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;   /* Full viewport width */
+    height: 100vh;  /* Full viewport height */
+    object-fit: cover; /* Crop while keeping aspect ratio */
+    z-index: -1;    /* Behind all content */
+}
+
+/* Optional dark overlay */
+body.home-page .overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0,0,0,0.3);
+    z-index: -1;
+}
+
+/* Keep your content readable */
+body.home-page .content {
+    position: relative;
+    z-index: 1;
+}
+
 /* Rest override */
 body.rest-bg {
-  background-image: url('../images/areas/bonfire2.jpg'); /* the rest image */
+  background-image: url('../images/areas/firelink.jpg'); /* the rest image */
 }
 
 h1, h2 {
@@ -253,9 +287,9 @@ progress {
 /* For class image in game.html*/
 
 .class-image {
-  width: 60px;
+  width: 160px;
   height: auto;
-  filter: drop-shadow(2px 2px 6px black);
+  filter: drop-shadow(2px 2px 6px whitesmoke);
 }
 
 /* Save/Load/Return css*/
@@ -345,13 +379,13 @@ a:hover {
     text-align: center;
     width: 200px;
     transition: border 0.3s, transform 0.3s;
-    box-shadow: 0 0 10px rgba(255, 0, 0, 0.2);
+    box-shadow: 2px 2px 10px rgba(255, 255, 255, 0.2);
     cursor: pointer;
     position: relative;
 }
 
 .class-option:hover {
-    border-color: crimson;
+    border-color: gold;
     transform: scale(1.05);
 }
 
@@ -448,6 +482,10 @@ a:hover {
     max-width: 200px;
     }
 
+    .class-image {
+    width: 80px;
+    }
+
     .class-lore {
     display: none !important;
     }
@@ -465,12 +503,13 @@ a:hover {
 
 /* Battle backgrounds for normal & boss enemy*/
 
-.battle-mode {
-  background-image: url('../images/areas/undead_settlement.jpg') !important;
-}
-
-.boss-mode {
-  background-image: url('../images/areas/ringed_city.jpg') !important;
+body.battle-mode,
+body.boss-mode {
+  background-image: var(--battle-bg, none);
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-attachment: fixed;
 }
 
 /* Flurry Pulse Animation (unchanged timing) */

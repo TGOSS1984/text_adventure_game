@@ -21,6 +21,18 @@ from .models import Enemy
 from .enemies import BOSSES
 import random
 
+NORMAL_BATTLE_BGS = [
+    "images/areas/undead_settlement.jpg",
+    "images/areas/high_walls.jpg",
+    "images/areas/irithyl.jpg",
+    "images/areas/bolateria.jpg",
+]
+BOSS_BATTLE_BGS = [
+    "images/areas/ringed_city.jpg",
+    "images/areas/stormveil.jpg",
+    "images/areas/erdtree.jpg",
+]
+
 main = Blueprint("main", __name__)
 story = Story()
 battle_manager = BattleManager()
@@ -88,6 +100,8 @@ def game():
 
         if next_data.get("battle"):
             is_boss = next_data.get("boss", False)
+            bg_pool = BOSS_BATTLE_BGS if is_boss else NORMAL_BATTLE_BGS
+            session["battle_bg"] = random.choice(bg_pool)
             boss_name = next_data.get("boss_name") if is_boss else None
             enemy = battle_manager.generate_enemy(boss=is_boss, boss_name=boss_name)
 
@@ -156,6 +170,7 @@ def battle():
         predicted_move, predicted_msg, _ = battle_manager.predict_enemy_move(character)
         session["predicted_move"] = predicted_move
         session["predicted_msg"] = predicted_msg
+        battle_bg = session.get("battle_bg", "images/areas/undead_settlement.jpg")
         return render_template(
             "battle.html",
             enemy=enemy,
@@ -163,6 +178,7 @@ def battle():
             character=character,
             message=message,
             move_hint=predicted_msg,
+            battle_bg=battle_bg,
         )
 
     # POST: Use the stored prediction
@@ -212,6 +228,7 @@ def battle():
     session["predicted_move"] = next_move
     session["predicted_msg"] = next_msg
 
+    battle_bg = session.get("battle_bg", "images/areas/undead_settlement.jpg")
     return render_template(
         "battle.html",
         enemy=enemy,
@@ -219,6 +236,7 @@ def battle():
         character=character,
         message=message,
         move_hint=next_msg,
+        battle_bg=battle_bg,
     )
 
 
