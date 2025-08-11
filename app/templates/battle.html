@@ -18,9 +18,10 @@ Used for the battles in the game
     <!--Font Awesome Link-->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
-    {% for bg in NORMAL_BATTLE_BGS + BOSS_BATTLE_BGS %}
-        <link rel="preload" as="image" href="{{ url_for('static', filename=bg) }}">
+    {% for bg in preload_list %}
+        <link rel="preload" as="image" href="{{ bg }}">
     {% endfor %}
+
     
     
 </head>

@@ -147,6 +147,10 @@ def game():
 
 @main.route("/battle", methods=["GET", "POST"])
 def battle():
+
+    # 1️⃣ Build the preload list once, at the very start
+    preload_list = [url_for("static", filename=bg) for bg in NORMAL_BATTLE_BGS + BOSS_BATTLE_BGS]
+
     enemy_data = session.get("enemy", {})
     enemy_image = enemy_data.get("image") or "default.png"
     enemy_lore = enemy_data.get("lore") or "An unknown entity lurks in the darkness."
@@ -179,6 +183,7 @@ def battle():
             message=message,
             move_hint=predicted_msg,
             battle_bg=battle_bg,
+            preload_list=preload_list
         )
 
     # POST: Use the stored prediction
@@ -237,6 +242,7 @@ def battle():
         message=message,
         move_hint=next_msg,
         battle_bg=battle_bg,
+        preload_list=preload_list
     )
 
 
