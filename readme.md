@@ -133,6 +133,8 @@ python run.py
 
 ## Story Flowchart
 
+**Overview**
+
 ```mermaid
 graph LR
 
@@ -162,6 +164,8 @@ graph LR
     FINAL --> END2["🌑 Age of Shadows"]
     FINAL --> END3["♻️ The Cycle Continues"]
 ```
+
+**Detailed**
 
 ```mermaid
 graph TD
@@ -306,12 +310,22 @@ end
 - The `use_estus()` function in `combat.py` checks how many flasks are available and heals the player, updating both HP and the session value.
 - Estus count is reset at bonfires and certain story branches like the "rest point".
 
+### Player
+
+- Each class has different perks
+- Knight, high defence, high HP, high block absorb, low dodge chance, low attack, low critical hit chance
+- Mage, low defence, low hp, medium block absorb, medium dodge chance, high attack, medium critical hit chance
+- Rogue, low defence , low hp, medium block absorb, high dodge chance, high attack, medium critical hit chance
+- Archer, medium defence, medium hp, high block absorb, medium dodge chance, medium attack, high critical chance
+
 ### Battle System Mechanics
 
 - Enemy encounters are triggered by specific story chapters using a `battle` flag in `story.py`.
 - Each enemy has distinct stats (HP, attack) and lore.
-- Players use one of several actions: `attack`, `block`, or `dodge`.
-- Using Block reduces damage by 50%, using didge has a chance to avoid 100% damage but is random, the prompt for enemy is preparing massive attack was added to encourage use of these mechanics as opposed to just hitting attack.
+- Players use one of several actions: `attack`, `block`, `dodge`, or `use estus`.
+- Using Block reduces damage by a % depending on class, using dodge has a chance to avoid 100% damage but is based on % chance of sucess for each class, the prompt for enemy upcoming attack was added to encourage use of these mechanics as opposed to just hitting attack.
+- Enemy has 3 types of attack, standard attack, massive attack & flurry attack - this is probability based with the flurry attack being most rare & the standard attack being most common
+- Animations are added for the flurry attack where the screen pulses Red and for using an Estus flask the sceen turns a green shade with bubbles rising to simulate health regeneration
 - Damage calculations are influenced by the player’s class stats (attack/defense) and randomized outcomes via `numpy.random`.
 - Dodge and block success/failure use probability thresholds.
 - Bosses have higher stats and use adjusted damage scaling.
@@ -323,6 +337,9 @@ end
 - Story progression is stored in session, and chapters are fetched dynamically.
 - Each chapter includes narrative text, optional choices, flags for battle/rest/bonfire, and hidden conditions.
 - HTML templates render logic dynamically from Flask using Jinja2 templating.
+- Story chapters are held in seperate.jsons with flags for battle/boss/bonsfire in each
+- Story mapping is also kept in a .json file to connect each chapter
+- Sotry is loaded using story_engine & Story_loader and they are called in routes.py
 
 ---
 
