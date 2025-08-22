@@ -42,7 +42,8 @@ The goal of *Elden Souls* is to provide a lore-rich, interactive text-based adve
 - Turn-based battle mechanics with attack, dodge, block, and Estus Flask healing
 - Random enemy encounters, can change per playthrough
 - Boss fights and lore-driven enemy encounters
-- Bonfire system to rest and restore health/Estus
+- Boss & Enemy battle backgrounds randomly generated
+- Bonfire system to rest and restore health/Estus - includes background change upon finding a bonfire, and a flame/pulse effect
 - Save/Load functionality with session storage and JSON backup
 - Responsive Flask web interface with gothic-themed styling using html & CSS
 - This project was primarily for use of python but as I decided to add some visual style to it using flask I wanted to also add more immersion by adding some themed music whihc be manually controlled by the user 
@@ -170,134 +171,131 @@ graph LR
 ```mermaid
 graph TD
 
+%% --- START ---
 START["🔯 Awaken in Ashen Ruins"]
 START -->|"Step into the smoldering remains"| R1C1["R1: Ashen Ruins I"]
 R1C1 -->|"Search the scorched bones (⚔️)"| R1C2["R1: Ashen Ruins II"]
 R1C2 -->|"Wander deeper into the ash"| R1C3["R1: Ashen Ruins III"]
-
-%% --- REGION CHOICES ---
-R1C3 -->|"Follow the stench of rot"| R1A["Weeping Marsh"]
-R1C3 -->|"Descend into the tomb-mouth"| R1B["Hollow Catacombs"]
-R1C3 -->|"Climb the forgotten ledge"| R1C["Obsidian Peaks"]
+R1C3 -->|"Follow the stench of rot"| R1A["Go to Weeping Marsh"]
+R1C3 -->|"Descend into the tomb-mouth"| R1B["Go to Hollow Catacombs"]
+R1C3 -->|"Climb the forgotten ledge"| R1C["Go to Obsidian Peaks"]
 R1C3 -->|"Kneel before the flame"| BON1["🔥 Bonfire - R1"]
-
 BON1 -->|"Confront the Ashen Knight"| B1["💀 Boss 1: Ashen Knight"]
-B1 --> R2C1
-B1 --> R3C1
-B1 --> R4C1
+B1 -->|"Wade into the Weeping Marsh"| R2C1["R2: Weeping Marsh I"]
+B1 -->|"Slip into the Hollow Catacombs"| R3C1["R3: Hollow Catacombs I"]
+B1 -->|"Scale the Obsidian Peaks"| R4C1["R4: Obsidian Peaks I"]
 
 %% --- REGION 2: Weeping Marsh ---
-subgraph Region2["🌑 Weeping Marsh"]
-R1A --> R2C1["R2: Marsh I"]
-R2C1 --> R2C2["R2: Marsh II (⚔️)"]
-R2C2 --> R2C3["R2: Marsh III"]
-R2C3 --> BON2["🔥 Bonfire - R2"]
-BON2 --> B2["💀 Boss 2: Mireborn Serpent"]
-end
-
-B2 --> R3Entry["⛓ Path of Thorns"]
-B2 --> R3C1
+R1A -->|"Slog through the black mire"| R2C1
+R2C1 -->|"Step beneath the hanging moss"| R2C2["R2: Weeping Marsh II (⚔️)"]
+R2C2 -->|"Cross the sinking path"| R2C3["R2: Weeping Marsh III"]
+R2C3 -->|"Rest among drowned bones"| BON2["🔥 Bonfire - R2"]
+BON2 -->|"Challenge the Mireborn Serpent"| B2["💀 Boss 2: Mireborn Serpent"]
+B2 -->|"Push on through the mist"| R3Entry["⛓ Path of Thorns"]
+B2 -->|"Circle back to Hollow Catacombs"| R3C1
 
 %% --- REGION 3: Hollow Catacombs ---
-subgraph Region3["🪦 Hollow Catacombs"]
-R1B --> R3C1["R3: Catacombs I"]
-R3C1 --> R3C2["R3: Catacombs II"]
-R3C2 --> R3C3["R3: Catacombs III (⚔️)"]
-R3C3 --> R3C4["R3: Catacombs IV"]
-R3C4 --> BON3["🔥 Bonfire - R3"]
-BON3 --> B3["💀 Boss 3: Grave Warden"]
-end
-
-B3 --> R3Entry
-B3 --> R4C1
+R1B -->|"Enter the yawning crypt"| R3C1
+R3C1 -->|"Descend the winding ossuary"| R3C2["R3: Hollow Catacombs II"]
+R3C2 -->|"Traverse the broken graves (⚔️)"| R3C3["R3: Hollow Catacombs III (⚔️)"]
+R3C3 -->|"Pass beneath the chained dead"| R3C4["R3: Hollow Catacombs IV"]
+R3C4 -->|"Kindle the old tombfire"| BON3["🔥 Bonfire - R3"]
+BON3 -->|"Face the Grave Warden"| B3["💀 Boss 3: Grave Warden"]
+B3 -->|"Climb toward flickering light"| R3Entry
+B3 -->|"Return to Obsidian Peaks"| R4C1
 
 %% --- REGION 4: Obsidian Peaks ---
-subgraph Region4["⛰️ Obsidian Peaks"]
-R1C --> R4C1["R4: Peaks I"]
-R4C1 --> R4C2["R4: Peaks II"]
-R4C2 --> R4C3["R4: Peaks III (⚔️)"]
-R4C3 --> BON4["🔥 Bonfire - R4"]
-BON4 --> B4["💀 Boss 4: Ember Tyrant"]
-end
+R1C -->|"Tread the ashen slope"| R4C1
+R4C1 -->|"Cross the blackened ridge"| R4C2["R4: Obsidian Peaks II"]
+R4C2 -->|"Climb the scorched spire (⚔️)"| R4C3["R4: Obsidian Peaks III"]
+R4C3 -->|"Rest beside the magma fissure"| BON4["🔥 Bonfire - R4"]
+BON4 -->|"Duel the Ember Tyrant"| B4["💀 Boss 4: Ember Tyrant"]
+B4 -->|"Drop into a lower passage"| R3Entry
+B4 -->|"Pass through the arch of ash"| Hub1
 
-B4 --> R3Entry
-B4 --> Hub1
-
-%% --- HUB ---
-R3Entry --> Hub1["⛩️ Chapel of Thorns"]
-Hub1 --> R5C1
-Hub1 --> R6C1
-Hub1 --> R7C1
-Hub1 --> R11C1
+%% --- HUB ENTRY ---
+R3Entry -->|"Approach the Chapel of Thorns"| Hub1["⛩️ Central Hub: Chapel of Thorns"]
+Hub1 -->|"Ascend the northern stair"| R5C1
+Hub1 -->|"Venture down the eastern gorge"| R6C1
+Hub1 -->|"Slip south through bramble"| R7C1
+Hub1 -->|"Descend to Drowned Village"| R11C1
 
 %% --- REGION 5: Shattered Keep ---
-subgraph Region5["🏰 Shattered Keep"]
-R5C1["Keep I"] --> R5C2["Keep II (⚔️)"]
-R5C2 --> R5C3["Keep III"]
-R5C3 --> BON5["🔥 Bonfire - R5"]
-BON5 --> B5["💀 Boss 5: Lord of Chains"]
-end
-B5 --> Cross1
+R5C1["R5: Shattered Keep I"]
+R5C1 -->|"Enter the echoing hall (⚔️)"| R5C2["R5: Keep II (⚔️)"]
+R5C2 -->|"Cross the splintered drawbridge"| R5C3["R5: Keep III"]
+R5C3 -->|"Light the brazier of ruin"| BON5["🔥 Bonfire - R5"]
+BON5 -->|"Unshackle the Lord of Chains"| B5["💀 Boss 5: Lord of Chains"]
+B5 -->|"Walk the forgotten archway"| Cross1
 
 %% --- REGION 6: Forgotten Valley ---
-subgraph Region6["🌫️ Forgotten Valley"]
-R6C1["Valley I"] --> R6C2["Valley II"]
-R6C2 --> R6C3["Valley III (⚔️)"]
-R6C3 --> BON6["🔥 Bonfire - R6"]
-BON6 --> B6["💀 Boss 6: Pale Drake"]
-end
-B6 --> Cross1
-B6 --> R7C1
+R6C1["R6: Forgotten Valley I"]
+R6C1 -->|"Step through the whispering fog"| R6C2["R6: Valley II"]
+R6C2 -->|"Traverse the gnarled roots (⚔️)"| R6C3["R6: Valley III (⚔️)"]
+R6C3 -->|"Collapse near the old cairn"| BON6["🔥 Bonfire - R6"]
+BON6 -->|"Rouse the Pale Drake"| B6["💀 Boss 6: Pale Drake"]
+B6 -->|"Circle beneath the cliffs"| Cross1
+B6 -->|"Sneak into Iron Bastion"| R7C1
 
 %% --- REGION 7: Iron Bastion ---
-subgraph Region7["⚒️ Iron Bastion"]
-R7C1["Bastion I"] --> R7C2["Bastion II (⚔️)"]
-R7C2 --> R7C3["Bastion III"]
-R7C3 --> BON7["🔥 Bonfire - R7"]
-BON7 --> B7["💀 Boss 7: Blacksteel Sentinel"]
-end
-B7 --> Cross1
+R7C1["R7: Iron Bastion I"]
+R7C1 -->|"March through rusted gates (⚔️)"| R7C2["R7: Bastion II (⚔️)"]
+R7C2 -->|"Cross the molten forge"| R7C3["R7: Bastion III"]
+R7C3 -->|"Find solace in the furnace alcove"| BON7["🔥 Bonfire - R7"]
+BON7 -->|"Confront the Blacksteel Sentinel"| B7["💀 Boss 7: Blacksteel Sentinel"]
+B7 -->|"Bridge the molten divide"| Cross1
 
 %% --- REGION 8: Cradle of Thorns ---
-subgraph Region8["🌿 Cradle of Thorns"]
-Cross1 --> R8C1["Thorns I"]
-R8C1 --> R8C2["Thorns II (⚔️)"]
-R8C2 --> BON8["🔥 Bonfire - R8"]
-BON8 --> B8["💀 Boss 8: Thorn Matriarch"]
-end
-B8 --> Hub2
+Cross1 -->|"Tear through the thornveil"| R8C1["R8: Cradle of Thorns I"]
+R8C1 -->|"Step into the vine maze (⚔️)"| R8C2["R8: Thorns II"]
+R8C2 -->|"Collapse beneath a root pyre"| BON8["🔥 Bonfire - R8"]
+BON8 -->|"Face the Thorn Matriarch"| B8["💀 Boss 8: Thorn Matriarch"]
+B8 -->|"Climb toward the Second Crossroads"| Hub2
 
 %% --- REGION 9: Abyssal Sanctum ---
-subgraph Region9["🌌 Abyssal Sanctum"]
-Hub2 --> R9C1["Sanctum I"]
-R9C1 --> R9C2["Sanctum II (⚔️)"]
-R9C2 --> BON9["🔥 Bonfire - R9"]
-BON9 --> B9["💀 Boss 9: Abyss Watcher"]
-end
-B9 --> R10C1
+Hub2 -->|"Descend into the abyss"| R9C1["R9: Abyssal Sanctum I"]
+R9C1 -->|"Step beyond the veil (⚔️)"| R9C2["R9: Sanctum II (⚔️)"]
+R9C2 -->|"Kneel beneath the obsidian sky"| BON9["🔥 Bonfire - R9"]
+BON9 -->|"Challenge the Abyss Watcher"| B9["💀 Boss 9: Abyss Watcher"]
+B9 -->|"Approach the silent citadel"| R10C1
 
 %% --- REGION 10: Forgotten Citadel ---
-subgraph Region10["🏯 Forgotten Citadel"]
-Hub2 --> R10C1["Citadel I"]
-R10C1 --> R10C2["Citadel II (⚔️)"]
-R10C2 --> R10C3["Citadel III"]
-R10C3 --> BON10["🔥 Bonfire - R10"]
-BON10 --> FINAL["💀 Final Boss: Cindergloom, Lord of Ashes"]
-end
+Hub2 -->|"Ascend to the forgotten tower"| R10C1["R10: Forgotten Citadel I"]
+R10C1 -->|"Step through shattered court (⚔️)"| R10C2["R10: Citadel II (⚔️)"]
+R10C2 -->|"Cross the frostbound gallery"| R10C3["R10: Citadel III"]
+R10C3 -->|"Offer ashes to the flame"| BON10["🔥 Bonfire - R10"]
+BON10 -->|"Face Cindergloom, Lord of Ashes"| FINAL["💀 Final Boss: Cindergloom, Lord of Ashes"]
 
-%% --- ENDINGS ---
-FINAL --> END1["🌅 Ending: Dawn of Flame"]
-FINAL --> END2["🌑 Ending: Age of Shadows"]
-FINAL --> END3["♻️ Ending: The Cycle Continues"]
+%% --- POST-GAME ---
+FINAL -->|"Embrace the Flame"| END1["🌅 Ending: Dawn of Flame"]
+FINAL -->|"Snuff the Light"| END2["🌑 Ending: Age of Shadows"]
+FINAL -->|"Let the Cycle Turn"| END3["♻️ Ending: The Cycle Continues"]
 
-%% --- OPTIONAL REGIONS (Grouped) ---
-subgraph Optional["✨ Optional Regions"]
-R11C1["Drowned Village"] --> BON11["🔥 Bonfire - R11"] --> B1
-R12C1["Spectral Woods"] --> BON12["🔥 Bonfire - R12"] --> R6C3
-R13C1["Tower of Whispers"] --> BON13["🔥 Bonfire - R13"] --> R10C2
-R14C1["Molten Depths"] --> BON14["🔥 Bonfire - R14"] --> B4
-R15C1["Halls of Echo"] --> BON15["🔥 Bonfire - R15"] --> R5C2
-end
+%% --- OPTIONAL REGIONS ---
+START -->|"Dive into the drowned road"| R11C1["R11: Drowned Village"]
+R11C1 -->|"Confront the sunken dead (⚔️)"| R11C2["R11: Village II (⚔️)"]
+R11C2 -->|"Light the waterlogged shrine"| BON11["🔥 Bonfire - R11"]
+BON11 -->|"Rejoin the path of ash"| B1
+
+Hub1 -->|"Fade into the spectral woods"| R12C1["R12: Spectral Woods"]
+R12C1 -->|"Follow whispers in the trees"| R12C2["R12: Woods II"]
+R12C2 -->|"Ignite the ghostfire"| BON12["🔥 Bonfire - R12"]
+BON12 -->|"Slip beneath the moss veil"| R6C3
+
+Hub2 -->|"Scale the Tower of Whispers"| R13C1["R13: Tower of Whispers"]
+R13C1 -->|"Echo through hollow heights (⚔️)"| R13C2["R13: Tower II (⚔️)"]
+R13C2 -->|"Rest beneath the singing spire"| BON13["🔥 Bonfire - R13"]
+BON13 -->|"Enter citadel's fractured gate"| R10C2
+
+R4C3 -->|"Plunge into molten depths"| R14C1["R14: Molten Depths"]
+R14C1 -->|"Cross the lava tomb"| R14C2["R14: Depths II"]
+R14C2 -->|"Collapse near ember altar"| BON14["🔥 Bonfire - R14"]
+BON14 -->|"Return to the Ember Tyrant"| B4
+
+R3C2 -->|"Wander the echoing hall"| R15C1["R15: Halls of Echo"]
+R15C1 -->|"Descend into screaming dark (⚔️)"| R15C2["R15: Halls II (⚔️)"]
+R15C2 -->|"Rest in the void chamber"| BON15["🔥 Bonfire - R15"]
+BON15 -->|"Return to the shattered hall"| R5C2
 ```
 
 ---
