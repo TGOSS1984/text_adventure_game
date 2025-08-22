@@ -133,18 +133,167 @@ python run.py
 
 ## Story Flowchart
 
-```text
-Select Class
-   |
-Chapter 0: Intro
-   |
-   +--> Choice A --> Chapter 1: Ashen Forest --> Battle --> Next Chapter
-   |
-   +--> Choice B --> Chapter 2: Weeping Vale --> Rest Point
-   |
-   +--> Hidden Path --> Chapter X --> Special Encounter
-        |
-        --> Boss Battle --> Ending
+```mermaid
+graph LR
+
+    START["🔯 Start: Ashen Ruins"]
+    START --> B1["💀 Ashen Knight"]
+    B1 --> B2["💀 Mireborn Serpent"]
+    B1 --> B3["💀 Grave Warden"]
+    B1 --> B4["💀 Ember Tyrant"]
+
+    B2 --> Hub1["⛩️ Chapel of Thorns"]
+    B3 --> Hub1
+    B4 --> Hub1
+
+    Hub1 --> B5["💀 Lord of Chains"]
+    Hub1 --> B6["💀 Pale Drake"]
+    Hub1 --> B7["💀 Blacksteel Sentinel"]
+
+    B5 --> Hub2["🌿 Cradle of Thorns"]
+    B6 --> Hub2
+    B7 --> Hub2
+
+    Hub2 --> B8["💀 Thorn Matriarch"]
+    B8 --> B9["💀 Abyss Watcher"]
+    B8 --> FINAL["💀 Cindergloom, Lord of Ashes"]
+
+    FINAL --> END1["🌅 Dawn of Flame"]
+    FINAL --> END2["🌑 Age of Shadows"]
+    FINAL --> END3["♻️ The Cycle Continues"]
+```
+
+```mermaid
+graph TD
+
+START["🔯 Awaken in Ashen Ruins"]
+START -->|"Step into the smoldering remains"| R1C1["R1: Ashen Ruins I"]
+R1C1 -->|"Search the scorched bones (⚔️)"| R1C2["R1: Ashen Ruins II"]
+R1C2 -->|"Wander deeper into the ash"| R1C3["R1: Ashen Ruins III"]
+
+%% --- REGION CHOICES ---
+R1C3 -->|"Follow the stench of rot"| R1A["Weeping Marsh"]
+R1C3 -->|"Descend into the tomb-mouth"| R1B["Hollow Catacombs"]
+R1C3 -->|"Climb the forgotten ledge"| R1C["Obsidian Peaks"]
+R1C3 -->|"Kneel before the flame"| BON1["🔥 Bonfire - R1"]
+
+BON1 -->|"Confront the Ashen Knight"| B1["💀 Boss 1: Ashen Knight"]
+B1 --> R2C1
+B1 --> R3C1
+B1 --> R4C1
+
+%% --- REGION 2: Weeping Marsh ---
+subgraph Region2["🌑 Weeping Marsh"]
+R1A --> R2C1["R2: Marsh I"]
+R2C1 --> R2C2["R2: Marsh II (⚔️)"]
+R2C2 --> R2C3["R2: Marsh III"]
+R2C3 --> BON2["🔥 Bonfire - R2"]
+BON2 --> B2["💀 Boss 2: Mireborn Serpent"]
+end
+
+B2 --> R3Entry["⛓ Path of Thorns"]
+B2 --> R3C1
+
+%% --- REGION 3: Hollow Catacombs ---
+subgraph Region3["🪦 Hollow Catacombs"]
+R1B --> R3C1["R3: Catacombs I"]
+R3C1 --> R3C2["R3: Catacombs II"]
+R3C2 --> R3C3["R3: Catacombs III (⚔️)"]
+R3C3 --> R3C4["R3: Catacombs IV"]
+R3C4 --> BON3["🔥 Bonfire - R3"]
+BON3 --> B3["💀 Boss 3: Grave Warden"]
+end
+
+B3 --> R3Entry
+B3 --> R4C1
+
+%% --- REGION 4: Obsidian Peaks ---
+subgraph Region4["⛰️ Obsidian Peaks"]
+R1C --> R4C1["R4: Peaks I"]
+R4C1 --> R4C2["R4: Peaks II"]
+R4C2 --> R4C3["R4: Peaks III (⚔️)"]
+R4C3 --> BON4["🔥 Bonfire - R4"]
+BON4 --> B4["💀 Boss 4: Ember Tyrant"]
+end
+
+B4 --> R3Entry
+B4 --> Hub1
+
+%% --- HUB ---
+R3Entry --> Hub1["⛩️ Chapel of Thorns"]
+Hub1 --> R5C1
+Hub1 --> R6C1
+Hub1 --> R7C1
+Hub1 --> R11C1
+
+%% --- REGION 5: Shattered Keep ---
+subgraph Region5["🏰 Shattered Keep"]
+R5C1["Keep I"] --> R5C2["Keep II (⚔️)"]
+R5C2 --> R5C3["Keep III"]
+R5C3 --> BON5["🔥 Bonfire - R5"]
+BON5 --> B5["💀 Boss 5: Lord of Chains"]
+end
+B5 --> Cross1
+
+%% --- REGION 6: Forgotten Valley ---
+subgraph Region6["🌫️ Forgotten Valley"]
+R6C1["Valley I"] --> R6C2["Valley II"]
+R6C2 --> R6C3["Valley III (⚔️)"]
+R6C3 --> BON6["🔥 Bonfire - R6"]
+BON6 --> B6["💀 Boss 6: Pale Drake"]
+end
+B6 --> Cross1
+B6 --> R7C1
+
+%% --- REGION 7: Iron Bastion ---
+subgraph Region7["⚒️ Iron Bastion"]
+R7C1["Bastion I"] --> R7C2["Bastion II (⚔️)"]
+R7C2 --> R7C3["Bastion III"]
+R7C3 --> BON7["🔥 Bonfire - R7"]
+BON7 --> B7["💀 Boss 7: Blacksteel Sentinel"]
+end
+B7 --> Cross1
+
+%% --- REGION 8: Cradle of Thorns ---
+subgraph Region8["🌿 Cradle of Thorns"]
+Cross1 --> R8C1["Thorns I"]
+R8C1 --> R8C2["Thorns II (⚔️)"]
+R8C2 --> BON8["🔥 Bonfire - R8"]
+BON8 --> B8["💀 Boss 8: Thorn Matriarch"]
+end
+B8 --> Hub2
+
+%% --- REGION 9: Abyssal Sanctum ---
+subgraph Region9["🌌 Abyssal Sanctum"]
+Hub2 --> R9C1["Sanctum I"]
+R9C1 --> R9C2["Sanctum II (⚔️)"]
+R9C2 --> BON9["🔥 Bonfire - R9"]
+BON9 --> B9["💀 Boss 9: Abyss Watcher"]
+end
+B9 --> R10C1
+
+%% --- REGION 10: Forgotten Citadel ---
+subgraph Region10["🏯 Forgotten Citadel"]
+Hub2 --> R10C1["Citadel I"]
+R10C1 --> R10C2["Citadel II (⚔️)"]
+R10C2 --> R10C3["Citadel III"]
+R10C3 --> BON10["🔥 Bonfire - R10"]
+BON10 --> FINAL["💀 Final Boss: Cindergloom, Lord of Ashes"]
+end
+
+%% --- ENDINGS ---
+FINAL --> END1["🌅 Ending: Dawn of Flame"]
+FINAL --> END2["🌑 Ending: Age of Shadows"]
+FINAL --> END3["♻️ Ending: The Cycle Continues"]
+
+%% --- OPTIONAL REGIONS (Grouped) ---
+subgraph Optional["✨ Optional Regions"]
+R11C1["Drowned Village"] --> BON11["🔥 Bonfire - R11"] --> B1
+R12C1["Spectral Woods"] --> BON12["🔥 Bonfire - R12"] --> R6C3
+R13C1["Tower of Whispers"] --> BON13["🔥 Bonfire - R13"] --> R10C2
+R14C1["Molten Depths"] --> BON14["🔥 Bonfire - R14"] --> B4
+R15C1["Halls of Echo"] --> BON15["🔥 Bonfire - R15"] --> R5C2
+end
 ```
 
 ---
