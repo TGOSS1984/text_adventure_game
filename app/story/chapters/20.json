@@ -1,12 +1,11 @@
 {
   "id": 20,
-  "text": "This is the placeholder text for chapter 20.",
+  "text": "At the heart of the catacombs lies an ancient altar, worn smooth by centuries of ashfall. The bonfire here barely flickers, a memory of fire rather than fire itself. When you approach, it sputters. When you kneel, it flares.\n\nVisions seize you—armies drowning in flame, cities built atop the corpses of dragons, and a crown that screams when worn. The flame whispers one word into your soul: 'Return.' Then, silence. You are alone again, save for the warmth that now kindles beneath your skin.",
   "choices": [
-    "choice_a",
-    "choice_b"
+    "face_the_grave_warden"
   ],
-  "lore": "Lore for chapter 20.",
-  "battle": true,
+  "lore": "This tombfire was lit in the Age of Bloom, when the flame was first deemed a curse. It has not gone out since. Many have tried to extinguish it. All failed. It does not burn wood. It burns remembrance.",
+  "battle": false,
   "boss": false,
   "rest": true
 }

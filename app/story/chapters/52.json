@@ -1,12 +1,11 @@
 {
   "id": 52,
-  "text": "This is the placeholder text for chapter 52.",
+  "text": "Beyond the Abyss, the Silent Citadel looms. No banners fly from its towers. No guards pace its ruined halls. It is a fortress of absence, where memories were once imprisoned and truth buried under stone.\n\nAs you ascend its forgotten tower, you hear not echoes, but *anticipation*. The air hums with unkindled energy. Statues line the corridor — warriors, kings, beasts — all with your face. All holding torches long extinguished. This citadel does not remember rulers. It remembers *regret*.",
   "choices": [
-    "choice_a",
-    "choice_b"
+    "step_through_shattered_court"
   ],
-  "lore": "Lore for chapter 52.",
-  "battle": true,
+  "lore": "The Silent Citadel once housed the Hall of Names — a chamber where each flamebearer’s deeds were recorded. But in the era of the Pyric Betrayal, the records were burned, and the flames turned inward.",
+  "battle": false,
   "boss": false,
   "rest": false
 }

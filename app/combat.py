@@ -16,6 +16,7 @@ import numpy as np
 from .models import Enemy
 from flask import session
 from .enemies import ENEMIES, BOSSES
+from .models import Enemy, Character   # <-- add Character here
 
 
 class BattleManager:
@@ -33,8 +34,12 @@ class BattleManager:
         if boss:
             name = boss_name or "Cindergloom"
             data = BOSSES.get(name)
+
             if not data:
-                raise ValueError(f"Boss '{name}' not found.")
+                print(f"[WARN] Boss '{name}' not found. Defaulting to Cindergloom.")
+                name = "Cindergloom"
+                data = BOSSES[name]
+
             return Enemy(
                 name=name,
                 hp=data["hp"],
@@ -58,18 +63,35 @@ class BattleManager:
         """
         Player's attack on the enemy.
         Damage is based on player's attack minus a small random amount.
+        Crit multiplier is applied BEFORE randomness so a crit is always stronger than any normal hit.
         """
-        dmg = player["attack"] - np.random.randint(0, 6)
-        dmg = max(5, dmg)
+        # Crit roll (safe defaults if fields are missing)
+        crit_chance = float(player.get("crit_chance", 0.0))
+        crit_multiplier = float(player.get("crit_multiplier", 1.0))
+        is_crit = np.random.rand() < crit_chance
+
+        # Apply multiplier to the ATTACK STAT before randomness
+        base_attack = player["attack"] * crit_multiplier if is_crit else player["attack"]
+
+        # Keep your original randomness + min clamp
+        dmg = base_attack - np.random.randint(0, 6)
+        dmg = max(5, int(round(dmg)))
+
         enemy.hp -= dmg
-        return f"You strike the {enemy.name} for {dmg} damage!", enemy.hp
+
+        if is_crit:
+            msg = f"💥 Critical hit! You strike the {enemy.name} for {dmg} damage!"
+        else:
+            msg = f"You strike the {enemy.name} for {dmg} damage!"
+
+        return msg, enemy.hp
 
     def enemy_attack(self, player, enemy, action=None):
         if action not in ["attack", "big_hit", "flurry"]:
             action = np.random.choice(["attack", "big_hit", "flurry"], p=[0.6, 0.25, 0.15])
 
         if action == "flurry":
-            hits = np.random.randint(4, 6)  # More hits: 4–5
+            hits = np.random.randint(3, 6)  # More hits: 3–5
             single_hit = max(2, enemy.attack // 3) + np.random.randint(6, 10)
             dmg = hits * single_hit - int(player["defense"] * 1.0)
             dmg = max(15, dmg)  # Raise min to reflect danger
@@ -94,24 +116,11 @@ class BattleManager:
         class_name = player.get("class_name", "Knight")  # Default fallback
         result = ""
 
-        # Class-based dodge chances
-        dodge_chances = {
-            "Knight": 0.3,
-            "Mage": 0.7,
-            "Rogue": 0.8,
-            "Archer": 0.6
-        }
-
-        # Class-based block reduction ratios
-        block_reduction = {
-            "Knight": 0.25,
-            "Rogue": 0.5,
-            "Archer": 0.4,
-            "Mage": 0.5
-        }
 
         if player_action == "dodge":
-            success_chance = dodge_chances.get(class_name, 0.6)
+            # NEW: pull dodge chance from Character
+            success_chance = Character.get_dodge(class_name)
+            success = np.random.rand() < success_chance
             success = np.random.rand() < success_chance
             if success:
                 result = "You dodged the attack completely!"
@@ -121,7 +130,8 @@ class BattleManager:
                 result = f"You failed to dodge and took {dmg} damage."
 
         elif player_action == "block":
-                reduction_ratio = block_reduction.get(class_name, 0.5)
+                # NEW: pull block multiplier from Character
+                reduction_ratio = Character.get_block_mult(class_name)
                 blocked = int(dmg * reduction_ratio)
                 current_hp -= blocked
                 result = f"You blocked the hit and took {blocked} damage."

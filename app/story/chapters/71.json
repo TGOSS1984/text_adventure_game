@@ -1,12 +1,11 @@
 {
   "id": 71,
-  "text": "This is the placeholder text for chapter 71.",
+  "text": "You collapse near the Ember Altar, your body barely resisting the pull of exhaustion and heat. The altar pulses with ancient flame — not bright, but heavy, as though burdened with memory. Around it lie scattered remnants: burnt offerings, charred masks, sigils carved in grief. At the altar’s base, a cracked mosaic depicts a figure kneeling before a throne of ash, reaching upward as if pleading. But there is no crown, no answer — only flame.\n\nIn your haze, you hear a voice you do not recognize, yet which speaks as if it knows you: 'Did you come to reign or to burn?' You reach for your flask. It is warm, but not from the fire. Something stirs inside it — not liquid, but memory.",
   "choices": [
-    "choice_a",
-    "choice_b"
+    "return_to_the_ember_tyrant"
   ],
-  "lore": "Lore for chapter 71.",
+  "lore": "The Ember Altar is believed to be a fragment of the original Flame Throne, shattered during the Pyric Betrayal. The faithful returned here to mourn what could not be reclaimed. Many burned their names into the stone, hoping to be remembered by the fire — or forgotten by the world.",
   "battle": false,
   "boss": false,
-  "rest": false
+  "rest": true
 }

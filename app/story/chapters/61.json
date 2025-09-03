@@ -1,12 +1,11 @@
 {
   "id": 61,
-  "text": "This is the placeholder text for chapter 61.",
+  "text": "A shudder passes through the waters as you confront the sunken dead. Once villagers, now marionettes of the deep — bloated things clad in algae-streaked robes, their faces split between sorrow and rage. Their attacks come not with fury, but with solemnity, as if compelled by duty rather than hatred.\n\nYou fight amid submerged crypts, where skeletal arms reach skyward as if trying to breach the surface. The battle becomes a ritual, the clash of your steel against theirs resonating like a funereal hymn. When the last of them falls, the waters grow calm, yet you sense the ritual is incomplete — something lingers, hungry still.",
   "choices": [
-    "choice_a",
-    "choice_b"
+    "light_the_waterlogged_shrine"
   ],
-  "lore": "Lore for chapter 61.",
-  "battle": false,
+  "lore": "The Sunken Dead are not simply restless spirits — they are oathbound to a forgotten covenant. Their burial rites were never completed, their names never sung into the Flame. Thus, they remain. Only fire can sever such bonds.",
+  "battle": true,
   "boss": false,
   "rest": false
 }

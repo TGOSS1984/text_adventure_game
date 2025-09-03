@@ -1,10 +1,10 @@
 {
   "id": 72,
-  "text": "This is the placeholder text for chapter 72.",
+  "text": "You wander the Echoing Hall, where the air hums with whispers that never fade. The walls are carved with reliefs of open mouths — thousands of them, as though the stone itself wishes to speak. Every step sends a murmur skittering along the floor, bouncing back from shadowed alcoves. Some of the voices are yours.\n\nGhostly melodies drift from nowhere, sometimes weeping, sometimes laughing. This is a place where thoughts manifest as echoes and regrets take shape. The hall stretches infinitely in both directions, though your path is somehow certain. There is something here that remembers you — or something you were meant to remember.",
   "choices": [
-    "final_choice"
+    "descend_into_screaming_dark"
   ],
-  "lore": "Lore for chapter 72.",
+  "lore": "The Echoing Hall was once the vault of the Vowbound Choir, singers whose voices wove protection into the world’s fabric. When the Flame waned, their songs soured, twisting into echoes that fed on sorrow. It is said they still sing — but now they sing only of endings.",
   "battle": true,
   "boss": false,
   "rest": false

@@ -1,11 +1,13 @@
 {
   "id": 26,
-  "text": "This is the placeholder text for chapter 26.",
+  "text": "The archway stands crooked and broken, formed not of stone, but fused bone and cinder. As you pass beneath it, the air grows thick, heavy with the perfume of burnt thorns and dried blood. The chapel looms beyond—a skeletal structure swallowed by vines, its stained glass melted by flame long past.\n\nInside, you see sigils of forgotten saints and impaled effigies of flamebearers, bound with thornwire. A lit brazier hangs inverted above the altar, its flame dripping upward. You feel the presence of watchers—silent, unseen, yet old as ash.",
   "choices": [
-    "choice_a",
-    "choice_b"
+    "ascend_the_northern_stair",
+    "venture_down_the_eastern_gorge",
+    "slip_south_through_bramble",
+    "descend_to_drowned_village"
   ],
-  "lore": "Lore for chapter 26.",
+  "lore": "The Chapel of Thorns was once the central shrine of the Pyric Concord. When the Flame fractured, so too did their faith. Some say the chapel inverted its own sanctity, becoming the root of heresy. Others claim it was always thus.",
   "battle": false,
   "boss": false,
   "rest": false

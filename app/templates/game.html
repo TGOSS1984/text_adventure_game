@@ -19,14 +19,34 @@ Used for the story of the game and where the choices are seen
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     
 </head>
-<body>
+<body class="{% if is_rest %}rest-bg{% endif %}"> <!-- override for bg change if rest area-->
+
     <div class="bonfire-bg">
         <h2>Class: {{ character.name }} | HP: {{ hp }}/{{ character.max_hp }} <i class="fas fa-heart" style="color: crimson;"></i></h2>
         <img src="{{ url_for('static', filename='images/' + character['image']) }}" alt="{{ character['class_name'] }}" class="class-image">
         <p>HP: {{ hp }}/{{ character.max_hp }} ({{ (hp / character.max_hp * 100) | round(0) }}%)</p>
         <progress value="{{ hp }}" max="{{ character.max_hp }}"></progress>
+
+        <!--Rest Flash Note-->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+        <div class="flash-container">
+            {% for category, message in messages %}
+            <div class="flash-message {{ category }}">{{ message }}</div>
+            {% endfor %}
+        </div>
+        {% endif %}
+        {% endwith %}
+
         <div class="lore-box">
-            <img src="{{ url_for('static', filename='images/icons/tome.png') }}" alt="Tome" class="icon-shadow">
+            <img 
+                src="{% if is_rest %}
+                        {{ url_for('static', filename='images/icons/rest_tome.png') }}
+                     {% else %}
+                        {{ url_for('static', filename='images/icons/tome.png') }}
+                     {% endif %}"
+                alt="Tome"
+                class="icon-shadow">
             <p><strong>Story:</strong> {{ chapter.text }}</p>
             {% if chapter.lore %}
             <p class="lore"><em>{{ chapter.lore }}</em></p>
@@ -53,6 +73,23 @@ Used for the story of the game and where the choices are seen
             <button id="pauseMusic" aria-label="Pause music">🔇 Pause</button>
         </div>
     </div>
+
+     <!-- Bonfire Pulse Overlay -->
+    <div id="bonfire-pulse" class="bonfire-pulse"></div>
+
+    <!--Sounds Script-->
     <script src="{{ url_for('static', filename='js/sound.js') }}"></script>
+
+    <!--Bonfire Pulse Overlay script-->
+    <script>
+    window.addEventListener("DOMContentLoaded", () => {
+        const messages = {{ get_flashed_messages(with_categories=true) | tojson }};
+        const pulse = document.getElementById("bonfire-pulse");
+
+        if (messages.some(([cat, msg]) => cat === "info" && msg.includes("bonfire"))) {
+            pulse.classList.add("active");
+        }
+    });
+    </script>
 </body>
 </html>

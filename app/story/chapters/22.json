@@ -1,11 +1,12 @@
 {
   "id": 22,
-  "text": "This is the placeholder text for chapter 22.",
+  "text": "You climb the narrow stair carved into bones and soot. Each step seems to echo through a thousand forgotten halls. At the summit, a crack in the stone reveals a flicker of light—pale and cold, yet unmistakably flame.\n\nIt is not a bonfire. It is memory taking shape. A woman kneels in the light, face obscured, her hands bleeding into the stone. She turns toward you—but her eyes are hollow, and her mouth moves without sound. You blink, and she is gone. Only the flickering remains.",
   "choices": [
-    "choice_a",
-    "choice_b"
+    "pass_through_the_arch_of_ash",
+    "return_to_obsidian_peaks",
+    "drop_into_a_lower_passage"
   ],
-  "lore": "Lore for chapter 22.",
+  "lore": "Legends speak of a Seer who tried to steal the Flame’s memory, carving it into the world itself. Her failure is etched in the shadows between realms. Some say she succeeded, and the world forgot.",
   "battle": false,
   "boss": false,
   "rest": false

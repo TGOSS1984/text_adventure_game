@@ -1,12 +1,13 @@
 {
   "id": 56,
-  "text": "This is the placeholder text for chapter 56.",
+  "text": "The Ember Tyrant, Once sovereign of the Molten Depths — a subterranean crucible where rivers of fire carved their will into the bones of the world — his reign ended when the forges grew cold and the Depths themselves sank into shadow. Bound in the remnants of his own crown, he has stood for centuries in the place where stone meets flame, a sentinel forged by ruin and wrath. To defeat him is not to end his watch, but to unseal what lies beyond — where the path ahead burns with choices as heavy as the chains he bears.",
   "choices": [
-    "choice_a",
-    "choice_b"
+    "pass_through_the_arch_of_ash",
+    "drop_into_a_lower_passage"
   ],
-  "lore": "Lore for chapter 56.",
+  "lore": "His eyes burn not with rage, but with the slow, relentless hatred of one who has watched empires turn to ash. Each step births a tremor; each breath sends embers spiraling into the night",
   "battle": true,
-  "boss": false,
+  "boss": true,
+  "boss_name": "The Ember Tyrant",
   "rest": false
 }

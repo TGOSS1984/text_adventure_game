@@ -1,12 +1,11 @@
 {
   "id": 40,
-  "text": "This is the placeholder text for chapter 40.",
+  "text": "You find a hollow alcove tucked behind the forge's deepest furnace. Here, warmth offers something beyond fire—remembrance. A half-burned journal rests on a blackened anvil. Its final page is smudged but legible: 'The sentinel stirs, and still I dream of her voice. I was not meant to guard, but to atone.'\n\nAs you rest, the forge breathes with you. For a moment, it almost seems alive. Your wounds close, your spirit steadies—but the embers whisper secrets too old to be safe.",
   "choices": [
-    "choice_a",
-    "choice_b"
+    "confront_the_blacksteel_sentinel"
   ],
-  "lore": "Lore for chapter 40.",
-  "battle": true,
+  "lore": "Few places remain in the world where rest brings peace. This alcove is one such place, formed from a blacksmith’s final act of rebellion—giving warmth to the condemned.",
+  "battle": false,
   "boss": false,
   "rest": true
 }

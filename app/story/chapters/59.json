@@ -1,12 +1,11 @@
 {
   "id": 59,
-  "text": "This is the placeholder text for chapter 59.",
+  "text": "The Old Cairn stands silent in the snow, a mound of weathered stones ringed by broken spears and tattered banners. Frost clings to every surface, the weight of years bowing the ancient markers into the ice. A faint warmth lingers here, as if the earth remembers fires long since gone out, and for a moment the wind stills, granting you rare respite. Yet beyond the cairn’s quiet embrace, the valley opens into a vast, frozen expanse—and somewhere in that white abyss, something stirs.",
   "choices": [
-    "choice_a",
-    "choice_b"
+    "rouse_the_pale_drake"
   ],
-  "lore": "Lore for chapter 59.",
+  "lore": "Once raised to honor the nameless dead of the Forgotten Valley, the Old Cairn has become a solitary refuge for those who dare this frigid waste. Travelers speak of dreams found here—visions of moonlit wings, and a shadow vast enough to darken the snowfields. The oldest stories claim the cairn was built not for the fallen, but as an offering, meant to placate the Pale Drake who slumbers beneath the ice.",
   "battle": false,
   "boss": false,
-  "rest": false
+  "rest": true
 }

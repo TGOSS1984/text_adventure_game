@@ -1,9 +1,11 @@
 {
   "id": 11,
-  "text": "You descend into the Shadow Hollow, a place where light surrenders and time forgets.\n\nThe silence here is sentient. Whispers slither between the stones, and unseen eyes blink from the veil of dark.\n\nThe walls bleed a dim, sickly glow — not from torches, but from memories imprinted into the stone. Names you’ve never heard stir in your mind like nightmares half-remembered.\n\nDeeper still, the shadows converge. Something old moves beyond sight, stirring not with malice, but with hunger. You have come too far to turn away.",
-  "choices": ["press_forward"],
-  "lore": "The Shadow Hollow is where the First Sin was whispered into mortal ears. No light dares touch its core. What lies below is not evil — it is truth, unblinking and cruel.",
-  "battle": true,
+  "text": "You climb until the winds scream like ghosts through jagged obsidian spires. The rock beneath your feet shifts and pulses—veins of dormant flame faintly glow just beneath the surface, like an old heart still trying to beat. Towers of twisted basalt reach skyward, broken by ancient explosions or long-dead wyrms.\n\nAt the summit, you glimpse far-off kingdoms wrapped in ash. Somewhere below, you hear a low, slow groaning—stone grinding against stone. The Peaks are not empty. They slumber, and slumbering things do not take kindly to trespass.",
+  "choices": [
+    "cross_the_blackened_ridge"
+  ],
+  "lore": "The Obsidian Peaks were formed when the Fire-Daughters sundered the Skyforge. What they created could not die, only sleep. Beneath every crag, a memory stirs—one that remembers the betrayal of flame.",
+  "battle": false,
   "boss": false,
   "rest": false
 }

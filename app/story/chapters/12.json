@@ -1,8 +1,10 @@
 {
   "id": 12,
-  "text": "You investigate the ruins, their stones blackened and half-swallowed by the earth. At the heart lies a collapsed shrine, choked in thorn and silence.\n\nAmidst the rubble, you find a journal — bound in scorched leather, its clasps rusted shut. Pages fall apart as you touch them, brittle with age. Yet some words endure.\n\n'I saw the mirror. It saw me back. I was not ready.'\n\nThe air around you shifts. Dust thickens. Shadows lengthen. The ruin seems to hold its breath.",
-  "choices": ["read_further", "leave_quietly"],
-  "lore": "The journal belonged to a penitent knight who sought absolution through reflection. What he found was not peace, but recognition — and a hunger staring back.",
+  "text": "Tendrils of moss dangle like executioner’s ropes. Light rarely touches here; instead, the air clings with a damp thickness that tastes of mildew and centuries of decay. You duck beneath a natural arch of twisted wood, where old runes pulse softly in the lichen-covered stone.\n\nShapes move just out of sight—some dragging, some whispering in languages not meant for living ears. You step carefully, but the moss shifts underfoot, almost alive. Something watches. Something that once was priest, now root, now rot.",
+  "choices": [
+    "cross_the_sinking_path"
+  ],
+  "lore": "The Hanging Path is all that remains of the Moss-Priests' pilgrimage. They bound their souls to the land, and the land remembered. In time, memory became hunger. They now guard what they once protected: silence.",
   "battle": false,
   "boss": false,
   "rest": false

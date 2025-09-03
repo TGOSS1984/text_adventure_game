@@ -1,12 +1,11 @@
 {
   "id": 68,
-  "text": "This is the placeholder text for chapter 68.",
+  "text": "You descend into the singing spire, a sanctum below the mirror chamber where sound flows like liquid. A steady hum surrounds you, forming into choral voices — distant, ethereal, eternal. The air is thick with forgotten hymns. As you rest, the melodies begin to bind your wounds, but also to unravel your mind. Names and places you’ve never known begin to feel familiar.\n\nA sigil beneath your resting place glows faintly. It depicts a figure split in two: one cloaked in flame, the other in shadow. Between them, a broken circle — the Cycle. As you drift toward sleep, a final whisper curls into your ear: 'One must burn so the other may rise.' When you awaken, the spire is silent.",
   "choices": [
-    "choice_a",
-    "choice_b"
+    "enter_citadel_s_fractured_gate"
   ],
-  "lore": "Lore for chapter 68.",
-  "battle": true,
+  "lore": "The Singing Spire is said to house the voice of the world itself, captured before the First Silence. It sings to all who enter, reminding them of what was lost in the Shattering. Some claim it holds the lullaby of the first Flamebearer — and the scream of the last.",
+  "battle": false,
   "boss": false,
-  "rest": false
+  "rest": true
 }

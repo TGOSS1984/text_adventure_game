@@ -1,11 +1,11 @@
 {
   "id": 18,
-  "text": "This is the placeholder text for chapter 18.",
+  "text": "Graves lie smashed, torn open from within rather than above. The soil reeks of burnt parchment and old salt. Crosses are made of rusted blades, and some still hum with residual fury. As you move forward, the graves shift behind you—gravel reforming into names.\n\nOne of them is yours.\n\nA chorus of spectral voices rises. 'You came to bury the flame, not to bear it. You lit the fire that cannot be quenched.' Shadows rise from the graves, half-formed memories in armor, wielding pieces of your forgotten past.",
   "choices": [
-    "final_choice"
+    "pass_beneath_the_chained_dead"
   ],
-  "lore": "Lore for chapter 18.",
-  "battle": false,
+  "lore": "Those interred here are not truly dead. They are forgotten. Their names excised from memory, their fates unchronicled. But memory clings to flesh like smoke to ash. And when the wind is right, they walk.",
+  "battle": true,
   "boss": false,
   "rest": false
 }

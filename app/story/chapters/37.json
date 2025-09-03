@@ -1,12 +1,11 @@
 {
   "id": 37,
-  "text": "This is the placeholder text for chapter 37.",
+  "text": "You approach the Iron Bastion not through its gates, but through a breach half-buried in soot and slag. Inside, the walls are scorched black, the remnants of a siege long lost. Statues line the corridor—warriors caught mid-scream, petrified by some ancient curse.\n\nA faint humming pervades the air. Not mechanical, but melodic—like a lullaby made of rust and sorrow. The deeper you go, the more the song resolves into a single phrase: 'The price of iron is memory.'",
   "choices": [
-    "choice_a",
-    "choice_b"
+    "march_through_rusted_gates"
   ],
-  "lore": "Lore for chapter 37.",
-  "battle": false,
+  "lore": "Iron Bastion was once the last refuge of the Forgelords, smiths who bound souls into steel. Their legacy remains in the cursed armor worn by its silent sentinels, and the song that never ends.",
+  "battle": true,
   "boss": false,
   "rest": false
 }

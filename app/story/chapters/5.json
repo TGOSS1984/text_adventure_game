@@ -1,8 +1,10 @@
 {
   "id": 5,
-  "text": "Silence. Your enemy lies broken. The air itself shudders in the wake of his fall. The flames dim but do not die — instead, they curl inward, waiting. Watching.\n\nAsh falls like slow, deliberate snow. Each flake sings faintly as it lands. The world is quieter now, as if holding its breath. You kneel at the broken altar, your reflection shimmering in blood and cinder.\n\nThe choice comes not as a voice, but as a weight. A fork in the soul.\n\nRekindle the Age of Flame and let light return — brilliant, but destined to burn away once more. Or embrace the coming dark, where truth may lie, cold and unyielding.\n\nNo one shall guide you now. You are legend — not for what you fought, but for what you chose. The world waits.",
-  "choices": [],
-  "lore": "Every Age begins in brilliance and ends in ash. Some claim the flame is salvation. Others say it is a lie — a cycle that binds all souls to endless war. But what comes after ash? That has never been written. Until now.",
+  "text": "The tomb entrance yawns before you, wide enough to swallow a siege beast. Moss drips from the ceiling, and the air is colder here—unnaturally so. You descend the stone steps into silence, broken only by your breath and the clatter of pebbles. Ancient murals line the walls: depictions of nameless kings casting shadows over kneeling throngs. Yet their faces have been scratched away.\n\nSomething is sealed here, and it fears memory. The deeper you tread, the more you feel your own identity erode. Only purpose remains. Welcome to the Hollow Catacombs.",
+  "choices": [
+    "slip_into_the_hollow_catacombs"
+  ],
+  "lore": "The Hollow Catacombs predate even the First Flame. It was said the dead could not rest until the Cycle was broken. Many entered in search of answers. Most became the answer.",
   "battle": false,
   "boss": false,
   "rest": false

@@ -1,12 +1,11 @@
 {
   "id": 38,
-  "text": "This is the placeholder text for chapter 38.",
+  "text": "You force the old gates open with a screech that echoes like thunder. Inside lies a courtyard littered with shattered helms and rusted blades. Statues watch from the battlements—some broken, others… subtly shifted since your last glance.\n\nA figure emerges, clad in armor fused with flesh. It moves like a marionette, pulled by unseen chains. With a silent scream, it lunges. The gates slam shut behind you. Battle is unavoidable.",
   "choices": [
-    "choice_a",
-    "choice_b"
+    "cross_the_molten_forge"
   ],
-  "lore": "Lore for chapter 38.",
-  "battle": false,
+  "lore": "The Rusted Gates are said to test those who pass, reanimating regrets into foes. Many warriors perish here, not from wounds, but from memories made manifest in steel.",
+  "battle": true,
   "boss": false,
   "rest": false
 }

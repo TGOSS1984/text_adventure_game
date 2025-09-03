@@ -1,9 +1,11 @@
 {
   "id": 14,
-  "text": "You turn away, but the mirror is not done with you. The air grows dense — not with threat, but with gravity.\n\nDust swirls as if in protest. The ground hums with withheld judgment.\n\nYour name is whispered from the dark, not as a greeting — but as a sentence. Behind you, the mirror cracks. Not from impact. From longing.",
-  "choices": ["shatter_mirror", "return"],
-  "lore": "Avoiding the mirror is not escape. To deny it is to fracture your story — and perhaps your soul. Some claim the mirror remembers you forever, even if you forget it.",
+  "text": "A clearing opens amidst the mire, ringed by massive bone piles—twisted, hollow, and all facing inward. The bonfire here is low, but it burns steady. Strange symbols are carved into nearby rocks, their meanings long lost, but their warnings palpable.\n\nYou sit, not to rest, but to remember. Yet memories elude you. Instead, images rise unbidden: a blade wreathed in screams, a crown made of teeth, a pact sealed in fire and regret. You do not know whose past you hold, only that it burns just beneath your skin.",
+  "choices": [
+    "challenge_the_mireborn_serpent"
+  ],
+  "lore": "These bones belong to no creature known. The Mireborn Serpent was once a child of the marsh, gifted with foresight. When it saw what was to come, it devoured its own kin in grief and madness. Now it waits for one who can end its seeing.",
   "battle": false,
   "boss": false,
-  "rest": false
+  "rest": true
 }

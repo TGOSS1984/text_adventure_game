@@ -1,12 +1,12 @@
 {
   "id": 35,
-  "text": "This is the placeholder text for chapter 35.",
+  "text": "You descend into the crypt below the brazier, where rusted chains slither like serpents. A massive figure looms in the dark—bound from crown to toe in iron links. Its eyes glow faintly behind a rusted mask, and with each breath, the chains tighten around its form.\n\nYou reach for the central lock. It does not resist. As the chains fall, the creature rises—not with gratitude, but purpose. You sense it has waited not to be freed… but to be found.",
   "choices": [
-    "choice_a",
-    "choice_b"
+    "walk_the_forgotten_archway"
   ],
-  "lore": "Lore for chapter 35.",
-  "battle": false,
-  "boss": false,
+  "lore": "The Lord of Chains was once the Warden of Balance, who chose to bind himself when the first flame waned. Legends say he holds one half of the secret to the Cycle's end—but will never speak it.",
+  "battle": true,
+  "boss": true,
+  "boss_name": "The Lord of Chains",
   "rest": false
 }

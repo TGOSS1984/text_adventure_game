@@ -17,10 +17,15 @@ Used for the battles in the game
 
     <!--Font Awesome Link-->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+    {% for bg in preload_list %}
+        <link rel="preload" as="image" href="{{ bg }}">
+    {% endfor %}
+
     
     
 </head>
-<body class="{% if enemy.is_boss %}boss-mode{% else %}battle-mode{% endif %}" data-class="{{ character['name']|lower }}" data-boss="{{ 'true' if enemy.is_boss else 'false' }}">
+<body class="{% if enemy.is_boss %}boss-mode{% else %}battle-mode{% endif %}" data-class="{{ character['name']|lower }}" data-boss="{{ 'true' if enemy.is_boss else 'false' }}" style="--battle-bg: url('{{ url_for('static', filename=battle_bg) }}');">
     <!-- DEBUG: character name is {{ character['name'] }} -->
     <div class="bonfire-bg">
         <h2>⚔️ Battle Begins</h2>
@@ -87,6 +92,12 @@ Used for the battles in the game
     <!--For Flurry Flash on screen-->
 
     <div id="flurry-flash"></div>
+
+    <!-- Green healing flash screen -->
+    <div id="healing-flash"></div>
+
+    <!-- Bubble animation container -->
+    <div id="bubble-container"></div>
 
 <!-- Class-specific Attack Sounds -->
 <audio id="attack-knight" src="{{ url_for('static', filename='sounds/sound_effects/attack/knight.mp3') }}"></audio>

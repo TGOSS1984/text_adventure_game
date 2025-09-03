@@ -1,9 +1,11 @@
 {
   "id": 6,
-  "text": "You enter the Chapel of Thorns, where silence grows like moss. Vines claw across broken pews, weaving through cracked mosaics that once depicted salvation.\n\nAt its heart lies a flame — small, steady, and golden. Not fierce like the pyres of war, but warm, like memory. Dust drifts through shafts of amber light from shattered stained glass. Each step echoes, reverent and uncertain.\n\nYou kneel. The air hums softly. The warmth seeps into your bones, quieting pain and silencing the ghosts that followed you. For a moment — just a moment — the world feels whole again.",
-  "choices": ["touch_relic", "leave_relic"],
-  "lore": "The Thorn Chapel was a place of forbidden faith — where healers defied the pyromancer lords, nurturing flame without destruction. It was sealed in bramble and branded heresy. Some say it still remembers peace. Few are allowed to feel it.",
+  "text": "The ledge is slick with old soot and frozen rain, the remnants of long-dead storms that once battered these heights. With each handhold, the rock crumbles a little more, as though resisting your ascent. When you finally pull yourself over the rim, a broken sky greets you—a horizon of jagged peaks where molten veins pulse faintly beneath obsidian crust.\n\nYou stand at the threshold of the Obsidian Peaks, a realm once forged by dragons and fire-shapers. The air is thinner here, filled with heatless embers and the scent of burnt offerings. Below, the lands you crossed already feel distant, like memories burned away.",
+  "choices": [
+    "tread_the_ashen_slope"
+  ],
+  "lore": "The Obsidian Peaks were once a crucible where Flamebound warriors were tempered. But their forges now lie silent. Some say the fire turned inward, and the peaks themselves were cursed to remember the screams of every soul burned there.",
   "battle": false,
   "boss": false,
-  "rest": true
+  "rest": false
 }

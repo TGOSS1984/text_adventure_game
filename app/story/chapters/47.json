@@ -1,11 +1,13 @@
 {
   "id": 47,
-  "text": "This is the placeholder text for chapter 47.",
+  "text": "You leave the grove behind. Its silence lingers like a thorn in the mind. The path steepens, carved into cliffside and time, and above you, two arching roots form an archway — the Second Crossroads.\n\nEtched in the stone are glyphs long eroded, but one still burns faintly: a spiral devouring its own flame. You remember it. Not from this life, perhaps, but another. There’s no going back now. Each path forward is laced with finality.",
   "choices": [
-    "choice_a",
-    "choice_b"
+    "descend_into_the_abyss",
+    "ascend_to_the_forgotten_tower",
+    "scale_the_tower_of_whispers"
+
   ],
-  "lore": "Lore for chapter 47.",
+  "lore": "The Second Crossroads was once the meeting place of the Pale Watchers. They argued here beneath the dying trees until none remained to listen. Only the flame endured — buried, not broken.",
   "battle": false,
   "boss": false,
   "rest": false

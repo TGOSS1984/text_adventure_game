@@ -1,12 +1,12 @@
 {
   "id": 41,
-  "text": "This is the placeholder text for chapter 41.",
+  "text": "The chamber beyond the alcove opens into a throne room of iron and ruin. At its center stands the Blacksteel Sentinel—once a guardian, now a hollowed husk fused with centuries of molten armor. Its chest is cracked, exposing a core of smoldering flame, pulsing like a dying heart.\n\nIt does not speak. It remembers no oaths. Yet as it raises its greatsword, you sense something deeper—regret, perhaps, or vengeance passed down through the forge. The duel is not just survival; it is legacy ignited.",
   "choices": [
-    "choice_a",
-    "choice_b"
+    "bridge_the_molten_divide"
   ],
-  "lore": "Lore for chapter 41.",
-  "battle": false,
-  "boss": false,
+  "lore": "Forged by the Forgelords to guard the Furnace Crown, the Sentinel has outlived its purpose. Bound to duty by soul-iron links, it waits only for a worthy bearer of its flame to fall—or rise.",
+  "battle": true,
+  "boss": true,
+  "boss_name": "The Blacksteel Sentinel",
   "rest": false
 }
