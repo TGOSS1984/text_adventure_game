@@ -226,6 +226,20 @@ def battle():
             player_hp, character["max_hp"], estus_count
         )
 
+    elif action == "timeout":
+        # Player ran out of time — enemy lands an unblocked penalty attack.
+        # No player action resolves; enemy attacks at full damage with no
+        # dodge/block mitigation. This is harsher than a normal turn to
+        # make the timer feel meaningful without being an instant kill.
+        _, warn_msg, dmg = battle_manager.enemy_attack(
+            character, enemy, action=predicted_move
+        )
+        # resolve_player_action with 'none' = full damage, no mitigation
+        player_hp, result = battle_manager.resolve_player_action(
+            predicted_move, "none", dmg, player_hp, character
+        )
+        message = "⏰ You hesitated! " + warn_msg + " " + result
+
     # ── Battle outcome ────────────────────────────────────────────────────────
 
     if enemy.hp <= 0:

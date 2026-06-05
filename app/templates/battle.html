@@ -159,6 +159,16 @@ HTMX integration:
             </button>
         </form>
 
+        <!-- ── ATB Timer bar ── -->
+        <div id="timer-bar" class="timer-bar" aria-label="Turn timer">
+            <div id="timer-bar-fill" class="timer-bar-fill timer-phase--normal"></div>
+        </div>
+
+        <!-- ── MP bar placeholder (wired up in Commit 7) ── -->
+        <div id="mp-bar-placeholder" class="mp-bar-placeholder" aria-hidden="true">
+            <!-- MP bar renders here once special moves are added -->
+        </div>
+
     </div><!-- /#battle-state -->
 
     <!-- Audio controls — OUTSIDE #battle-state so they persist across HTMX swaps -->
@@ -170,6 +180,9 @@ HTMX integration:
 </div><!-- /.bonfire-bg -->
 
 <!-- ── Overlay effects — OUTSIDE #battle-state, never swapped ── -->
+<!-- Timer danger vignette — activates when <15% time remains -->
+<div id="timer-vignette" class="timer-vignette"></div>
+
 <div id="flurry-flash">
     <div class="flurry-vignette"></div>
 </div>
@@ -193,6 +206,7 @@ HTMX integration:
 <!-- Scripts — outside #battle-state so they are never re-executed by HTMX -->
 <script src="{{ url_for('static', filename='js/audio_manager.js') }}"></script>
 <script src="{{ url_for('static', filename='js/battle_sounds.js') }}"></script>
+<script src="{{ url_for('static', filename='js/battle_timer.js') }}"></script>
 
 </body>
 </html>

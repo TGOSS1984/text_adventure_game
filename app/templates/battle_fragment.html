@@ -117,4 +117,12 @@ It is swapped into <div id="battle-state"> by HTMX.
     </button>
 </form>
 
+<!-- ── ATB Timer bar — reset to full on every swap ── -->
+<div id="timer-bar" class="timer-bar" aria-label="Turn timer">
+    <div id="timer-bar-fill" class="timer-bar-fill timer-phase--normal" style="width:100%;"></div>
+</div>
+
+<!-- ── MP bar placeholder (Commit 7) ── -->
+<div id="mp-bar-placeholder" class="mp-bar-placeholder" aria-hidden="true"></div>
+
 <!-- Audio controls rendered in battle.html outside swap zone -->

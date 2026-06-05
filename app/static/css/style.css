@@ -1158,3 +1158,119 @@ body.home-page .bonfire-bg {
     .choices-hidden    { visibility: visible; opacity: 1; pointer-events: auto; }
     .choices-reveal    { animation: none; }
 }
+
+
+/* ── 20. ATB Turn Timer (Commit 8) ───────────────────────── */
+
+/* Timer bar track */
+.timer-bar {
+    width: var(--hp-bar-width);
+    height: 8px;
+    background: rgba(0, 0, 0, 0.50);
+    border: 1px solid rgba(255, 255, 255, 0.10);
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+    margin: var(--space-sm) auto var(--space-xs);
+    position: relative;
+}
+
+/* Timer fill — width driven by JS every 50ms */
+.timer-bar-fill {
+    height: 100%;
+    width: 100%;
+    border-radius: var(--radius-sm);
+    transition: background-color 0.4s ease;
+    /* Subtle moving shimmer so the bar looks alive even when full */
+    background-image: linear-gradient(
+        90deg,
+        transparent 0%,
+        rgba(255,255,255,0.15) 50%,
+        transparent 100%
+    );
+    background-size: 200% 100%;
+    animation: timerShimmer 1.8s linear infinite;
+}
+
+@keyframes timerShimmer {
+    0%   { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+}
+
+/* ── Phase colours ── */
+.timer-phase--normal {
+    background-color: #c9a84c;          /* gold/amber — plenty of time */
+    box-shadow: 0 0 6px rgba(201, 168, 76, 0.55);
+}
+
+.timer-phase--warning {
+    background-color: #e07b20;          /* deep orange — getting low */
+    box-shadow: 0 0 8px rgba(224, 123, 32, 0.65);
+    animation: timerShimmer 1.8s linear infinite,
+               timerPulse   0.9s ease-in-out infinite;
+}
+
+.timer-phase--danger {
+    background-color: #c0392b;          /* crimson — nearly out */
+    box-shadow: 0 0 12px rgba(192, 57, 43, 0.80);
+    animation: timerShimmer 1.8s linear infinite,
+               timerPulse   0.45s ease-in-out infinite;
+}
+
+@keyframes timerPulse {
+    0%, 100% { opacity: 1.0; }
+    50%      { opacity: 0.6; }
+}
+
+/* Small label below the bar */
+.timer-bar::after {
+    content: 'TURN TIMER';
+    position: absolute;
+    right: 0;
+    top: calc(100% + 3px);
+    font-size: 0.60rem;
+    letter-spacing: 0.08em;
+    color: rgba(255, 255, 255, 0.30);
+    font-family: var(--font-body);
+}
+
+/* ── Danger vignette — screen edges glow red in last 15% ── */
+.timer-vignette {
+    position: fixed;
+    inset: 0;
+    background: radial-gradient(
+        ellipse at center,
+        transparent 45%,
+        rgba(180, 0, 0, 0.55) 100%
+    );
+    pointer-events: none;
+    opacity: 0;
+    z-index: 100;
+    transition: opacity 0.3s ease;
+}
+
+.timer-vignette--active {
+    opacity: 1;
+    animation: timerVignettePulse 0.5s ease-in-out infinite;
+}
+
+@keyframes timerVignettePulse {
+    0%, 100% { opacity: 0.70; }
+    50%      { opacity: 0.35; }
+}
+
+/* ── MP bar placeholder — space reserved for Commit 7 ── */
+.mp-bar-placeholder {
+    width: var(--hp-bar-width);
+    height: 6px;                        /* same footprint as the real MP bar */
+    margin: var(--space-xs) auto var(--space-sm);
+    /* Invisible for now — just holds layout space */
+    background: transparent;
+}
+
+/* ── Reduced motion overrides ── */
+@media (prefers-reduced-motion: reduce) {
+    .timer-bar-fill    { animation: none; }
+    .timer-phase--warning,
+    .timer-phase--danger { animation: none; }
+    .timer-vignette--active { animation: none; opacity: 0.60; }
+}

@@ -276,6 +276,9 @@ function bindBattleButtons() {
       const action = btn.dataset.action;
       if (!action) return;
 
+      // Stop the ATB timer immediately — player has acted
+      if (window.BattleTimer) BattleTimer.stop();
+
       let sfxId = null;
 
       switch (action) {
