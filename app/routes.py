@@ -2,17 +2,20 @@
 routes.py
 
 File for the main flask routes that controls game flow.
-Displays home page & class selection
-Starts the game & initializes session data
-Navigates through the story chapters
-Manages battle initiation & combat mechanics
-Healing logic, rest point, death logic
-Save/Load state using session data
 
-The routes combine with the story, combat, models files to move the gameplay along.
+HTMX integration (Commit 5):
+- /battle POST now checks for the HX-Request header.
+- If present (HTMX call from battle_sounds.js):
+    - Normal turn  → render battle_fragment.html (partial, no full page)
+    - Victory/Death → return empty 200 with HX-Redirect header so HTMX
+                      follows the redirect cleanly without a full reload
+- If absent (direct browser POST / fallback):
+    - Behaves exactly as before — full page render or redirect
+This means the game works correctly with JS disabled or on browsers
+without HTMX support.
 """
 
-from flask import Blueprint, render_template, request, redirect, url_for, session, flash
+from flask import Blueprint, render_template, request, redirect, url_for, session, flash, Response
 from app.story.story_engine import Story
 from .combat import BattleManager
 from .models import Character
@@ -36,6 +39,24 @@ BOSS_BATTLE_BGS = [
 main = Blueprint("main", __name__)
 story = Story()
 battle_manager = BattleManager()
+
+
+def _is_htmx():
+    """Return True if the request was made by HTMX (partial swap expected)."""
+    return request.headers.get("HX-Request") == "true"
+
+
+def _htmx_redirect(location):
+    """
+    Return an empty 200 response with HX-Redirect header.
+    HTMX intercepts this and navigates the browser to `location` —
+    the equivalent of a server-side redirect but handled client-side
+    so the full page is replaced cleanly.
+    """
+    return Response(
+        status=200,
+        headers={"HX-Redirect": location},
+    )
 
 
 @main.route("/")
@@ -162,6 +183,7 @@ def battle():
     estus_count = session.get("estus", 0)
     message = ""
 
+    # ── GET: first load of battle page ────────────────────────────────────────
     if request.method == "GET":
         predicted_move, predicted_msg, _ = battle_manager.predict_enemy_move(character)
         session["predicted_move"] = predicted_move
@@ -178,9 +200,9 @@ def battle():
             preload_list=preload_list,
         )
 
-    # POST
+    # ── POST: battle action ───────────────────────────────────────────────────
     predicted_move = session.get("predicted_move")
-    action = request.form["action"]
+    action = request.form.get("action")
 
     if action == "attack":
         result, enemy.hp = battle_manager.attack(character, enemy)
@@ -200,21 +222,28 @@ def battle():
         message = warn_msg + " " + result
 
     elif action == "estus":
-        # Updated to match new use_estus(hp, max_hp, estus_count) signature —
-        # method no longer reads or writes session itself (Commit 1 change).
         player_hp, estus_count, message = battle_manager.use_estus(
             player_hp, character["max_hp"], estus_count
         )
 
-    # Battle outcome
+    # ── Battle outcome ────────────────────────────────────────────────────────
+
     if enemy.hp <= 0:
         session["chapter"] = session.get("chapter_after_battle", 0)
-        return redirect(url_for("main.game"))
+        victory_url = url_for("main.game")
+        # HTMX: send HX-Redirect so the client navigates to the game screen
+        if _is_htmx():
+            return _htmx_redirect(victory_url)
+        return redirect(victory_url)
 
     if player_hp <= 0:
-        return redirect(url_for("main.death"))
+        death_url = url_for("main.death")
+        if _is_htmx():
+            return _htmx_redirect(death_url)
+        return redirect(death_url)
 
-    # Write state back to session
+    # ── Normal turn: update session, return next state ────────────────────────
+
     session["enemy"]["hp"] = enemy.hp
     session["hp"] = player_hp
     session["estus"] = estus_count
@@ -224,8 +253,8 @@ def battle():
     session["predicted_msg"] = next_msg
 
     battle_bg = session.get("battle_bg", "images/areas/undead_settlement.jpg")
-    return render_template(
-        "battle.html",
+
+    template_vars = dict(
         enemy=enemy,
         player_hp=player_hp,
         character=character,
@@ -234,6 +263,13 @@ def battle():
         battle_bg=battle_bg,
         preload_list=preload_list,
     )
+
+    # HTMX request → return only the fragment (no <html>, no <head>)
+    if _is_htmx():
+        return render_template("battle_fragment.html", **template_vars)
+
+    # Non-HTMX fallback → full page (graceful degradation)
+    return render_template("battle.html", **template_vars)
 
 
 @main.route("/death")

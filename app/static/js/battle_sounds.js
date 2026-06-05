@@ -106,7 +106,7 @@ const EstusBubbles = (() => {
 
       // Lifetime drives perceived speed: longer = slower
       // Larger bubbles rise slightly slower (heavier feel)
-      const lifetime = 7000 + (r / 28) * 4000 + Math.random() * 2000; // 7–13s
+      const lifetime = 3500 + (r / 28) * 2000 + Math.random() * 1000; // 3.5–6.5s
 
       // Per-bubble base transparency — varies 0.55–0.90 for visual variety
       const baseAlpha = 0.55 + Math.random() * 0.35;
@@ -239,7 +239,7 @@ function triggerEstusAnimation() {
   if (flash) {
     flash.classList.add('active');
     // Remove class after animation completes so it resets cleanly for next use
-    setTimeout(() => flash.classList.remove('active'), 3600);
+    setTimeout(() => flash.classList.remove('active'), 1800);
   }
 
   // Show canvas and spawn bubbles
@@ -259,19 +259,23 @@ function triggerFlurryFlash() {
 
 // ── Main init ──────────────────────────────────────────────────────────────
 
-document.addEventListener('DOMContentLoaded', () => {
+// ── Battle button binding ─────────────────────────────────────────────────
+// Extracted into a named function so it can be called:
+//   1. On initial DOMContentLoaded
+//   2. After every HTMX swap (htmx:afterSwap) — new DOM nodes need new listeners
+
+function bindBattleButtons() {
   const playerClass = document.body.dataset.class || 'knight';
-  const isBoss      = document.body.dataset.boss === 'true';
 
-  initBattleMusic(isBoss);
-
-  const buttons = document.querySelectorAll('.battle-btn');
-  const form    = document.getElementById('battleForm');
-
-  buttons.forEach(btn => {
+  // Re-query every time — HTMX swap creates fresh DOM nodes
+  document.querySelectorAll('.battle-btn').forEach(btn => {
     btn.addEventListener('click', e => {
       e.preventDefault();
-      const action = btn.value;
+
+      // Buttons use data-action (type="button" has no .value)
+      const action = btn.dataset.action;
+      if (!action) return;
+
       let sfxId = null;
 
       switch (action) {
@@ -285,25 +289,64 @@ document.addEventListener('DOMContentLoaded', () => {
           break;
       }
 
-      AudioManager.savePosition();
-
-      // Estus: longer delay so bubbles visibly rise before page reloads.
+      // Estus: longer delay so bubbles visibly rise before the swap.
       // All other actions use SFX duration.
-      const submitDelay = action === 'estus' ? 3500 : (sfxId ? getSfxDelay(sfxId) : 400);
+      const submitDelay = action === 'estus' ? 1750 : (sfxId ? getSfxDelay(sfxId) : 400);
 
       setTimeout(() => {
-        const inp   = document.createElement('input');
-        inp.type    = 'hidden';
-        inp.name    = 'action';
-        inp.value   = action;
-        form.appendChild(inp);
-        form.submit();
+        if (window.htmx) {
+          htmx.ajax('POST', window.location.pathname, {
+            target: '#battle-state',
+            swap:   'innerHTML',
+            values: { action: action },
+          });
+        } else {
+          // Graceful fallback: native submit (no HTMX)
+          const form = document.getElementById('battleForm');
+          const inp  = document.createElement('input');
+          inp.type   = 'hidden';
+          inp.name   = 'action';
+          inp.value  = action;
+          form.appendChild(inp);
+          form.submit();
+        }
       }, submitDelay);
     });
   });
 
+  // Re-bind play/pause using .onclick (not addEventListener) so repeated calls
+  // from bindBattleButtons never stack duplicate listeners on the same node.
+  // AudioManager.bindControls uses addEventListener so we bypass it here.
+  const playBtn  = document.getElementById('playMusic');
+  const pauseBtn = document.getElementById('pauseMusic');
+  // Clone node to strip any stacked listeners from previous bindControls calls,
+  // then let AudioManager attach exactly one fresh listener.
+  ['playMusic', 'pauseMusic'].forEach(id => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    const clone = el.cloneNode(true);
+    el.parentNode.replaceChild(clone, el);
+  });
+  AudioManager.bindControls('#playMusic', '#pauseMusic');
+
+  // Check flurry warning on each render
   const moveHint = document.getElementById('move-hint');
   if (moveHint && moveHint.innerText.toLowerCase().includes('flurry')) {
     triggerFlurryFlash();
   }
+}
+
+// ── Main init ──────────────────────────────────────────────────────────────
+
+document.addEventListener('DOMContentLoaded', () => {
+  const isBoss = document.body.dataset.boss === 'true';
+  initBattleMusic(isBoss);
+
+  // Bind buttons on initial load
+  bindBattleButtons();
+
+  // Re-bind after every HTMX swap — new fragment = new DOM nodes
+  document.body.addEventListener('htmx:afterSwap', () => {
+    bindBattleButtons();
+  });
 });

@@ -1,0 +1,120 @@
+<!--
+battle_fragment.html
+Partial template — returned ONLY for HTMX POST requests (HX-Request header present).
+Renders only the dynamic inner content of #battle-state.
+The full page shell (audio, scripts, overlays, body attributes) stays in the DOM untouched.
+
+This is NOT a standalone page — it has no <html>, <head>, or <body>.
+It is swapped into <div id="battle-state"> by HTMX.
+-->
+
+{# ── HP percentages & colour classes (identical logic to battle.html) ── #}
+{% set player_pct = ((player_hp / character.max_hp) * 100) | round(1) %}
+{% set enemy_pct  = ((enemy.hp  / enemy.max_hp)     * 100) | round(1) %}
+
+{% if player_pct > 50 %}
+    {% set player_hp_cls = '' %}
+{% elif player_pct > 25 %}
+    {% set player_hp_cls = 'hp-mid' %}
+{% else %}
+    {% set player_hp_cls = 'hp-low' %}
+{% endif %}
+
+{% set enemy_hp_cls = 'hp-low' if enemy_pct <= 30 else '' %}
+
+{% set class_icons = {
+    'Knight': 'fa-chess-knight',
+    'Mage':   'fa-wand-magic-sparkles',
+    'Rogue':  'fa-skull-crossbones',
+    'Archer': 'fa-feather'
+} %}
+{% set class_icon = class_icons.get(character.class_name, 'fa-shield-halved') %}
+
+<!-- Player HUD -->
+<div class="player-hud">
+    <img
+        src="{{ url_for('static', filename='images/' + character['image']) }}"
+        alt="{{ character['class_name'] }}"
+        class="battle-player-portrait"
+    >
+    <div class="player-hud-bars">
+        <div class="stat-bar-group">
+            <div class="stat-bar-label">
+                <span><i class="fas {{ class_icon }}"></i> {{ character['class_name'] }}</span>
+                <span>{{ player_hp }}/{{ character.max_hp }}</span>
+            </div>
+            <div class="stat-bar-track" role="img" aria-label="Player HP {{ player_hp }} of {{ character.max_hp }}">
+                <div
+                    class="stat-bar-fill stat-bar-fill--player {{ player_hp_cls }}"
+                    style="width: {{ player_pct }}%;"
+                ></div>
+            </div>
+        </div>
+        <div class="estus-icons" aria-label="Estus Flasks remaining: {{ session['estus'] }}">
+            {% for i in range(5) %}
+                <img
+                    src="{{ url_for('static', filename='images/icons/estus.png') }}"
+                    alt="Estus Flask"
+                    class="estus-icon {% if i >= session['estus'] %}used{% endif %}"
+                >
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<!-- Enemy display -->
+<div class="enemy-display">
+    <img
+        class="enemy-img"
+        src="{{ url_for('static', filename='images/enemies/' + enemy.image) }}"
+        alt="{{ enemy.name }}"
+    >
+    <p class="enemy-lore">{{ enemy.lore }}</p>
+</div>
+
+<!-- Enemy HP bar -->
+<div class="stat-bar-group">
+    <div class="stat-bar-label">
+        <span><i class="fas fa-skull-crossbones"></i> {{ enemy.name }}</span>
+        <span>{{ enemy.hp }}/{{ enemy.max_hp }}</span>
+    </div>
+    <div class="stat-bar-track" role="img" aria-label="{{ enemy.name }} HP {{ enemy.hp }} of {{ enemy.max_hp }}">
+        <div
+            class="stat-bar-fill stat-bar-fill--enemy {{ enemy_hp_cls }}"
+            style="width: {{ enemy_pct }}%;"
+        ></div>
+    </div>
+</div>
+
+<!-- Move hint -->
+{% if move_hint %}
+    <div class="lore-box move-hint-box">
+        <p id="move-hint"><strong>Enemy Stance:</strong> {{ move_hint }}</p>
+    </div>
+{% endif %}
+
+<!-- Battle log -->
+{% if message %}
+    <div class="lore-box battle-log-box">
+        <p>{{ message }}</p>
+    </div>
+{% endif %}
+
+<!-- Action buttons -->
+<form id="battleForm" class="battle-actions">
+    <button type="button" data-action="attack" class="battle-btn">
+        <i class="fas fa-hand-fist"></i> Attack
+    </button>
+    <button type="button" data-action="dodge" class="battle-btn">
+        <i class="fas fa-person-running"></i> Dodge
+    </button>
+    <button type="button" data-action="block" class="battle-btn">
+        <i class="fas fa-shield-halved"></i> Block
+    </button>
+    <button type="button" data-action="estus" class="battle-btn"
+        {% if session['estus'] == 0 %}disabled style="opacity:0.45;cursor:not-allowed;"{% endif %}>
+        <i class="fas fa-flask"></i> Estus Flask
+    </button>
+</form>
+
+<!-- Audio controls rendered in battle.html outside swap zone -->

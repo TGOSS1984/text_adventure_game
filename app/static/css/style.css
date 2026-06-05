@@ -451,13 +451,19 @@ progress {
     width: 100%;
 }
 
-/* Move hint box */
+/* Move hint box and battle log — both centred on same axis as HP bars */
+.move-hint-box,
+.battle-log-box {
+    margin: var(--space-sm) auto;
+    width: var(--hp-bar-width);
+    text-align: center;
+}
+
 .move-hint-box {
     background-color: var(--clr-bg-boss-hint);
     border-left: 4px solid var(--clr-primary);
     padding: var(--space-sm) var(--space-md);
     border-radius: 0 var(--radius-md) var(--radius-md) 0;
-    margin: var(--space-sm) 0;
 }
 
 /* Battle action buttons */
@@ -536,7 +542,7 @@ progress {
 }
 
 #healing-flash.active {
-    animation: estusPulse 3.5s ease-out forwards;
+    animation: estusPulse 1.75s ease-out forwards;
 }
 
 /* Pulse pattern:
