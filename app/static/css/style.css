@@ -398,32 +398,57 @@ progress {
 
 /* ── 8. Battle screen ─────────────────────────────────────── */
 
-/* Two-column layout on wider screens:
-   left = player portrait + player stats
-   right = enemy image + enemy stats
-   Action buttons span full width below */
+/*
+  Stacked vertical layout — consistent with the original game feel.
+  The side-by-side grid was removed because the enemy image (large,
+  variable height) and player portrait (small, fixed height) can't be
+  balanced reliably at different viewport widths.
 
-.battle-layout {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    grid-template-rows: auto auto auto;
-    column-gap: var(--space-lg);
-    row-gap: var(--space-md);
-    width: min(900px, 96vw);
-    align-items: start;
+  New structure (top → bottom):
+    .player-hud        — horizontal strip: portrait left, HP + Estus right
+    .enemy-display     — centred enemy image + lore
+    .stat-bar-group    — enemy HP bar (full width)
+    .move-hint-box     — move hint
+    .lore-box          — battle result message
+    .battle-actions    — action buttons row
+*/
+
+/* ── Player HUD strip ── */
+/*
+  Portrait centred above the bars so the HP bar sits on the same
+  centre axis as the enemy HP bar further down the page.
+*/
+.player-hud {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-xs);
+    width: var(--hp-bar-width);
+    margin: var(--space-sm) auto;
 }
 
-.battle-player-col { grid-column: 1; grid-row: 1; }
-.battle-enemy-col  { grid-column: 2; grid-row: 1; }
-.battle-log        { grid-column: 1 / -1; grid-row: 2; }
-.battle-actions    { grid-column: 1 / -1; grid-row: 3; }
-
-/* Player portrait in battle */
 .battle-player-portrait {
-    width: 120px;
+    width: 80px;
     height: auto;
-    filter: drop-shadow(0 0 8px rgba(255,255,255,0.25));
-    margin-bottom: var(--space-sm);
+    filter: drop-shadow(0 0 6px rgba(255,255,255,0.30));
+    border-radius: var(--radius-sm);
+}
+
+/* Bars sit below the portrait, full width to match enemy bar */
+.player-hud-bars {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-xs);
+}
+
+.player-hud-bars .stat-bar-group {
+    width: 100%;
+}
+
+.player-hud-bars .stat-bar-track,
+.player-hud-bars .stat-bar-label {
+    width: 100%;
 }
 
 /* Move hint box */
@@ -435,12 +460,13 @@ progress {
     margin: var(--space-sm) 0;
 }
 
-/* Battle action buttons grid */
+/* Battle action buttons */
 .battle-actions {
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
     gap: var(--space-sm);
+    margin: var(--space-sm) 0;
 }
 
 .battle-btn {
@@ -891,16 +917,6 @@ progress {
 /* ── 17. Media queries ────────────────────────────────────── */
 
 @media (max-width: 768px) {
-
-    /* Battle layout collapses to single column on mobile */
-    .battle-layout {
-        grid-template-columns: 1fr;
-    }
-
-    .battle-player-col { grid-column: 1; grid-row: 1; }
-    .battle-enemy-col  { grid-column: 1; grid-row: 2; }
-    .battle-log        { grid-column: 1; grid-row: 3; }
-    .battle-actions    { grid-column: 1; grid-row: 4; }
 
     /* Compact stat bars on mobile */
     :root {

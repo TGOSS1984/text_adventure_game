@@ -1,12 +1,6 @@
 <!--
 game.html
 Story / adventure screen for Elden Souls.
-
-Changes in this commit:
-- Native <progress> replaced with custom .stat-bar-group HP bar
-- HP bar colour class (hp-mid / hp-low) derived in template
-- audio_manager.js loaded before sound.js
-- background-attachment mobile fix applied via media query in CSS
 -->
 
 <!DOCTYPE html>
@@ -21,7 +15,16 @@ Changes in this commit:
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 </head>
 
-{# HP percentage for bar width + colour class #}
+{# ── Per-class icon map — mirrors index.html exactly ── #}
+{% set class_icons = {
+    'Knight': 'fa-chess-knight',
+    'Mage':   'fa-wand-magic-sparkles',
+    'Rogue':  'fa-skull-crossbones',
+    'Archer': 'fa-feather'
+} %}
+{% set class_icon = class_icons.get(character.class_name, 'fa-shield-halved') %}
+
+{# ── HP bar values ── #}
 {% set hp_pct = ((hp / character.max_hp) * 100) | round(1) %}
 {% if hp_pct > 50 %}
     {% set hp_cls = '' %}
@@ -35,10 +38,10 @@ Changes in this commit:
 
     <div class="bonfire-bg">
 
-        <!-- Header line -->
+        <!-- Header — correct icon per class -->
         <h2>
-            <i class="fas fa-chess-knight"></i>
-            {{ character.name }}
+            <i class="fas {{ class_icon }}"></i>
+            {{ character.class_name }}
             &nbsp;|&nbsp;
             <i class="fas fa-heart" style="color: var(--clr-primary);"></i>
             {{ hp }}/{{ character.max_hp }}
@@ -51,17 +54,13 @@ Changes in this commit:
             class="class-image"
         >
 
-        <!-- Custom HP bar (replaces <progress>) -->
+        <!-- Custom HP bar -->
         <div class="stat-bar-group">
             <div class="stat-bar-label">
                 <span>HP</span>
                 <span>{{ hp }}/{{ character.max_hp }} ({{ hp_pct | round(0) | int }}%)</span>
             </div>
-            <div
-                class="stat-bar-track"
-                role="img"
-                aria-label="Player HP {{ hp }} of {{ character.max_hp }}"
-            >
+            <div class="stat-bar-track" role="img" aria-label="Player HP {{ hp }} of {{ character.max_hp }}">
                 <div
                     class="stat-bar-fill stat-bar-fill--player {{ hp_cls }}"
                     style="width: {{ hp_pct }}%;"
@@ -130,7 +129,7 @@ Changes in this commit:
 
     </div><!-- /.bonfire-bg -->
 
-    <!-- Bonfire pulse overlay (activated on rest flash) -->
+    <!-- Bonfire pulse overlay -->
     <div id="bonfire-pulse" class="bonfire-pulse"></div>
 
     <script src="{{ url_for('static', filename='js/audio_manager.js') }}"></script>

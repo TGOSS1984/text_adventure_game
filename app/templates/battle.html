@@ -2,14 +2,19 @@
 battle.html
 Battle screen for Elden Souls.
 
-Changes in this commit:
-- Native <progress> replaced with custom .stat-bar-group HP bars (player + enemy)
-- Player class portrait shown alongside enemy
-- Estus displayed as icon row (filled/greyed) rather than plain text
-- Two-column .battle-layout grid (collapses to single column on mobile)
-- Flurry flash gains a .flurry-vignette child element for the edge-darkening effect
-- Move hint and message use token-based classes
-- Debug comment removed
+Layout revision: reverted from side-by-side grid back to stacked vertical
+layout. The grid caused visual imbalance because the enemy image is large
+and the player portrait is small — very different heights that couldn't
+be reconciled cleanly at variable viewport widths.
+
+New stacked structure (top → bottom):
+  1. Battle title
+  2. Player HUD strip  — portrait + HP bar + Estus icons in one horizontal row
+  3. Enemy display     — image centred, full width, lore below
+  4. Enemy HP bar      — full width beneath enemy
+  5. Move hint / battle log
+  6. Action buttons
+  7. Audio controls
 -->
 
 <!DOCTYPE html>
@@ -28,11 +33,10 @@ Changes in this commit:
     {% endfor %}
 </head>
 
-{# Derive HP percentages for bar widths and colour classes #}
+{# ── HP percentages & colour classes ── #}
 {% set player_pct = ((player_hp / character.max_hp) * 100) | round(1) %}
 {% set enemy_pct  = ((enemy.hp  / enemy.max_hp)     * 100) | round(1) %}
 
-{# Pick HP colour class for player bar #}
 {% if player_pct > 50 %}
     {% set player_hp_cls = '' %}
 {% elif player_pct > 25 %}
@@ -41,8 +45,16 @@ Changes in this commit:
     {% set player_hp_cls = 'hp-low' %}
 {% endif %}
 
-{# Pick HP colour class for enemy bar #}
 {% set enemy_hp_cls = 'hp-low' if enemy_pct <= 30 else '' %}
+
+{# ── Per-class icon map ── #}
+{% set class_icons = {
+    'Knight': 'fa-chess-knight',
+    'Mage':   'fa-wand-magic-sparkles',
+    'Rogue':  'fa-skull-crossbones',
+    'Archer': 'fa-feather'
+} %}
+{% set class_icon = class_icons.get(character.class_name, 'fa-shield-halved') %}
 
 <body
     class="{% if enemy.is_boss %}boss-mode{% else %}battle-mode{% endif %}"
@@ -52,23 +64,21 @@ Changes in this commit:
 >
 
 <div class="bonfire-bg">
+
     <h2>&#9876; {% if enemy.is_boss %}Boss Battle{% else %}Battle Begins{% endif %}</h2>
 
-    <!-- ── Battle layout grid ── -->
-    <div class="battle-layout">
-
-        <!-- ── Player column ── -->
-        <div class="battle-player-col" style="text-align:center;">
-            <img
-                src="{{ url_for('static', filename='images/' + character['image']) }}"
-                alt="{{ character['class_name'] }}"
-                class="battle-player-portrait"
-            >
-
-            <!-- Player HP bar -->
+    <!-- ── 1. Player HUD strip ── -->
+    <!-- Horizontal row: small portrait on left, HP bar + Estus filling the rest -->
+    <div class="player-hud">
+        <img
+            src="{{ url_for('static', filename='images/' + character['image']) }}"
+            alt="{{ character['class_name'] }}"
+            class="battle-player-portrait"
+        >
+        <div class="player-hud-bars">
             <div class="stat-bar-group">
                 <div class="stat-bar-label">
-                    <span><i class="fas fa-user-shield"></i> {{ character['class_name'] }}</span>
+                    <span><i class="fas {{ class_icon }}"></i> {{ character['class_name'] }}</span>
                     <span>{{ player_hp }}/{{ character.max_hp }}</span>
                 </div>
                 <div class="stat-bar-track" role="img" aria-label="Player HP {{ player_hp }} of {{ character.max_hp }}">
@@ -78,8 +88,7 @@ Changes in this commit:
                     ></div>
                 </div>
             </div>
-
-            <!-- Estus flask icons -->
+            <!-- Estus icons -->
             <div class="estus-icons" aria-label="Estus Flasks remaining: {{ session['estus'] }}">
                 {% for i in range(5) %}
                     <img
@@ -90,96 +99,83 @@ Changes in this commit:
                 {% endfor %}
             </div>
         </div>
+    </div><!-- /.player-hud -->
 
-        <!-- ── Enemy column ── -->
-        <div class="battle-enemy-col" style="text-align:center;">
-            <div class="enemy-display">
-                <img
-                    class="enemy-img"
-                    src="{{ url_for('static', filename='images/enemies/' + enemy.image) }}"
-                    alt="{{ enemy.name }}"
-                >
-                <p class="enemy-lore">{{ enemy.lore }}</p>
-            </div>
+    <!-- ── 2. Enemy display — centred, full width ── -->
+    <div class="enemy-display">
+        <img
+            class="enemy-img"
+            src="{{ url_for('static', filename='images/enemies/' + enemy.image) }}"
+            alt="{{ enemy.name }}"
+        >
+        <p class="enemy-lore">{{ enemy.lore }}</p>
+    </div>
 
-            <!-- Enemy HP bar -->
-            <div class="stat-bar-group">
-                <div class="stat-bar-label">
-                    <span><i class="fas fa-skull-crossbones"></i> {{ enemy.name }}</span>
-                    <span>{{ enemy.hp }}/{{ enemy.max_hp }}</span>
-                </div>
-                <div class="stat-bar-track" role="img" aria-label="{{ enemy.name }} HP {{ enemy.hp }} of {{ enemy.max_hp }}">
-                    <div
-                        class="stat-bar-fill stat-bar-fill--enemy {{ enemy_hp_cls }}"
-                        style="width: {{ enemy_pct }}%;"
-                    ></div>
-                </div>
-            </div>
+    <!-- ── 3. Enemy HP bar ── -->
+    <div class="stat-bar-group">
+        <div class="stat-bar-label">
+            <span><i class="fas fa-skull-crossbones"></i> {{ enemy.name }}</span>
+            <span>{{ enemy.hp }}/{{ enemy.max_hp }}</span>
         </div>
-
-        <!-- ── Battle log ── -->
-        <div class="battle-log">
-            {% if move_hint %}
-                <div class="lore-box move-hint-box">
-                    <p id="move-hint"><strong>Enemy Stance:</strong> {{ move_hint }}</p>
-                </div>
-            {% endif %}
-
-            {% if message %}
-                <div class="lore-box">
-                    <p>{{ message }}</p>
-                </div>
-            {% endif %}
+        <div class="stat-bar-track" role="img" aria-label="{{ enemy.name }} HP {{ enemy.hp }} of {{ enemy.max_hp }}">
+            <div
+                class="stat-bar-fill stat-bar-fill--enemy {{ enemy_hp_cls }}"
+                style="width: {{ enemy_pct }}%;"
+            ></div>
         </div>
+    </div>
 
-        <!-- ── Action buttons ── -->
-        <div class="battle-actions">
-            <form id="battleForm" method="POST" style="display:contents;">
-                <button type="submit" name="action" value="attack" class="battle-btn">
-                    <i class="fas fa-hand-fist"></i> Attack
-                </button>
-                <button type="submit" name="action" value="dodge" class="battle-btn">
-                    <i class="fas fa-person-running"></i> Dodge
-                </button>
-                <button type="submit" name="action" value="block" class="battle-btn">
-                    <i class="fas fa-shield-halved"></i> Block
-                </button>
-                <button type="submit" name="action" value="estus" class="battle-btn"
-                    {% if session['estus'] == 0 %}disabled style="opacity:0.45;cursor:not-allowed;"{% endif %}>
-                    <i class="fas fa-flask"></i> Estus Flask
-                </button>
-            </form>
+    <!-- ── 4. Move hint ── -->
+    {% if move_hint %}
+        <div class="lore-box move-hint-box">
+            <p id="move-hint"><strong>Enemy Stance:</strong> {{ move_hint }}</p>
         </div>
+    {% endif %}
 
-    </div><!-- /.battle-layout -->
+    <!-- ── 5. Battle log message ── -->
+    {% if message %}
+        <div class="lore-box">
+            <p>{{ message }}</p>
+        </div>
+    {% endif %}
 
+    <!-- ── 6. Action buttons ── -->
+    <form id="battleForm" method="POST" class="battle-actions">
+        <button type="submit" name="action" value="attack" class="battle-btn">
+            <i class="fas fa-hand-fist"></i> Attack
+        </button>
+        <button type="submit" name="action" value="dodge" class="battle-btn">
+            <i class="fas fa-person-running"></i> Dodge
+        </button>
+        <button type="submit" name="action" value="block" class="battle-btn">
+            <i class="fas fa-shield-halved"></i> Block
+        </button>
+        <button type="submit" name="action" value="estus" class="battle-btn"
+            {% if session['estus'] == 0 %}disabled style="opacity:0.45;cursor:not-allowed;"{% endif %}>
+            <i class="fas fa-flask"></i> Estus Flask
+        </button>
+    </form>
+
+    <!-- ── 7. Audio controls ── -->
     <div class="audio-controls" aria-label="Music controls">
-        <button id="playMusic" aria-label="Play music">&#128266; Play</button>
+        <button id="playMusic"  aria-label="Play music">&#128266; Play</button>
         <button id="pauseMusic" aria-label="Pause music">&#128263; Pause</button>
     </div>
 
 </div><!-- /.bonfire-bg -->
 
 <!-- ── Overlay effects ── -->
-
-<!-- Flurry flash — ::before = red overlay, ::after = sigil, child = vignette -->
 <div id="flurry-flash">
     <div class="flurry-vignette"></div>
 </div>
-
-<!-- Estus healing flash -->
 <div id="healing-flash"></div>
-
-<!-- Estus bubble particles -->
 <div id="bubble-container"></div>
 
-<!-- Hidden accessibility progress elements (read by screen readers) -->
-<progress value="{{ player_hp }}" max="{{ character.max_hp }}" aria-hidden="false"
-    aria-label="Player HP">{{ player_hp }}/{{ character.max_hp }}</progress>
-<progress value="{{ enemy.hp }}" max="{{ enemy.max_hp }}" aria-hidden="false"
-    aria-label="Enemy HP">{{ enemy.hp }}/{{ enemy.max_hp }}</progress>
+<!-- Accessibility: hidden native progress elements -->
+<progress value="{{ player_hp }}" max="{{ character.max_hp }}" aria-label="Player HP">{{ player_hp }}/{{ character.max_hp }}</progress>
+<progress value="{{ enemy.hp }}" max="{{ enemy.max_hp }}" aria-label="Enemy HP">{{ enemy.hp }}/{{ enemy.max_hp }}</progress>
 
-<!-- SFX audio elements -->
+<!-- SFX -->
 <audio id="attack-knight" src="{{ url_for('static', filename='sounds/sound_effects/attack/knight.mp3') }}" preload="auto"></audio>
 <audio id="attack-mage"   src="{{ url_for('static', filename='sounds/sound_effects/attack/mage.mp3') }}"   preload="auto"></audio>
 <audio id="attack-rogue"  src="{{ url_for('static', filename='sounds/sound_effects/attack/rogue.mp3') }}"  preload="auto"></audio>
@@ -187,8 +183,6 @@ Changes in this commit:
 <audio id="block"         src="{{ url_for('static', filename='sounds/sound_effects/block_generic.mp3') }}" preload="auto"></audio>
 <audio id="dodge"         src="{{ url_for('static', filename='sounds/sound_effects/dodge_generic.mp3') }}" preload="auto"></audio>
 <audio id="estus"         src="{{ url_for('static', filename='sounds/sound_effects/estus_sip.mp3') }}"     preload="auto"></audio>
-
-<!-- Background music (src set by AudioManager in battle_sounds.js) -->
 <audio id="music" loop></audio>
 
 <script src="{{ url_for('static', filename='js/audio_manager.js') }}"></script>
