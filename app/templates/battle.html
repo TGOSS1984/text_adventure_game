@@ -1,7 +1,15 @@
 <!--
-Battle HTML file
 battle.html
-Used for the battles in the game
+Battle screen for Elden Souls.
+
+Changes in this commit:
+- Native <progress> replaced with custom .stat-bar-group HP bars (player + enemy)
+- Player class portrait shown alongside enemy
+- Estus displayed as icon row (filled/greyed) rather than plain text
+- Two-column .battle-layout grid (collapses to single column on mobile)
+- Flurry flash gains a .flurry-vignette child element for the edge-darkening effect
+- Move hint and message use token-based classes
+- Debug comment removed
 -->
 
 <!DOCTYPE html>
@@ -9,111 +17,181 @@ Used for the battles in the game
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Elden Souls is a Flask-based, text-driven adventure game inspired by Dark Souls and Elden Ring. Choose your class, battle lore-rich enemies, explore branching story paths, and make impactful decisions that shape the fate of a fallen world. Built in Python with deep narrative, RPG mechanics, and session-based progression.">
-    <title>Battle - Elden Souls</title>
+    <meta name="description" content="Elden Souls — a Flask text adventure inspired by Dark Souls and Elden Ring.">
+    <title>Battle — Elden Souls</title>
 
-    <!--CSS Link-->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-
-    <!--Font Awesome Link-->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
     {% for bg in preload_list %}
         <link rel="preload" as="image" href="{{ bg }}">
     {% endfor %}
-
-    
-    
 </head>
-<body class="{% if enemy.is_boss %}boss-mode{% else %}battle-mode{% endif %}" data-class="{{ character['name']|lower }}" data-boss="{{ 'true' if enemy.is_boss else 'false' }}" style="--battle-bg: url('{{ url_for('static', filename=battle_bg) }}');">
-    <!-- DEBUG: character name is {{ character['name'] }} -->
-    <div class="bonfire-bg">
-        <h2>⚔️ Battle Begins</h2>
-        <p class="battle-info">
-            <i class="fas fa-user-shield"></i> <strong>{{ character["class_name"] }}:</strong> {{ player_hp }}/{{ character.max_hp }}
-            <i class="fas fa-heart-pulse" style="color: crimson;"></i>
-        </p>
 
-        <p class="battle-info">
-            <i class="fas fa-flask"></i> <strong>Estus Flasks:</strong> {{ session['estus'] }}
-        </p>
+{# Derive HP percentages for bar widths and colour classes #}
+{% set player_pct = ((player_hp / character.max_hp) * 100) | round(1) %}
+{% set enemy_pct  = ((enemy.hp  / enemy.max_hp)     * 100) | round(1) %}
 
-        <p class="battle-info">
-            <i class="fas fa-skull-crossbones"></i> <strong>{{ enemy.name }}:</strong> {{ enemy.hp }}/{{ enemy.max_hp }}
-            <i class="fas fa-heart-crack" style="color: crimson;"></i>
-        </p>
+{# Pick HP colour class for player bar #}
+{% if player_pct > 50 %}
+    {% set player_hp_cls = '' %}
+{% elif player_pct > 25 %}
+    {% set player_hp_cls = 'hp-mid' %}
+{% else %}
+    {% set player_hp_cls = 'hp-low' %}
+{% endif %}
 
-        <p class="battle-info">
-            <i class="fas fa-bolt"></i> <strong>{{ enemy.name }} Attack:</strong> {{ enemy.attack }}
-        </p>
+{# Pick HP colour class for enemy bar #}
+{% set enemy_hp_cls = 'hp-low' if enemy_pct <= 30 else '' %}
 
-        <!-- Enemy Image + Lore Section -->
-        <div class="enemy-display" style="text-align: center; margin: 2rem 0;">
-            <img class="enemy-img" src="{{ url_for('static', filename='images/enemies/' + enemy.image) }}"
-                 alt="{{ enemy.name }}">
-                 
-            <p class="enemy-lore">
-                {{ enemy.lore }}
-            </p>
-        </div>
-        
-        {% if move_hint %}
-            <div class="lore-box" style="background-color: rgba(80,0,0,0.6); border-left: 4px solid crimson;">
-                <p id="move-hint"><strong>Enemy Stance:</strong> {{ move_hint }}</p>
+<body
+    class="{% if enemy.is_boss %}boss-mode{% else %}battle-mode{% endif %}"
+    data-class="{{ character['name']|lower }}"
+    data-boss="{{ 'true' if enemy.is_boss else 'false' }}"
+    style="--battle-bg: url('{{ url_for('static', filename=battle_bg) }}');"
+>
+
+<div class="bonfire-bg">
+    <h2>&#9876; {% if enemy.is_boss %}Boss Battle{% else %}Battle Begins{% endif %}</h2>
+
+    <!-- ── Battle layout grid ── -->
+    <div class="battle-layout">
+
+        <!-- ── Player column ── -->
+        <div class="battle-player-col" style="text-align:center;">
+            <img
+                src="{{ url_for('static', filename='images/' + character['image']) }}"
+                alt="{{ character['class_name'] }}"
+                class="battle-player-portrait"
+            >
+
+            <!-- Player HP bar -->
+            <div class="stat-bar-group">
+                <div class="stat-bar-label">
+                    <span><i class="fas fa-user-shield"></i> {{ character['class_name'] }}</span>
+                    <span>{{ player_hp }}/{{ character.max_hp }}</span>
+                </div>
+                <div class="stat-bar-track" role="img" aria-label="Player HP {{ player_hp }} of {{ character.max_hp }}">
+                    <div
+                        class="stat-bar-fill stat-bar-fill--player {{ player_hp_cls }}"
+                        style="width: {{ player_pct }}%;"
+                    ></div>
+                </div>
             </div>
-        {% endif %}
 
-        {% if message %}
-            <div class="lore-box">
-                <p>{{ message }}</p>
+            <!-- Estus flask icons -->
+            <div class="estus-icons" aria-label="Estus Flasks remaining: {{ session['estus'] }}">
+                {% for i in range(5) %}
+                    <img
+                        src="{{ url_for('static', filename='images/icons/estus.png') }}"
+                        alt="Estus Flask"
+                        class="estus-icon {% if i >= session['estus'] %}used{% endif %}"
+                    >
+                {% endfor %}
             </div>
-        {% endif %}
-
-        <form id="battleForm" method="POST">
-            <button type="submit" name="action" value="attack" class="battle-btn">
-                <i class="fas fa-hand-fist"></i> Attack
-            </button>
-            <button type="submit" name="action" value="dodge" class="battle-btn">
-                <i class="fas fa-person-running"></i> Dodge
-            </button>
-            <button type="submit" name="action" value="block" class="battle-btn">
-                <i class="fas fa-shield-halved"></i> Block
-            </button>
-            <button type="submit" name="action" value="estus" class="battle-btn">
-                <i class="fas fa-flask"></i> Use Estus Flask
-            </button>
-        </form>
-        <div class="audio-controls" aria-label="Background music controls">
-            <button id="playMusic" aria-label="Play music">🔊 Play</button>
-            <button id="pauseMusic" aria-label="Pause music">🔇 Pause</button>
         </div>
+
+        <!-- ── Enemy column ── -->
+        <div class="battle-enemy-col" style="text-align:center;">
+            <div class="enemy-display">
+                <img
+                    class="enemy-img"
+                    src="{{ url_for('static', filename='images/enemies/' + enemy.image) }}"
+                    alt="{{ enemy.name }}"
+                >
+                <p class="enemy-lore">{{ enemy.lore }}</p>
+            </div>
+
+            <!-- Enemy HP bar -->
+            <div class="stat-bar-group">
+                <div class="stat-bar-label">
+                    <span><i class="fas fa-skull-crossbones"></i> {{ enemy.name }}</span>
+                    <span>{{ enemy.hp }}/{{ enemy.max_hp }}</span>
+                </div>
+                <div class="stat-bar-track" role="img" aria-label="{{ enemy.name }} HP {{ enemy.hp }} of {{ enemy.max_hp }}">
+                    <div
+                        class="stat-bar-fill stat-bar-fill--enemy {{ enemy_hp_cls }}"
+                        style="width: {{ enemy_pct }}%;"
+                    ></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ── Battle log ── -->
+        <div class="battle-log">
+            {% if move_hint %}
+                <div class="lore-box move-hint-box">
+                    <p id="move-hint"><strong>Enemy Stance:</strong> {{ move_hint }}</p>
+                </div>
+            {% endif %}
+
+            {% if message %}
+                <div class="lore-box">
+                    <p>{{ message }}</p>
+                </div>
+            {% endif %}
+        </div>
+
+        <!-- ── Action buttons ── -->
+        <div class="battle-actions">
+            <form id="battleForm" method="POST" style="display:contents;">
+                <button type="submit" name="action" value="attack" class="battle-btn">
+                    <i class="fas fa-hand-fist"></i> Attack
+                </button>
+                <button type="submit" name="action" value="dodge" class="battle-btn">
+                    <i class="fas fa-person-running"></i> Dodge
+                </button>
+                <button type="submit" name="action" value="block" class="battle-btn">
+                    <i class="fas fa-shield-halved"></i> Block
+                </button>
+                <button type="submit" name="action" value="estus" class="battle-btn"
+                    {% if session['estus'] == 0 %}disabled style="opacity:0.45;cursor:not-allowed;"{% endif %}>
+                    <i class="fas fa-flask"></i> Estus Flask
+                </button>
+            </form>
+        </div>
+
+    </div><!-- /.battle-layout -->
+
+    <div class="audio-controls" aria-label="Music controls">
+        <button id="playMusic" aria-label="Play music">&#128266; Play</button>
+        <button id="pauseMusic" aria-label="Pause music">&#128263; Pause</button>
     </div>
 
-    <!--For Flurry Flash on screen-->
+</div><!-- /.bonfire-bg -->
 
-    <div id="flurry-flash"></div>
+<!-- ── Overlay effects ── -->
 
-    <!-- Green healing flash screen -->
-    <div id="healing-flash"></div>
+<!-- Flurry flash — ::before = red overlay, ::after = sigil, child = vignette -->
+<div id="flurry-flash">
+    <div class="flurry-vignette"></div>
+</div>
 
-    <!-- Bubble animation container -->
-    <div id="bubble-container"></div>
+<!-- Estus healing flash -->
+<div id="healing-flash"></div>
 
-<!-- Class-specific Attack Sounds -->
-<audio id="attack-knight" src="{{ url_for('static', filename='sounds/sound_effects/attack/knight.mp3') }}"></audio>
-<audio id="attack-mage" src="{{ url_for('static', filename='sounds/sound_effects/attack/mage.mp3') }}"></audio>
-<audio id="attack-rogue" src="{{ url_for('static', filename='sounds/sound_effects/attack/rogue.mp3') }}"></audio>
-<audio id="attack-archer" src="{{ url_for('static', filename='sounds/sound_effects/attack/archer.mp3') }}"></audio>
+<!-- Estus bubble particles -->
+<div id="bubble-container"></div>
 
-<!-- Generic Sound Effects -->
-<audio id="block" src="{{ url_for('static', filename='sounds/sound_effects/block_generic.mp3') }}"></audio>
-<audio id="dodge" src="{{ url_for('static', filename='sounds/sound_effects/dodge_generic.mp3') }}"></audio>
-<audio id="estus" src="{{ url_for('static', filename='sounds/sound_effects/estus_sip.mp3') }}"></audio>
+<!-- Hidden accessibility progress elements (read by screen readers) -->
+<progress value="{{ player_hp }}" max="{{ character.max_hp }}" aria-hidden="false"
+    aria-label="Player HP">{{ player_hp }}/{{ character.max_hp }}</progress>
+<progress value="{{ enemy.hp }}" max="{{ enemy.max_hp }}" aria-hidden="false"
+    aria-label="Enemy HP">{{ enemy.hp }}/{{ enemy.max_hp }}</progress>
 
-<!-- Background Music -->
+<!-- SFX audio elements -->
+<audio id="attack-knight" src="{{ url_for('static', filename='sounds/sound_effects/attack/knight.mp3') }}" preload="auto"></audio>
+<audio id="attack-mage"   src="{{ url_for('static', filename='sounds/sound_effects/attack/mage.mp3') }}"   preload="auto"></audio>
+<audio id="attack-rogue"  src="{{ url_for('static', filename='sounds/sound_effects/attack/rogue.mp3') }}"  preload="auto"></audio>
+<audio id="attack-archer" src="{{ url_for('static', filename='sounds/sound_effects/attack/archer.mp3') }}" preload="auto"></audio>
+<audio id="block"         src="{{ url_for('static', filename='sounds/sound_effects/block_generic.mp3') }}" preload="auto"></audio>
+<audio id="dodge"         src="{{ url_for('static', filename='sounds/sound_effects/dodge_generic.mp3') }}" preload="auto"></audio>
+<audio id="estus"         src="{{ url_for('static', filename='sounds/sound_effects/estus_sip.mp3') }}"     preload="auto"></audio>
+
+<!-- Background music (src set by AudioManager in battle_sounds.js) -->
 <audio id="music" loop></audio>
-<script src="{{ url_for('static', filename='js/audio_manager.js') }}"></script>
 
+<script src="{{ url_for('static', filename='js/audio_manager.js') }}"></script>
 <script src="{{ url_for('static', filename='js/battle_sounds.js') }}"></script>
 
 </body>

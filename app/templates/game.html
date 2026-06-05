@@ -1,7 +1,12 @@
 <!--
-Game HTML file
 game.html
-Used for the story of the game and where the choices are seen
+Story / adventure screen for Elden Souls.
+
+Changes in this commit:
+- Native <progress> replaced with custom .stat-bar-group HP bar
+- HP bar colour class (hp-mid / hp-low) derived in template
+- audio_manager.js loaded before sound.js
+- background-attachment mobile fix applied via media query in CSS
 -->
 
 <!DOCTYPE html>
@@ -9,25 +14,66 @@ Used for the story of the game and where the choices are seen
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Elden Souls is a Flask-based, text-driven adventure game inspired by Dark Souls and Elden Ring. Choose your class, battle lore-rich enemies, explore branching story paths, and make impactful decisions that shape the fate of a fallen world. Built in Python with deep narrative, RPG mechanics, and session-based progression.">
-    <title>Elden Souls - Adventure</title>
+    <meta name="description" content="Elden Souls — a Flask text adventure inspired by Dark Souls and Elden Ring.">
+    <title>Elden Souls — Adventure</title>
 
-    <!--CSS Link-->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-    
-    <!--Font Awesome Link-->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-    
 </head>
-<body class="{% if is_rest %}rest-bg{% endif %}"> <!-- override for bg change if rest area-->
+
+{# HP percentage for bar width + colour class #}
+{% set hp_pct = ((hp / character.max_hp) * 100) | round(1) %}
+{% if hp_pct > 50 %}
+    {% set hp_cls = '' %}
+{% elif hp_pct > 25 %}
+    {% set hp_cls = 'hp-mid' %}
+{% else %}
+    {% set hp_cls = 'hp-low' %}
+{% endif %}
+
+<body class="{% if is_rest %}rest-bg{% endif %}">
 
     <div class="bonfire-bg">
-        <h2>Class: {{ character.name }} | HP: {{ hp }}/{{ character.max_hp }} <i class="fas fa-heart" style="color: crimson;"></i></h2>
-        <img src="{{ url_for('static', filename='images/' + character['image']) }}" alt="{{ character['class_name'] }}" class="class-image">
-        <p>HP: {{ hp }}/{{ character.max_hp }} ({{ (hp / character.max_hp * 100) | round(0) }}%)</p>
-        <progress value="{{ hp }}" max="{{ character.max_hp }}"></progress>
 
-        <!--Rest Flash Note-->
+        <!-- Header line -->
+        <h2>
+            <i class="fas fa-chess-knight"></i>
+            {{ character.name }}
+            &nbsp;|&nbsp;
+            <i class="fas fa-heart" style="color: var(--clr-primary);"></i>
+            {{ hp }}/{{ character.max_hp }}
+        </h2>
+
+        <!-- Class portrait -->
+        <img
+            src="{{ url_for('static', filename='images/' + character['image']) }}"
+            alt="{{ character['class_name'] }}"
+            class="class-image"
+        >
+
+        <!-- Custom HP bar (replaces <progress>) -->
+        <div class="stat-bar-group">
+            <div class="stat-bar-label">
+                <span>HP</span>
+                <span>{{ hp }}/{{ character.max_hp }} ({{ hp_pct | round(0) | int }}%)</span>
+            </div>
+            <div
+                class="stat-bar-track"
+                role="img"
+                aria-label="Player HP {{ hp }} of {{ character.max_hp }}"
+            >
+                <div
+                    class="stat-bar-fill stat-bar-fill--player {{ hp_cls }}"
+                    style="width: {{ hp_pct }}%;"
+                ></div>
+            </div>
+        </div>
+
+        <!-- Hidden native progress for screen-reader fallback -->
+        <progress value="{{ hp }}" max="{{ character.max_hp }}"
+            aria-label="Player HP">{{ hp }}/{{ character.max_hp }}</progress>
+
+        <!-- Bonfire rest flash message -->
         {% with messages = get_flashed_messages(with_categories=true) %}
         {% if messages %}
         <div class="flash-container">
@@ -38,59 +84,67 @@ Used for the story of the game and where the choices are seen
         {% endif %}
         {% endwith %}
 
+        <!-- Story / lore panel -->
         <div class="lore-box">
-            <img 
+            <img
                 src="{% if is_rest %}
                         {{ url_for('static', filename='images/icons/rest_tome.png') }}
                      {% else %}
                         {{ url_for('static', filename='images/icons/tome.png') }}
                      {% endif %}"
                 alt="Tome"
-                class="icon-shadow">
+                class="icon-shadow"
+            >
             <p><strong>Story:</strong> {{ chapter.text }}</p>
             {% if chapter.lore %}
             <p class="lore"><em>{{ chapter.lore }}</em></p>
             {% endif %}
         </div>
+
+        <!-- Choice buttons -->
         {% if chapter.choices %}
             <form method="POST">
                 {% for choice in chapter.choices %}
-                    <button name="choice" value="{{ choice }}">{{ choice.replace("_", " ").title() }}</button>
+                    <button name="choice" value="{{ choice }}">
+                        {{ choice.replace("_", " ").title() }}
+                    </button>
                 {% endfor %}
             </form>
         {% else %}
-
-        <div class="center-links">
-            <a href="{{ url_for('main.index') }}">Return to Title</a>
-        </div>
+            <div class="center-links">
+                <a href="{{ url_for('main.index') }}">Return to Title</a>
+            </div>
         {% endif %}
+
+        <!-- Save / Load links -->
         <div class="menu">
             <a href="{{ url_for('main.save') }}">Save</a> |
             <a href="{{ url_for('main.load') }}">Load</a>
         </div>
-        <div class="audio-controls" aria-label="Background music controls">
-            <button id="playMusic" aria-label="Play music">🔊 Play</button>
-            <button id="pauseMusic" aria-label="Pause music">🔇 Pause</button>
-        </div>
-    </div>
 
-     <!-- Bonfire Pulse Overlay -->
+        <!-- Music controls -->
+        <div class="audio-controls" aria-label="Background music controls">
+            <button id="playMusic"  aria-label="Play music">&#128266; Play</button>
+            <button id="pauseMusic" aria-label="Pause music">&#128263; Pause</button>
+        </div>
+
+    </div><!-- /.bonfire-bg -->
+
+    <!-- Bonfire pulse overlay (activated on rest flash) -->
     <div id="bonfire-pulse" class="bonfire-pulse"></div>
 
-    <!--Sounds Script-->
     <script src="{{ url_for('static', filename='js/audio_manager.js') }}"></script>
     <script src="{{ url_for('static', filename='js/sound.js') }}"></script>
 
-    <!--Bonfire Pulse Overlay script-->
     <script>
-    window.addEventListener("DOMContentLoaded", () => {
+    window.addEventListener('DOMContentLoaded', () => {
         const messages = {{ get_flashed_messages(with_categories=true) | tojson }};
-        const pulse = document.getElementById("bonfire-pulse");
-
-        if (messages.some(([cat, msg]) => cat === "info" && msg.includes("bonfire"))) {
-            pulse.classList.add("active");
+        const pulse = document.getElementById('bonfire-pulse');
+        if (messages.some(([cat, msg]) => cat === 'info' && msg.includes('bonfire'))) {
+            pulse.classList.add('active');
         }
     });
     </script>
+
 </body>
 </html>

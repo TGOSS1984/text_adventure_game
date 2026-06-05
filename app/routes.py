@@ -16,7 +16,7 @@ from flask import Blueprint, render_template, request, redirect, url_for, sessio
 from app.story.story_engine import Story
 from .combat import BattleManager
 from .models import Character
-from .save_load import save_game, load_game
+from .save_load import save_game, load_game, has_save
 from .models import Enemy
 from .enemies import BOSSES
 import random
@@ -40,14 +40,12 @@ battle_manager = BattleManager()
 
 @main.route("/")
 def index():
-    from .models import Character
     class_stats = Character.get_class_stats()
-    return render_template("index.html", class_stats=class_stats)
+    return render_template("index.html", class_stats=class_stats, has_save=has_save())
 
 
 @main.route("/start", methods=["POST"])
 def start():
-    # Normalize the posted value
     posted = (request.form.get("class") or "").strip()
     char_class = posted or session.get("character", {}).get("char_class")
 
@@ -69,21 +67,19 @@ def start():
         "image": character.image,
         "crit_chance": getattr(character, "crit_chance", 0.0),
         "crit_multiplier": getattr(character, "crit_multiplier", 1.0),
-        "char_class": char_class,  # keep source-of-truth in session too
+        "char_class": char_class,
     }
     session["chapter"] = 0
     session["hp"] = character.max_hp
     session["enemy"] = {}
     session["estus"] = 5
-
-    # 🔑 Clear any leftover flashes so none leak into /game
     session.pop("_flashes", None)
 
     return redirect(url_for("main.game"))
 
+
 @main.after_request
 def no_cache(resp):
-    # Prevent the browser from showing an old page (with an old flash) from cache
     resp.headers["Cache-Control"] = "no-store"
     return resp
 
@@ -95,7 +91,6 @@ def game():
         next_chapter = story.choose_path(choice)
         next_data = story.get_chapter(next_chapter)
 
-        # ✅ Overwrite session["choices"]
         session["choices"] = next_data.get("choices", [])
 
         if next_data.get("battle"):
@@ -121,19 +116,18 @@ def game():
             session["chapter"] = next_chapter
             return redirect(url_for("main.game"))
 
-    # GET method
+    # GET
     chapter = session.get("chapter", 0)
     data = story.get_chapter(chapter)
 
-    # ✅ Bonfire/rest logic (with redirect so flash works)
     if data.get("rest") and not session.get("rested_here"):
         session["hp"] = session["character"]["max_hp"]
         session["estus"] = 5
         flash("🔥 You rest at the bonfire. HP and Estus Flasks restored.", "info")
-        session["rested_here"] = True  # prevent infinite flash loop
+        session["rested_here"] = True
         return redirect(url_for("main.game"))
 
-    session["rested_here"] = False  # reset on any non-rest chapter
+    session["rested_here"] = False
     hp = session.get("hp", session["character"]["max_hp"])
 
     return render_template(
@@ -141,14 +135,12 @@ def game():
         chapter=data,
         hp=hp,
         character=session["character"],
-        is_rest=bool(data.get("rest", False))  # Pass rest flag to template
+        is_rest=bool(data.get("rest", False)),
     )
 
 
 @main.route("/battle", methods=["GET", "POST"])
 def battle():
-
-    # 1️⃣ Build the preload list once, at the very start
     preload_list = [url_for("static", filename=bg) for bg in NORMAL_BATTLE_BGS + BOSS_BATTLE_BGS]
 
     enemy_data = session.get("enemy", {})
@@ -161,15 +153,15 @@ def battle():
         attack=enemy_data.get("attack"),
         image=enemy_image,
         lore=enemy_lore,
-        is_boss=session.get("enemy_is_boss", False)
+        is_boss=session.get("enemy_is_boss", False),
     )
     enemy.max_hp = enemy_data.get("max_hp", enemy.hp)
+
     character = session.get("character", {})
     player_hp = session.get("hp", 100)
     estus_count = session.get("estus", 0)
     message = ""
 
-    # GET: Predict next move and store in session
     if request.method == "GET":
         predicted_move, predicted_msg, _ = battle_manager.predict_enemy_move(character)
         session["predicted_move"] = predicted_move
@@ -183,12 +175,11 @@ def battle():
             message=message,
             move_hint=predicted_msg,
             battle_bg=battle_bg,
-            preload_list=preload_list
+            preload_list=preload_list,
         )
 
-    # POST: Use the stored prediction
+    # POST
     predicted_move = session.get("predicted_move")
-    move_hint = session.get("predicted_msg")
     action = request.form["action"]
 
     if action == "attack":
@@ -209,13 +200,13 @@ def battle():
         message = warn_msg + " " + result
 
     elif action == "estus":
-        if estus_count > 0:
-            player_hp, message = battle_manager.use_estus(player_hp, character["max_hp"])
-            estus_count -= 1
-        else:
-            message = "You are out of Estus Flasks!"
+        # Updated to match new use_estus(hp, max_hp, estus_count) signature —
+        # method no longer reads or writes session itself (Commit 1 change).
+        player_hp, estus_count, message = battle_manager.use_estus(
+            player_hp, character["max_hp"], estus_count
+        )
 
-    # Check battle outcome
+    # Battle outcome
     if enemy.hp <= 0:
         session["chapter"] = session.get("chapter_after_battle", 0)
         return redirect(url_for("main.game"))
@@ -223,12 +214,11 @@ def battle():
     if player_hp <= 0:
         return redirect(url_for("main.death"))
 
-    # Update session state
+    # Write state back to session
     session["enemy"]["hp"] = enemy.hp
     session["hp"] = player_hp
     session["estus"] = estus_count
 
-    # Predict next move for next turn
     next_move, next_msg, _ = battle_manager.predict_enemy_move(character)
     session["predicted_move"] = next_move
     session["predicted_msg"] = next_msg
@@ -242,7 +232,7 @@ def battle():
         message=message,
         move_hint=next_msg,
         battle_bg=battle_bg,
-        preload_list=preload_list
+        preload_list=preload_list,
     )
 
 
@@ -250,13 +240,13 @@ def battle():
 def death():
     return render_template("death.html")
 
+
 @main.route("/restart", methods=["POST"])
 def restart():
-    # Blow away all game state so we land on the class selector cleanly
     session.clear()
-    # (Optional) belt-and-braces if any framework flashes linger
     session.pop("_flashes", None)
     return redirect(url_for("main.index"))
+
 
 @main.route("/save")
 def save():
