@@ -28,7 +28,7 @@ from .combat import BattleManager, MP_REGEN_ATTACK, PHASE2_HP_TRIGGER
 from .models import Character
 from .save_load import save_game, load_game, has_save
 from .models import Enemy
-from .enemies import BOSSES
+from .enemies import ENEMIES, BOSSES
 import random
 
 NORMAL_BATTLE_BGS = [
@@ -521,6 +521,19 @@ def buy():
 @main.route("/death")
 def death():
     return render_template("death.html")
+
+@main.route("/bestiary")
+def bestiary():
+    """
+    Bestiary / game instructions page.
+    Read-only — no session writes. Safe to visit at any point mid-run.
+    Passes ENEMIES list and BOSSES dict directly to the template.
+    """
+    return render_template(
+        "bestiary.html",
+        enemies=ENEMIES,
+        bosses=BOSSES,
+    )
 
 
 @main.route("/restart", methods=["POST"])

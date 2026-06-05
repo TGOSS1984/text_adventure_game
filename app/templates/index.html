@@ -9,6 +9,9 @@ Commit 9 additions:
 - Begin Journey button moved inside gift panel so it only appears
   after both class AND gift are chosen
 - gift radio input submitted with the form to /start
+
+Commit 12 addition:
+- Bestiary link below audio controls
 -->
 
 <!DOCTYPE html>
@@ -178,7 +181,6 @@ Commit 9 additions:
 
                 </div><!-- /.gift-options-wrapper -->
 
-                <!-- Begin Journey only appears once class + gift are chosen -->
                 <button type="submit" class="begin-journey" id="begin-btn">
                     <i class="fas fa-fire"></i> Begin Journey
                 </button>
@@ -198,6 +200,13 @@ Commit 9 additions:
             <button id="pauseMusic">&#128263; Pause</button>
         </div>
 
+        {# ── Commit 12: bestiary link ── #}
+        <div class="menu" style="margin-top: 0.5rem;">
+            <a href="{{ url_for('main.bestiary') }}" style="color: rgba(201,168,76,0.75); font-size: 0.85rem; letter-spacing: 0.06em;">
+                <i class="fas fa-book-skull"></i> Bestiary &amp; Guide
+            </a>
+        </div>
+
     </div><!-- /.bonfire-bg -->
 
     <script src="{{ url_for('static', filename='js/audio_manager.js') }}"></script>
@@ -205,18 +214,15 @@ Commit 9 additions:
     <script src="{{ url_for('static', filename='js/ember_particles.js') }}"></script>
 
     <script>
-    // Reveal gift panel when a class is selected
-    // Uses the capture-phase change event on the radio inputs
     document.querySelectorAll('input[name="class"]').forEach(radio => {
         radio.addEventListener('change', () => {
             const panel = document.getElementById('gift-panel');
             if (panel.classList.contains('gift-panel--visible')) return;
             panel.classList.add('gift-panel--visible');
             panel.setAttribute('aria-hidden', 'false');
-            // Smooth scroll so the gift panel comes into view
             setTimeout(() => {
                 panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
-            }, 350); // wait for slide-down animation to begin
+            }, 350);
         });
     });
     </script>

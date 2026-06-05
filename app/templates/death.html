@@ -1,7 +1,10 @@
 <!--
-Death HTML file
 death.html
-Used for game over/you died screen with an option to restart
+Game over / You Died screen.
+
+Commit 12 addition:
+- Bestiary link added alongside the Restart button
+- Font Awesome loaded for the book-skull icon
 -->
 
 <!DOCTYPE html>
@@ -10,22 +13,28 @@ Used for game over/you died screen with an option to restart
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Elden Souls is a Flask-based, text-driven adventure game inspired by Dark Souls and Elden Ring. Choose your class, battle lore-rich enemies, explore branching story paths, and make impactful decisions that shape the fate of a fallen world. Built in Python with deep narrative, RPG mechanics, and session-based progression.">
-    <title>You Died - Elden Souls</title>
+    <title>You Died — Elden Souls</title>
 
-    <!--CSS Link-->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 </head>
 <body>
     <div class="bonfire-bg">
         <h1 class="you-died" style="color: crimson; font-size: 3rem;">YOU DIED</h1>
         <p class="battle-info" style="font-style: italic; margin-bottom: 20px;">The flames fade... but your will endures.</p>
 
-        <!-- Restart game via POST - back to class selection screen -->
         <form action="{{ url_for('main.restart') }}" method="post">
-            <button type="submit" style="padding: 10px 20px; font-weight: bold;">Restart</button>
+            <button type="submit" style="padding: 10px 20px; font-weight: bold;">
+                <i class="fas fa-rotate-left"></i> Restart
+            </button>
         </form>
 
+        {# ── Commit 12: bestiary link — useful to study enemies after dying ── #}
+        <div class="menu" style="margin-top: 1.2rem;">
+            <a href="{{ url_for('main.bestiary') }}" style="color: rgba(201,168,76,0.80); letter-spacing: 0.06em;">
+                <i class="fas fa-book-skull"></i> Study the Bestiary
+            </a>
+        </div>
     </div>
 </body>
 </html>
