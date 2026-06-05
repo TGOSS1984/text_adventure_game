@@ -33,6 +33,18 @@ HTMX integration:
 
 {# ── Initial render values (full page load only) ── #}
 {% set player_pct = ((player_hp / character.max_hp) * 100) | round(1) %}
+{% set mp_pct     = ((mp / mp_max) * 100) | round(1) if mp_max > 0 else 0 %}
+
+{# ── Special button state ── #}
+{% set special_ready = (mp >= 50 and cooldown == 0) %}
+{% set special_label = {
+    'Knight': '🛡 Shield Bash',
+    'Mage':   '✨ Arcane Burst',
+    'Rogue':  '💨 Smoke Screen',
+    'Archer': '🎯 Mark Target',
+} %}
+{% set s_label = special_label.get(character.class_name, '⚡ Special') %}
+{% set s_hint  = ('(' ~ cooldown ~ ' turn cooldown)') if cooldown > 0 else ('(costs 50 MP — ' ~ mp ~ '/' ~ mp_max ~ ')') %}
 {% set enemy_pct  = ((enemy.hp  / enemy.max_hp)     * 100) | round(1) %}
 
 {% if player_pct > 50 %}
@@ -90,6 +102,16 @@ HTMX integration:
                             class="stat-bar-fill stat-bar-fill--player {{ player_hp_cls }}"
                             style="width: {{ player_pct }}%;"
                         ></div>
+                    </div>
+                </div>
+                <!-- MP bar — grouped with player stats -->
+                <div class="stat-bar-group mp-bar-group">
+                    <div class="stat-bar-label">
+                        <span>✨ MP</span>
+                        <span>{{ mp }}/{{ mp_max }}</span>
+                    </div>
+                    <div class="stat-bar-track mp-track" role="img" aria-label="MP {{ mp }} of {{ mp_max }}">
+                        <div class="stat-bar-fill stat-bar-fill--mp" style="width: {{ mp_pct }}%;"></div>
                     </div>
                 </div>
                 <div class="estus-icons" aria-label="Estus Flasks remaining: {{ session['estus'] }}">
@@ -157,16 +179,18 @@ HTMX integration:
                 {% if session['estus'] == 0 %}disabled style="opacity:0.45;cursor:not-allowed;"{% endif %}>
                 <i class="fas fa-flask"></i> Estus Flask
             </button>
+            <button type="button" data-action="special" class="battle-btn battle-btn--special"
+                {% if not special_ready %}disabled style="opacity:0.45;cursor:not-allowed;"{% endif %}
+                title="{{ s_hint }}">
+                {{ s_label }}{% if cooldown > 0 %} ({{ cooldown }}){% endif %}
+            </button>
         </form>
 
         <!-- ── ATB Timer bar ── -->
         <div id="timer-bar" class="timer-bar" aria-label="Turn timer">
             <div id="timer-bar-fill" class="timer-bar-fill timer-phase--normal"></div>
         </div>
-
-        <!-- ── MP bar placeholder (wired up in Commit 7) ── -->
-        <div id="mp-bar-placeholder" class="mp-bar-placeholder" aria-hidden="true">
-            <!-- MP bar renders here once special moves are added -->
+            </div>
         </div>
 
     </div><!-- /#battle-state -->
