@@ -1,0 +1,337 @@
+<!--
+shop.html
+Bonfire merchant shop — Commit 10.
+
+Accessible from rest chapters only (link in game.html when is_rest=True).
+Displays SHOP_ITEMS with current souls, buy buttons, and purchased state.
+Uses the existing design tokens from style.css — no external CSS needed.
+-->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Elden Souls — Merchant's Wares">
+    <title>Elden Souls — Merchant</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+    <style>
+        /* ── Shop-specific styles — scoped so they don't bleed into other pages ── */
+
+        .shop-wrapper {
+            max-width: 680px;
+            margin: 0 auto;
+            padding: 2rem 1rem 4rem;
+        }
+
+        .shop-header {
+            text-align: center;
+            margin-bottom: 2.5rem;
+        }
+
+        .shop-header h1 {
+            font-size: 2rem;
+            color: var(--clr-primary);
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            margin: 0 0 0.4rem;
+            text-shadow: 0 0 18px var(--clr-primary);
+        }
+
+        .shop-header p {
+            color: var(--clr-text-muted, #999);
+            font-style: italic;
+            font-size: 0.95rem;
+            margin: 0 0 1.2rem;
+        }
+
+        /* Souls counter pill */
+        .souls-counter {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: rgba(255,255,255,0.06);
+            border: 1px solid var(--clr-primary);
+            border-radius: 999px;
+            padding: 0.4rem 1.1rem;
+            font-size: 1.1rem;
+            color: var(--clr-primary);
+            font-weight: 700;
+            letter-spacing: 0.06em;
+            box-shadow: 0 0 12px rgba(201,165,89,0.2);
+        }
+
+        .souls-counter i {
+            font-size: 1rem;
+        }
+
+        /* Divider */
+        .shop-divider {
+            border: none;
+            border-top: 1px solid rgba(255,255,255,0.08);
+            margin: 1.5rem 0;
+        }
+
+        /* Item grid */
+        .shop-items {
+            display: grid;
+            gap: 1rem;
+        }
+
+        .shop-item {
+            display: grid;
+            grid-template-columns: 3rem 1fr auto;
+            align-items: center;
+            gap: 1rem;
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 8px;
+            padding: 1rem 1.1rem;
+            transition: border-color 0.2s, background 0.2s;
+        }
+
+        .shop-item:not(.shop-item--bought):not(.shop-item--broke):hover {
+            background: rgba(201,165,89,0.07);
+            border-color: rgba(201,165,89,0.35);
+        }
+
+        .shop-item--bought {
+            opacity: 0.45;
+        }
+
+        .shop-item--broke {
+            opacity: 0.6;
+        }
+
+        /* Icon column */
+        .shop-item-icon {
+            width: 3rem;
+            height: 3rem;
+            border-radius: 50%;
+            background: rgba(201,165,89,0.12);
+            border: 1px solid rgba(201,165,89,0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            color: var(--clr-primary);
+            flex-shrink: 0;
+        }
+
+        /* Text column */
+        .shop-item-info {
+            min-width: 0;
+        }
+
+        .shop-item-name {
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--clr-text, #e8dcc8);
+            margin: 0 0 0.2rem;
+        }
+
+        .shop-item-desc {
+            font-size: 0.82rem;
+            color: var(--clr-text-muted, #999);
+            margin: 0;
+            line-height: 1.4;
+        }
+
+        /* Action column */
+        .shop-item-action {
+            flex-shrink: 0;
+            text-align: right;
+        }
+
+        .shop-buy-btn {
+            /* Inherits .battle-btn base from style.css but we override colour */
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            padding: 0.5rem 1rem;
+            font-size: 0.85rem;
+            background: transparent;
+            border: 1px solid var(--clr-primary);
+            color: var(--clr-primary);
+            border-radius: 5px;
+            cursor: pointer;
+            white-space: nowrap;
+            font-family: inherit;
+            letter-spacing: 0.04em;
+            transition: background 0.15s, color 0.15s, box-shadow 0.15s;
+        }
+
+        .shop-buy-btn:hover:not(:disabled) {
+            background: var(--clr-primary);
+            color: #1a1209;
+            box-shadow: 0 0 14px rgba(201,165,89,0.4);
+        }
+
+        .shop-buy-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            border-color: rgba(255,255,255,0.2);
+            color: rgba(255,255,255,0.3);
+        }
+
+        .cost-label {
+            font-size: 0.78rem;
+            color: var(--clr-text-muted, #999);
+            margin-top: 0.3rem;
+            text-align: right;
+        }
+
+        .sold-out-tag,
+        .full-tag {
+            font-size: 0.78rem;
+            font-style: italic;
+            color: rgba(255,255,255,0.35);
+        }
+
+        /* Flash messages (reuse game.html pattern) */
+        .flash-container {
+            margin-bottom: 1.2rem;
+        }
+
+        .flash-message {
+            padding: 0.6rem 1rem;
+            border-radius: 5px;
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        .flash-message.info  { background: rgba(201,165,89,0.12); border-left: 3px solid var(--clr-primary); color: var(--clr-primary); }
+        .flash-message.error { background: rgba(180,50,50,0.15);  border-left: 3px solid #c04040; color: #e07070; }
+
+        /* Back link */
+        .shop-back {
+            display: block;
+            text-align: center;
+            margin-top: 2.5rem;
+            color: var(--clr-text-muted, #999);
+            font-size: 0.9rem;
+            text-decoration: none;
+            letter-spacing: 0.06em;
+            transition: color 0.2s;
+        }
+
+        .shop-back:hover {
+            color: var(--clr-primary);
+        }
+
+        .shop-back i {
+            margin-right: 0.3rem;
+        }
+
+        /* Merchant flavour quote */
+        .merchant-quote {
+            text-align: center;
+            font-style: italic;
+            color: rgba(201,165,89,0.55);
+            font-size: 0.82rem;
+            margin-top: 2rem;
+            letter-spacing: 0.04em;
+        }
+    </style>
+</head>
+
+<body class="rest-bg shop-page">
+<div class="bonfire-bg">
+    <div class="shop-wrapper">
+
+        <!-- Header -->
+        <div class="shop-header">
+            <h1><i class="fas fa-store"></i> Merchant's Wares</h1>
+            <p>"Step closer, weary undead. Souls are the only currency that matters here."</p>
+
+            <!-- Souls pill -->
+            <div class="souls-counter">
+                <i class="fas fa-coins"></i>
+                {{ souls }} Souls
+            </div>
+        </div>
+
+        <hr class="shop-divider">
+
+        <!-- Flash messages -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+        <div class="flash-container">
+            {% for category, message in messages %}
+            <div class="flash-message {{ category }}">{{ message }}</div>
+            {% endfor %}
+        </div>
+        {% endif %}
+        {% endwith %}
+
+        <!-- Shop items -->
+        <div class="shop-items">
+            {% for item in items %}
+            <div class="shop-item
+                {% if item.already_bought %}shop-item--bought
+                {% elif not item.can_buy %}shop-item--broke
+                {% endif %}">
+
+                <!-- Icon -->
+                <div class="shop-item-icon">
+                    <i class="{{ item.icon }}"></i>
+                </div>
+
+                <!-- Info -->
+                <div class="shop-item-info">
+                    <p class="shop-item-name">{{ item.name }}</p>
+                    <p class="shop-item-desc">{{ item.description }}</p>
+                </div>
+
+                <!-- Action -->
+                <div class="shop-item-action">
+                    {% if item.already_bought %}
+                        <div class="sold-out-tag">
+                            {% if item.key == "estus_refill" %}
+                                <i class="fas fa-check"></i> Full
+                            {% else %}
+                                <i class="fas fa-check"></i> Purchased
+                            {% endif %}
+                        </div>
+                    {% else %}
+                        <form method="POST" action="{{ url_for('main.buy') }}">
+                            <input type="hidden" name="item_key" value="{{ item.key }}">
+                            <button
+                                type="submit"
+                                class="shop-buy-btn"
+                                {% if not item.can_buy %}disabled{% endif %}
+                                {% if not item.can_buy %}title="Need {{ item.cost }} souls"{% endif %}>
+                                <i class="fas fa-coins"></i> Buy
+                            </button>
+                        </form>
+                        <p class="cost-label">{{ item.cost }} souls</p>
+                    {% endif %}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <!-- Merchant quote -->
+        <p class="merchant-quote">
+            "I'll be here, long after the fires fade…"
+        </p>
+
+        <!-- Back to bonfire -->
+        <a href="{{ url_for('main.game') }}" class="shop-back">
+            <i class="fas fa-fire-flame-curved"></i> Return to Bonfire
+        </a>
+
+    </div>
+</div>
+
+<!-- Bonfire pulse overlay (same as game.html) -->
+<div id="bonfire-pulse" class="bonfire-pulse"></div>
+
+<script src="{{ url_for('static', filename='js/audio_manager.js') }}"></script>
+<script src="{{ url_for('static', filename='js/sound.js') }}"></script>
+
+</body>
+</html>

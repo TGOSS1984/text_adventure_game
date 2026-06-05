@@ -15,9 +15,13 @@ Special move design:
   Archer  — Mark Target:   Guaranteed critical at 2.0× multiplier (vs normal 1.5×)
 
 All specials:
-  - Cost 35 MP
-  - 3-turn cooldown after use
-  - Regen 20 MP per turn (handled in routes.py)
+  - Cost 50 MP
+  - 4-turn cooldown after use
+  - Regen 25 MP per attack action (handled in routes.py)
+
+Commit 10 fix:
+- generate_enemy() now passes soul_reward= to Enemy() constructor
+  so session["enemy"]["soul_reward"] is non-zero and souls are awarded on kill
 """
 
 import numpy as np
@@ -25,11 +29,11 @@ from .models import Enemy, Character
 from .enemies import ENEMIES, BOSSES
 
 # ── Constants ──────────────────────────────────────────────────────────────────
-MP_COST        = 50   # MP cost per special use — high enough to limit spam
+MP_COST         = 50   # MP cost per special use — high enough to limit spam
 MP_REGEN_ATTACK = 25   # MP earned only when player chooses Attack
-                        # Passive actions (dodge/block/estus) earn nothing —
-                        # you must fight aggressively to build your special
-COOLDOWN_TURNS  = 4   # turns before special can be used again
+                       # Passive actions (dodge/block/estus) earn nothing —
+                       # you must fight aggressively to build your special
+COOLDOWN_TURNS  = 4    # turns before special can be used again
 
 
 class BattleManager:
@@ -51,6 +55,7 @@ class BattleManager:
                 image=data['image'],
                 lore=data['lore'],
                 is_boss=True,
+                soul_reward=data.get('soul_reward', 0),  # ← Commit 10 fix
             )
         else:
             e = np.random.choice(ENEMIES)
@@ -60,6 +65,7 @@ class BattleManager:
                 attack=e['attack'],
                 image=e['image'],
                 lore=e['lore'],
+                soul_reward=e.get('soul_reward', 0),     # ← Commit 10 fix
             )
 
     # ── Player actions ─────────────────────────────────────────────────────────
@@ -92,10 +98,10 @@ class BattleManager:
         if estus_count <= 0:
             return current_hp, 0, "No Estus Flasks left!"
 
-        healed   = int(max_hp * 0.7)
-        new_hp   = min(current_hp + healed, max_hp)
+        healed    = int(max_hp * 0.7)
+        new_hp    = min(current_hp + healed, max_hp)
         new_estus = estus_count - 1
-        msg      = f"You drink from the Estus Flask and recover {healed} HP."
+        msg       = f"You drink from the Estus Flask and recover {healed} HP."
         return new_hp, new_estus, msg
 
     def use_special(self, player, enemy, current_mp, cooldown):
@@ -144,7 +150,6 @@ class BattleManager:
 
         # ── Mage: Arcane Burst ────────────────────────────────────────────────
         elif class_name == 'Mage':
-            # Magic damage: 2.0× attack, bypasses all physical defence
             dmg = int(round(player['attack'] * 2.0))
             dmg = max(10, dmg)
             enemy.hp -= dmg
@@ -155,7 +160,6 @@ class BattleManager:
 
         # ── Rogue: Smoke Screen ───────────────────────────────────────────────
         elif class_name == 'Rogue':
-            # 50% attack damage — blade thrown from the shadows before vanishing
             dmg = max(3, int(round(player['attack'] * 0.5)))
             enemy.hp -= dmg
             smoke_screen = True
@@ -166,7 +170,6 @@ class BattleManager:
 
         # ── Archer: Mark Target ───────────────────────────────────────────────
         elif class_name == 'Archer':
-            # Guaranteed crit at 2.0× multiplier instead of normal 1.5×
             dmg = int(round(player['attack'] * 2.0))
             dmg = max(5, dmg)
             enemy.hp -= dmg

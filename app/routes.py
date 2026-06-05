@@ -8,6 +8,15 @@ Commit 7 additions:
 - Stun flag: if session['stunned'], skip enemy counter for that turn
 - Smoke screen flag: if session['smoke_screen_active'], pass to resolve_player_action
 - Both flags are single-use and cleared after consumption
+
+Commit 10 additions:
+- Enemy soul_reward stored in session["enemy"]["soul_reward"]
+- On enemy kill: award soul_reward to session["souls"]
+  Boss bonus: award an additional 50% (rounded) on top of base reward
+- /shop GET: render shop.html with available items and player's souls
+- /buy  POST: validate item key, check funds, apply upgrade, deduct souls
+  Items: estus_refill, attack_shard, defense_shard, hp_vessel
+  Each item can only be bought once per run (session["shop_bought"] set)
 """
 
 from flask import Blueprint, render_template, request, redirect, url_for, session, flash, Response
@@ -30,6 +39,40 @@ BOSS_BATTLE_BGS = [
     "images/areas/stormveil.jpg",
     "images/areas/erdtree.jpg",
 ]
+
+# ── Commit 10: Shop catalogue ─────────────────────────────────────────────────
+# Each item: cost (souls), one-time purchase per run, effect applied in /buy
+SHOP_ITEMS = {
+    "estus_refill": {
+        "name":        "Estus Refill",
+        "description": "Restore all Estus Flasks to full.",
+        "cost":        150,
+        "icon":        "fas fa-flask",
+        "repeatable":  True,   # can buy every time you visit a bonfire
+    },
+    "attack_shard": {
+        "name":        "Cracked Red Shard",
+        "description": "Sharpen your weapon. Attack +3 (permanent).",
+        "cost":        200,
+        "icon":        "fas fa-fire-flame-curved",
+        "repeatable":  False,
+    },
+    "defense_shard": {
+        "name":        "Cracked Blue Shard",
+        "description": "Harden your resolve. Defense +3 (permanent).",
+        "cost":        175,
+        "icon":        "fas fa-shield-halved",
+        "repeatable":  False,
+    },
+    "hp_vessel": {
+        "name":        "Vessel of Embers",
+        "description": "Kindle your flame. Max HP +20 (permanent).",
+        "cost":        250,
+        "icon":        "fas fa-heart",
+        "repeatable":  False,
+    },
+}
+# ─────────────────────────────────────────────────────────────────────────────
 
 main        = Blueprint("main", __name__)
 story       = Story()
@@ -87,15 +130,17 @@ def start():
     session["smoke_screen_active"] = False  # Rogue smoke screen flag
     session["souls"]            = 0      # souls currency (Commit 10)
     session["estus_max"]        = 5      # default; raised to 6 by estus_plus gift
+    # ── Commit 10: track one-time shop purchases ─────────────────────────────
+    session["shop_bought"]      = []     # list of item keys bought this run
     # ─────────────────────────────────────────────────────────────────────────
 
     # ── Apply starting gift ───────────────────────────────────────────────────
     gift = (request.form.get("gift") or "fading_soul").strip()
-    session["gift"] = gift  # store for display / future reference
+    session["gift"] = gift
 
     if gift == "estus_plus":
         session["estus"]     = 6
-        session["estus_max"] = 6   # permanent max for this run
+        session["estus_max"] = 6
     elif gift == "hunters_charm":
         session["character"]["crit_chance"] = round(
             session["character"]["crit_chance"] + 0.05, 4
@@ -137,12 +182,13 @@ def game():
             enemy      = battle_manager.generate_enemy(boss=is_boss, boss_name=boss_name)
 
             session["enemy"] = {
-                "name":   enemy.name,
-                "hp":     enemy.hp,
-                "max_hp": enemy.hp,
-                "attack": enemy.attack,
-                "image":  enemy.image,
-                "lore":   enemy.lore,
+                "name":        enemy.name,
+                "hp":          enemy.hp,
+                "max_hp":      enemy.hp,
+                "attack":      enemy.attack,
+                "image":       enemy.image,
+                "lore":        enemy.lore,
+                "soul_reward": enemy.soul_reward,   # Commit 10
             }
             session["enemy_is_boss"]       = is_boss
             session["chapter_after_battle"] = next_chapter
@@ -156,9 +202,8 @@ def game():
 
     if data.get("rest") and not session.get("rested_here"):
         session["hp"]    = session["character"]["max_hp"]
-        # Estus restores to 6 if player chose the Estus +1 starting gift
         session["estus"] = session.get("estus_max", 5)
-        session["mp"]    = 0   # MP resets to 0 at bonfire — fresh start, not a free refill
+        session["mp"]    = 0
         flash("🔥 You rest at the bonfire. HP, Estus Flasks and MP restored.", "info")
         session["rested_here"] = True
         return redirect(url_for("main.game"))
@@ -173,6 +218,7 @@ def game():
         character=session["character"],
         is_rest=bool(data.get("rest", False)),
         gift=session.get("gift", "fading_soul"),
+        souls=session.get("souls", 0),   # Commit 10
     )
 
 
@@ -191,6 +237,7 @@ def battle():
         image=enemy_image,
         lore=enemy_lore,
         is_boss=session.get("enemy_is_boss", False),
+        soul_reward=enemy_data.get("soul_reward", 0),   # Commit 10
     )
     enemy.max_hp = enemy_data.get("max_hp", enemy.hp)
 
@@ -200,6 +247,7 @@ def battle():
     mp           = session.get("mp", 0)
     mp_max       = character.get("mp_max", 100)
     cooldown     = session.get("special_cooldown", 0)
+    souls        = session.get("souls", 0)   # Commit 10
     message      = ""
 
     # ── GET ────────────────────────────────────────────────────────────────────
@@ -222,6 +270,7 @@ def battle():
             cooldown=cooldown,
             gift=session.get("gift", "fading_soul"),
             estus_max=session.get("estus_max", 5),
+            souls=souls,   # Commit 10
         )
 
     # ── POST ───────────────────────────────────────────────────────────────────
@@ -232,15 +281,11 @@ def battle():
 
     # ── Cooldown tick (every turn) ───────────────────────────────────────────
     cooldown = max(0, cooldown - 1)
-    # MP regen happens ONLY on attack actions — passive play builds no MP.
-    # This ensures special moves are earned through aggression, not attrition.
-    # Regen is applied after action resolution below.
 
     # ── Player action ──────────────────────────────────────────────────────────
     if action == "attack":
         result, enemy.hp = battle_manager.attack(character, enemy)
         message = result
-        # Build MP for attacking — reward aggressive play
         mp = min(mp + MP_REGEN_ATTACK, mp_max)
 
     elif action == "special":
@@ -252,7 +297,6 @@ def battle():
         smoke_screen_active = smoke
 
     elif action in ["dodge", "block"]:
-        # No player damage output — just defend
         message = ""
 
     elif action == "estus":
@@ -261,7 +305,6 @@ def battle():
         )
 
     elif action == "timeout":
-        # Timer expired — penalty hit, no player mitigation
         _, warn_msg, dmg = battle_manager.enemy_attack(character, enemy, action=predicted_move)
         player_hp, result = battle_manager.resolve_player_action(
             predicted_move, "none", dmg, player_hp, character
@@ -269,9 +312,6 @@ def battle():
         message = "⏰ You hesitated! " + warn_msg + " " + result
 
     # ── Enemy counter-attack ───────────────────────────────────────────────────
-    # Skipped if: enemy was stunned by Knight Shield Bash,
-    #             player used timeout (already resolved above),
-    #             enemy is dead.
     enemy_acted = False
     if enemy.hp > 0 and not stunned and action not in ("timeout", "estus"):
         _, warn_msg, dmg = battle_manager.enemy_attack(
@@ -288,7 +328,6 @@ def battle():
         message = (message + " " + warn_msg + " " + counter_result).strip()
         enemy_acted = True
 
-    # Estus: enemy still counters (using Estus is a vulnerable moment)
     if action == "estus" and enemy.hp > 0:
         _, warn_msg, dmg = battle_manager.enemy_attack(
             character, enemy, action=predicted_move
@@ -299,12 +338,22 @@ def battle():
         )
         message = (message + " " + warn_msg + " " + counter_result).strip()
 
-    # Clear single-use flags after they've been consumed
     session["stunned"]             = False
     session["smoke_screen_active"] = False
 
     # ── Battle outcome ─────────────────────────────────────────────────────────
     if enemy.hp <= 0:
+        # ── Commit 10: award souls on kill ────────────────────────────────────
+        reward = enemy.soul_reward
+        if session.get("enemy_is_boss", False):
+            # Boss bonus: +50% souls rounded to nearest 5
+            bonus  = round(reward * 0.5 / 5) * 5
+            reward = reward + bonus
+            flash(f"⚔️ Boss slain! You gain {reward} souls ({bonus} bonus).", "info")
+        else:
+            flash(f"💀 Enemy defeated. You gain {reward} souls.", "info")
+        session["souls"] = session.get("souls", 0) + reward
+        # ─────────────────────────────────────────────────────────────────────
         session["chapter"] = session.get("chapter_after_battle", 0)
         victory_url = url_for("main.game")
         if _is_htmx():
@@ -318,12 +367,11 @@ def battle():
         return redirect(death_url)
 
     # ── Write session state ────────────────────────────────────────────────────
-    session["enemy"]["hp"]     = enemy.hp
-    session["hp"]              = player_hp
-    session["estus"]           = estus_count
-    session["mp"]              = mp
+    session["enemy"]["hp"]      = enemy.hp
+    session["hp"]               = player_hp
+    session["estus"]            = estus_count
+    session["mp"]               = mp
     session["special_cooldown"] = cooldown
-    # stunned and smoke_screen_active written above
 
     next_move, next_msg, _ = battle_manager.predict_enemy_move(character)
     session["predicted_move"] = next_move
@@ -344,11 +392,112 @@ def battle():
         cooldown=cooldown,
         gift=session.get("gift", "fading_soul"),
         estus_max=session.get("estus_max", 5),
+        souls=session.get("souls", 0),   # Commit 10
     )
 
     if _is_htmx():
         return render_template("battle_fragment.html", **template_vars)
     return render_template("battle.html", **template_vars)
+
+
+# ── Commit 10: Shop routes ────────────────────────────────────────────────────
+
+@main.route("/shop")
+def shop():
+    """Bonfire shop — only reachable from rest chapters via game.html link."""
+    souls      = session.get("souls", 0)
+    bought     = session.get("shop_bought", [])
+    character  = session.get("character", {})
+    estus      = session.get("estus", 0)
+    estus_max  = session.get("estus_max", 5)
+
+    # Build display list: mark items as bought/unavailable
+    items = []
+    for key, item in SHOP_ITEMS.items():
+        can_buy = souls >= item["cost"]
+        already_bought = (not item["repeatable"]) and (key in bought)
+        # estus_refill is pointless if already full
+        if key == "estus_refill" and estus >= estus_max:
+            already_bought = True  # show as "unavailable" label rather than "sold out"
+        items.append({
+            "key":            key,
+            "name":           item["name"],
+            "description":    item["description"],
+            "cost":           item["cost"],
+            "icon":           item["icon"],
+            "can_buy":        can_buy and not already_bought,
+            "already_bought": already_bought,
+        })
+
+    return render_template(
+        "shop.html",
+        items=items,
+        souls=souls,
+        character=character,
+        gift=session.get("gift", "fading_soul"),
+    )
+
+
+@main.route("/buy", methods=["POST"])
+def buy():
+    """Process a shop purchase. Validates funds, applies effect, deducts souls."""
+    item_key = request.form.get("item_key", "").strip()
+
+    if item_key not in SHOP_ITEMS:
+        flash("Unknown item.", "error")
+        return redirect(url_for("main.shop"))
+
+    item       = SHOP_ITEMS[item_key]
+    souls      = session.get("souls", 0)
+    bought     = session.get("shop_bought", [])
+    estus      = session.get("estus", 0)
+    estus_max  = session.get("estus_max", 5)
+
+    # Guard: one-time items
+    if not item["repeatable"] and item_key in bought:
+        flash(f"You have already purchased {item['name']}.", "error")
+        return redirect(url_for("main.shop"))
+
+    # Guard: estus_refill when already full
+    if item_key == "estus_refill" and estus >= estus_max:
+        flash("Your Estus Flasks are already full.", "error")
+        return redirect(url_for("main.shop"))
+
+    # Guard: afford?
+    if souls < item["cost"]:
+        flash(f"Not enough souls. You need {item['cost']}, you have {souls}.", "error")
+        return redirect(url_for("main.shop"))
+
+    # ── Apply effect ──────────────────────────────────────────────────────────
+    session["souls"] = souls - item["cost"]
+
+    if item_key == "estus_refill":
+        session["estus"] = estus_max
+        flash(f"🔥 Estus Flasks refilled. ({item['cost']} souls spent)", "info")
+
+    elif item_key == "attack_shard":
+        session["character"]["attack"] += 3
+        session["shop_bought"] = bought + [item_key]
+        flash(f"⚔️ Attack increased by 3. ({item['cost']} souls spent)", "info")
+
+    elif item_key == "defense_shard":
+        session["character"]["defense"] += 3
+        session["shop_bought"] = bought + [item_key]
+        flash(f"🛡️ Defense increased by 3. ({item['cost']} souls spent)", "info")
+
+    elif item_key == "hp_vessel":
+        session["character"]["max_hp"] += 20
+        session["hp"] = min(session.get("hp", 0) + 20, session["character"]["max_hp"])
+        session["shop_bought"] = bought + [item_key]
+        flash(f"❤️ Max HP increased by 20. ({item['cost']} souls spent)", "info")
+    # ─────────────────────────────────────────────────────────────────────────
+
+    # Mark session as modified (mutable nested dict)
+    session.modified = True
+
+    return redirect(url_for("main.shop"))
+
+# ─────────────────────────────────────────────────────────────────────────────
 
 
 @main.route("/death")

@@ -7,6 +7,10 @@ Shows the player & enemy stats.
 Commit 7 additions:
 - mp_max added per class (Knight 80, Mage 120, Rogue 100, Archer 100)
 - as_dict() includes mp_max so session stores it
+
+Commit 10 additions:
+- Enemy gains soul_reward field (int, default 0)
+- soul_reward passed through to routes.py for awarding on kill
 """
 
 
@@ -55,7 +59,7 @@ class Character:
     def get_mp_max(cls, class_name: str) -> int:
         return cls.MP_MAX.get(class_name, 100)
 
-    # ── Constructor 
+    # ── Constructor
 
     def __init__(self, name, attack, defense, max_hp, image,
                  crit_chance: float = 0.0, crit_multiplier: float = 1.0):
@@ -119,12 +123,14 @@ class Character:
 
 
 class Enemy:
-    def __init__(self, name, hp, attack, image=None, lore=None, is_boss=False):
-        """Enemy with name, HP, attack power, optional image and lore."""
-        self.name    = name
-        self.hp      = hp
-        self.max_hp  = hp
-        self.attack  = attack
-        self.image   = image
-        self.lore    = lore
-        self.is_boss = is_boss
+    def __init__(self, name, hp, attack, image=None, lore=None,
+                 is_boss=False, soul_reward: int = 0):
+        """Enemy with name, HP, attack power, optional image, lore, and soul reward."""
+        self.name        = name
+        self.hp          = hp
+        self.max_hp      = hp
+        self.attack      = attack
+        self.image       = image
+        self.lore        = lore
+        self.is_boss     = is_boss
+        self.soul_reward = soul_reward  # Commit 10: souls awarded on kill

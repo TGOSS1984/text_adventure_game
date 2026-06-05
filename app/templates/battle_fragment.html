@@ -6,6 +6,8 @@ The full page shell (audio, scripts, overlays, body attributes) stays in the DOM
 
 This is NOT a standalone page — it has no <html>, <head>, or <body>.
 It is swapped into <div id="battle-state"> by HTMX.
+
+Commit 10: souls counter added to player HUD below Estus icons.
 -->
 
 {# ── HP percentages & colour classes (identical logic to battle.html) ── #}
@@ -77,16 +79,16 @@ It is swapped into <div id="battle-state"> by HTMX.
             </div>
         </div>
         <!-- MP bar — grouped with player stats -->
-<div class="stat-bar-group mp-bar-group">
-    <div class="stat-bar-label">
-        <span>✨ MP</span>
-        <span>{{ mp }}/{{ mp_max }}</span>
-    </div>
-    <div class="stat-bar-track mp-track" role="img" aria-label="MP {{ mp }} of {{ mp_max }}">
-        <div class="stat-bar-fill stat-bar-fill--mp" style="width: {{ mp_pct }}%;"></div>
-    </div>
-</div>
-<div class="estus-icons" aria-label="Estus Flasks remaining: {{ session['estus'] }}">
+        <div class="stat-bar-group mp-bar-group">
+            <div class="stat-bar-label">
+                <span>✨ MP</span>
+                <span>{{ mp }}/{{ mp_max }}</span>
+            </div>
+            <div class="stat-bar-track mp-track" role="img" aria-label="MP {{ mp }} of {{ mp_max }}">
+                <div class="stat-bar-fill stat-bar-fill--mp" style="width: {{ mp_pct }}%;"></div>
+            </div>
+        </div>
+        <div class="estus-icons" aria-label="Estus Flasks remaining: {{ session['estus'] }}">
             {% for i in range(estus_max) %}
                 <img
                     src="{{ url_for('static', filename='images/icons/estus.png') }}"
@@ -94,6 +96,11 @@ It is swapped into <div id="battle-state"> by HTMX.
                     class="estus-icon {% if i >= session['estus'] %}used{% endif %}"
                 >
             {% endfor %}
+        </div>
+        {# ── Commit 10: souls counter in battle HUD ── #}
+        <div class="battle-souls-counter" title="Souls collected this run" aria-label="Souls: {{ souls }}">
+            <i class="fas fa-coins"></i>
+            <span>{{ souls }}</span>
         </div>
     </div>
 </div>

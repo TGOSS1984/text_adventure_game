@@ -1502,3 +1502,196 @@ body.home-page .bonfire-bg {
     font-size: 0.75rem;
     opacity: 0.90;
 }
+
+
+/* ── Battle HUD souls counter ───────────────────────────────────────────── */
+/* Sits below the Estus icons row in the player HUD */
+.battle-souls-counter {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    margin-top: 0.4rem;
+    padding: 0.2rem 0.6rem;
+    background: rgba(201, 165, 89, 0.08);
+    border: 1px solid rgba(201, 165, 89, 0.25);
+    border-radius: 999px;
+    font-size: 0.8rem;
+    color: var(--clr-primary);
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    line-height: 1;
+}
+
+.battle-souls-counter i {
+    font-size: 0.75rem;
+}
+
+
+/* ── Shop page: readable cards over bright background ───────────────────── */
+
+
+/* Page-level darkening overlay — only on shop */
+body.shop-page::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.72);
+    pointer-events: none;
+    z-index: 0;
+}
+
+body.shop-page .bonfire-bg,
+body.shop-page .shop-wrapper {
+    position: relative;
+    z-index: 1;
+}
+
+/* Shop header — force gold title to stay visible */
+.shop-header h1 {
+    color: var(--clr-gold) !important;
+    text-shadow:
+        0 0 24px rgba(201, 168, 76, 0.70),
+        2px 2px 6px #000,
+        0 0 2px #000 !important;
+}
+
+.shop-header p {
+    color: rgba(230, 210, 170, 0.85) !important;
+    text-shadow: 1px 1px 4px #000;
+}
+
+/* Souls counter pill — darker fill so it pops */
+.souls-counter {
+    background: rgba(0, 0, 0, 0.75) !important;
+    border-color: var(--clr-gold) !important;
+    color: var(--clr-gold) !important;
+    box-shadow: 0 0 14px rgba(201, 168, 76, 0.35) !important;
+    text-shadow: 1px 1px 3px #000;
+}
+
+/* Shop item cards — much darker, bordered, readable */
+.shop-item {
+    background: rgba(0, 0, 0, 0.82) !important;
+    border: 1px solid rgba(201, 168, 76, 0.30) !important;
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+}
+
+.shop-item:not(.shop-item--bought):not(.shop-item--broke):hover {
+    background: rgba(10, 6, 0, 0.90) !important;
+    border-color: rgba(201, 168, 76, 0.65) !important;
+}
+
+.shop-item--bought,
+.shop-item--broke {
+    background: rgba(0, 0, 0, 0.65) !important;
+}
+
+/* Item name — bright white with shadow so it reads over any bg */
+.shop-item-name {
+    color: #f0e8d0 !important;
+    text-shadow: 1px 1px 4px #000, 0 0 8px rgba(0,0,0,0.8);
+}
+
+/* Item description — slightly dimmer but still clearly legible */
+.shop-item-desc {
+    color: rgba(210, 195, 160, 0.90) !important;
+    text-shadow: 1px 1px 3px #000;
+}
+
+/* Icon circle — more opaque */
+.shop-item-icon {
+    background: rgba(0, 0, 0, 0.70) !important;
+    border-color: rgba(201, 168, 76, 0.50) !important;
+    color: var(--clr-gold) !important;
+}
+
+/* Buy button — clearer border */
+.shop-buy-btn {
+    border-color: var(--clr-gold) !important;
+    color: var(--clr-gold) !important;
+    background: rgba(0, 0, 0, 0.60) !important;
+    text-shadow: 1px 1px 3px #000;
+}
+
+.shop-buy-btn:hover:not(:disabled) {
+    background: var(--clr-gold) !important;
+    color: #0d0900 !important;
+    text-shadow: none !important;
+}
+
+/* Cost label */
+.cost-label {
+    color: rgba(210, 195, 160, 0.80) !important;
+    text-shadow: 1px 1px 3px #000;
+}
+
+/* Purchased / full tags */
+.sold-out-tag,
+.full-tag {
+    color: rgba(180, 170, 140, 0.75) !important;
+    text-shadow: 1px 1px 3px #000;
+}
+
+/* Divider — more visible */
+.shop-divider {
+    border-top-color: rgba(201, 168, 76, 0.25) !important;
+}
+
+/* Merchant quote */
+.merchant-quote {
+    color: rgba(201, 168, 76, 0.70) !important;
+    text-shadow: 1px 1px 4px #000;
+}
+
+/* Back to bonfire link */
+.shop-back {
+    color: rgba(210, 195, 160, 0.80) !important;
+    text-shadow: 1px 1px 3px #000;
+}
+
+.shop-back:hover {
+    color: var(--clr-gold) !important;
+}
+
+/* Flash messages on shop page */
+.flash-message.info {
+    background: rgba(0, 0, 0, 0.80) !important;
+    border-left-color: var(--clr-gold) !important;
+    color: var(--clr-gold) !important;
+    text-shadow: 1px 1px 3px #000;
+}
+
+.flash-message.error {
+    background: rgba(0, 0, 0, 0.80) !important;
+}
+
+
+/* ── Visit Merchant button on game.html bonfire screen ──────────────────── */
+
+.shop-link-btn {
+    background: rgba(0, 0, 0, 0.72) !important;
+    border-color: var(--clr-gold) !important;
+    color: var(--clr-gold) !important;
+    text-shadow: 1px 1px 4px #000;
+    box-shadow: 0 0 10px rgba(201, 168, 76, 0.20);
+    font-weight: 700;
+    letter-spacing: 0.08em;
+}
+
+.shop-link-btn:hover {
+    background: var(--clr-gold) !important;
+    color: #0d0900 !important;
+    text-shadow: none !important;
+    box-shadow: 0 0 20px rgba(201, 168, 76, 0.50) !important;
+    border-color: var(--clr-gold-bright) !important;
+}
+
+/* Souls badge in game.html header — darken pill so it reads over the header */
+.souls-badge {
+    background: rgba(0, 0, 0, 0.65) !important;
+    border-color: var(--clr-gold) !important;
+    color: var(--clr-gold) !important;
+    text-shadow: 1px 1px 3px #000;
+    box-shadow: 0 0 8px rgba(201, 168, 76, 0.25);
+}
