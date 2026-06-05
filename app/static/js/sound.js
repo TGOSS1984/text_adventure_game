@@ -1,43 +1,25 @@
-/*
-File for the sound in the game
-Manages the audio, used in game.html
-*/
+/**
+ * sound.js
+ * Background music for the story / game screen (game.html).
+ *
+ * Depends on: audio_manager.js (must be loaded first)
+ *
+ * Changes from original:
+ * - Removed unconditional audio.play() on DOMContentLoaded
+ * - Music now starts only on first user interaction (click / keydown)
+ * - Play/Pause state persisted via AudioManager using 'storyMusicState' key
+ */
 
 document.addEventListener('DOMContentLoaded', function () {
-    const audio = new Audio('/static/sounds/music/story_theme.mp3');
-    audio.loop = true;
-    audio.volume = 0.3;
 
-    const playBtn = document.getElementById('playMusic');
-    const pauseBtn = document.getElementById('pauseMusic');
+  AudioManager.initMusic('/static/sounds/music/story_theme.mp3', {
+    volume:   0.3,
+    stateKey: 'storyMusicState',
+    timeKey:  'storyMusicTime',
+  });
 
-    // Restore previous music state if available
-    const musicState = localStorage.getItem('mainMusicState');
-    if (musicState === 'playing') {
-        audio.play().catch(e => console.warn("Autoplay blocked:", e));
-    }
+  AudioManager.bindControls('#playMusic', '#pauseMusic');
 
-    // Play on page load by default (fallback)
-    audio.play()
-        .then(() => {
-            localStorage.setItem('mainMusicState', 'playing');
-        })
-        .catch(err => {
-            console.warn("Autoplay failed (user interaction required):", err);
-            // Show unmuted state but let user trigger play
-        });
-
-    // Button controls
-    playBtn.addEventListener('click', () => {
-        audio.play().then(() => {
-            localStorage.setItem('mainMusicState', 'playing');
-        }).catch(e => console.warn("Play blocked:", e));
-    });
-
-    pauseBtn.addEventListener('click', () => {
-        audio.pause();
-        localStorage.setItem('mainMusicState', 'paused');
-    });
 });
 
 

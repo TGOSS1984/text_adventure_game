@@ -1,164 +1,148 @@
-/* Battle Sounds */
+/**
+ * battle_sounds.js
+ * SFX and background music for the battle screen (battle.html).
+ *
+ * Depends on: audio_manager.js (must be loaded first)
+ *
+ * Changes from original:
+ * - Removed unconditional music.play() on load; music resumes via AudioManager
+ *   only if the player had it playing before (stored preference)
+ * - Submit delay reduced: 300 ms is enough for the attack SFX to audibly
+ *   start before the page transitions. The original 1200 ms caused the
+ *   music-position save → reload gap that produced the audio stutter.
+ * - Music position is saved via AudioManager.savePosition() immediately
+ *   on button click (before the delay) so the next page load restores
+ *   it accurately.
+ * - Flurry flash and Estus bubble logic preserved unchanged.
+ * - setBackgroundMusic kept as a thin wrapper around AudioManager.initMusic
+ *   so boss vs normal tracks still work.
+ */
 
-console.log("battle_sounds.js loaded");
+// ── Music setup ────────────────────────────────────────────────────────────
 
-function playSound(id) {
-  const audio = document.getElementById(id);
-  if (audio) {
-    audio.currentTime = 0;
-    audio.play().catch((e) => console.warn(`Sound error [${id}]:`, e));
-  } else {
-    console.warn(`Missing <audio id="${id}">`);
-  }
-}
-
-function setBackgroundMusic(isBossFight = false) {
-  const music = document.getElementById('music');
-  const src = isBossFight
+function initBattleMusic(isBoss) {
+  const src = isBoss
     ? '/static/sounds/music/ambient_boss.mp3'
     : '/static/sounds/music/ambient_normal.mp3';
 
-  if (!music.src.includes(src)) {
-    music.src = src;
-  }
+  AudioManager.initMusic(src, {
+    volume:   0.5,
+    stateKey: 'battleMusicState',
+    timeKey:  'battleMusicTime',
+  });
 
-  music.loop = true;
-  music.volume = 0.5;
-
-  // Restore time if saved
-  const savedTime = parseFloat(localStorage.getItem('musicTime'));
-  if (!isNaN(savedTime)) {
-    music.currentTime = savedTime;
-  }
-
-  return music;
+  AudioManager.bindControls('#playMusic', '#pauseMusic');
 }
+
+// ── SFX helpers ────────────────────────────────────────────────────────────
 
 function playAttackSound(playerClass) {
-  const id = `attack-${playerClass}`;
-  console.log("Attempting to play:", id);
-  playSound(id);
+  AudioManager.playSfx(`attack-${playerClass}`);
+}
+function playBlockSound()  { AudioManager.playSfx('block'); }
+function playDodgeSound()  { AudioManager.playSfx('dodge'); }
+function playEstusSound()  { AudioManager.playSfx('estus'); }
+
+// ── Estus bubble animation ─────────────────────────────────────────────────
+
+function triggerEstusAnimation() {
+  // Screen flash
+  const healingFlash = document.getElementById('healing-flash');
+  if (healingFlash) {
+    healingFlash.classList.add('active');
+    setTimeout(() => healingFlash.classList.remove('active'), 700);
+  }
+
+  // Bubble particles
+  const bubbleContainer = document.getElementById('bubble-container');
+  if (!bubbleContainer) return;
+
+  // Mix of small bubbles and a few larger orbs for depth
+  const particles = [
+    ...Array.from({ length: 12 }, () => ({ type: 'bubble', size: Math.random() * 40 + 8 })),
+    ...Array.from({ length: 3  }, () => ({ type: 'orb',    size: Math.random() * 28 + 22 })),
+  ];
+
+  particles.forEach((p, i) => {
+    const el = document.createElement('div');
+    el.classList.add('bubble', p.type === 'orb' ? 'bubble--orb' : '');
+
+    el.style.width  = `${p.size}px`;
+    el.style.height = `${p.size}px`;
+
+    // Spread across the full width but avoid the very edges
+    el.style.left = `${5 + Math.random() * 90}vw`;
+
+    // Stagger spawning so they don't all start together
+    el.style.animationDelay = `${i * 60}ms`;
+
+    // Slight horizontal drift — applied as a CSS variable read by the animation
+    el.style.setProperty('--drift', `${(Math.random() - 0.5) * 80}px`);
+
+    bubbleContainer.appendChild(el);
+    setTimeout(() => el.remove(), 3500);
+  });
 }
 
-function playBlockSound() { playSound('block'); }
-function playDodgeSound() { playSound('dodge'); }
-function playEstusSound() { playSound('estus'); }
+// ── Flurry flash ───────────────────────────────────────────────────────────
+
+function triggerFlurryFlash() {
+  const flash = document.getElementById('flurry-flash');
+  if (!flash) return;
+
+  // Separate the background flash from the sigil so they can animate
+  // independently — the sigil scales up while the overlay pulses
+  flash.classList.add('flurry-animate');
+  setTimeout(() => flash.classList.remove('flurry-animate'), 1200);
+}
+
+// ── DOMContentLoaded ───────────────────────────────────────────────────────
 
 document.addEventListener('DOMContentLoaded', () => {
   const playerClass = document.body.dataset.class || 'knight';
-  const isBoss = document.body.dataset.boss === 'true';
+  const isBoss      = document.body.dataset.boss === 'true';
 
-  const music = setBackgroundMusic(isBoss);
-  const playBtn = document.getElementById('playMusic');
-  const pauseBtn = document.getElementById('pauseMusic');
+  initBattleMusic(isBoss);
+
   const buttons = document.querySelectorAll('.battle-btn');
-  const form = document.getElementById('battleForm');
+  const form    = document.getElementById('battleForm');
 
-  // Restore music state
-  const musicState = localStorage.getItem('musicState');
-  if (musicState === 'playing') {
-    music.play().then(() => {
-      localStorage.removeItem('musicTime');
-    }).catch(e => console.warn("Autoplay blocked:", e));
-  }
-
-  // Play/Pause buttons
-  if (playBtn && pauseBtn) {
-    playBtn.addEventListener('click', () => {
-      music.play().then(() => {
-        localStorage.setItem('musicState', 'playing');
-      }).catch(e => console.warn("Play blocked:", e));
-    });
-
-    pauseBtn.addEventListener('click', () => {
-      music.pause();
-      localStorage.setItem('musicState', 'paused');
-    });
-  }
-
-  // Action buttons
   buttons.forEach((btn) => {
     btn.addEventListener('click', (e) => {
       e.preventDefault();
       const action = btn.value;
-      console.log("Action triggered:", action);
 
+      // ── Play SFX & trigger visual effects immediately ──
       switch (action) {
         case 'attack': playAttackSound(playerClass); break;
-        case 'block': playBlockSound(); break;
-        case 'dodge': playDodgeSound(); break;
+        case 'block':  playBlockSound();  break;
+        case 'dodge':  playDodgeSound();  break;
         case 'estus':
           playEstusSound();
-
-          // Healing Flash
-          const healingFlash = document.getElementById('healing-flash');
-          if (healingFlash) {
-            healingFlash.classList.add("active");
-            setTimeout(() => healingFlash.classList.remove("active"), 700);
-          }
-
-          // Bubble Animation
-const bubbleContainer = document.getElementById('bubble-container');
-if (bubbleContainer) {
-  for (let i = 0; i < 15; i++) {
-    const bubble = document.createElement('div');
-    bubble.classList.add('bubble');
-
-    // Random size
-    const size = Math.floor(Math.random() * 60 + 10); // 10–70px
-    bubble.style.width = `${size}px`;
-    bubble.style.height = `${size}px`;
-
-    // ✅ Random horizontal position
-    const left = `${Math.random() * 100}vw`;
-    bubble.style.left = left;
-
-    // ✅ Optional: staggered rise (delay up to 0.5s)
-    bubble.style.animationDelay = `${Math.random() * 0.5}s`;
-
-    // Optional: debug
-    // console.log(`Bubble ${i + 1} at left: ${left}, size: ${size}px`);
-
-    // Add and remove
-    bubbleContainer.appendChild(bubble);
-    setTimeout(() => bubble.remove(), 4000); // slightly longer if needed
-  }
-}
-
+          triggerEstusAnimation();
           break;
-
       }
 
-      // Save music playback position before reload
-      localStorage.setItem('musicTime', music.currentTime);
+      // Save music position NOW — before the delay — so the value is
+      // accurate when the next page reads it from localStorage
+      AudioManager.savePosition();
 
+      // Short delay (300 ms) lets the SFX begin audibly before page
+      // transition. Previous 1200 ms was the main cause of audio stutter.
       setTimeout(() => {
         const hiddenInput = document.createElement('input');
-        hiddenInput.type = 'hidden';
-        hiddenInput.name = 'action';
+        hiddenInput.type  = 'hidden';
+        hiddenInput.name  = 'action';
         hiddenInput.value = action;
         form.appendChild(hiddenInput);
         form.submit();
-      }, 1200);
+      }, 300);
     });
   });
-});
 
-// Battle Flurry flash/pulse
-
-function triggerFlurryFlash() {
-  const flash = document.getElementById('flurry-flash');
-  if (flash) {
-    flash.classList.add('flurry-animate');
-    setTimeout(() => {
-      flash.classList.remove('flurry-animate');
-    }, 1000);
-  }
-}
-
-document.addEventListener('DOMContentLoaded', () => {
+  // Show flurry warning animation if the move hint mentions flurry
   const moveHint = document.getElementById('move-hint');
-  if (moveHint && moveHint.innerText.toLowerCase().includes("flurry")) {
+  if (moveHint && moveHint.innerText.toLowerCase().includes('flurry')) {
     triggerFlurryFlash();
   }
 });

@@ -48,3 +48,6 @@ desktop.ini
 core.Microsoft*
 core.mongo*
 core.python*
+
+# Player save data
+saves/
