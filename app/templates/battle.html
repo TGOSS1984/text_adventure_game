@@ -2,14 +2,11 @@
 battle.html
 Full battle page — served on GET and on non-HTMX POSTs (fallback).
 
-HTMX integration:
-- HTMX loaded from CDN in <head>
-- Dynamic content wrapped in <div id="battle-state">
-- Buttons use data-action attributes; battle_sounds.js calls
-  htmx.ajax() after the SFX delay, targeting #battle-state
-- Audio elements, overlay divs, and script tags live OUTSIDE
-  #battle-state so they are never touched by HTMX swaps
-- Music plays continuously — no reload, no gap
+Commit 11 additions:
+- boss_phase and phase_changed vars wired through from routes.py
+- Phase 2 badge on enemy HP bar label (matching battle_fragment.html)
+- #phase-flash overlay div added outside #battle-state for JS to trigger
+- souls displayed in player HUD (matching battle_fragment.html)
 -->
 
 <!DOCTYPE html>
@@ -23,7 +20,6 @@ HTMX integration:
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
-    <!-- HTMX — enables partial page swaps without full reload -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/htmx/1.9.12/htmx.min.js" defer></script>
 
     {% for bg in preload_list %}
@@ -31,11 +27,9 @@ HTMX integration:
     {% endfor %}
 </head>
 
-{# ── Initial render values (full page load only) ── #}
+{# ── Initial render values ── #}
 {% set player_pct = ((player_hp / character.max_hp) * 100) | round(1) %}
 {% set mp_pct     = ((mp / mp_max) * 100) | round(1) if mp_max > 0 else 0 %}
-
-{# ── Special button state ── #}
 {% set special_ready = (mp >= 50 and cooldown == 0) %}
 {% set special_label = {
     'Knight': '🛡 Shield Bash',
@@ -45,7 +39,7 @@ HTMX integration:
 } %}
 {% set s_label = special_label.get(character.class_name, '⚡ Special') %}
 {% set s_hint  = ('(' ~ cooldown ~ ' turn cooldown)') if cooldown > 0 else ('(costs 50 MP — ' ~ mp ~ '/' ~ mp_max ~ ')') %}
-{% set enemy_pct  = ((enemy.hp  / enemy.max_hp)     * 100) | round(1) %}
+{% set enemy_pct = ((enemy.hp / enemy.max_hp) * 100) | round(1) %}
 
 {% if player_pct > 50 %}
     {% set player_hp_cls = '' %}
@@ -74,14 +68,8 @@ HTMX integration:
 
 <div class="bonfire-bg">
 
-    <!-- Static title — never swapped -->
     <h2>&#9876; {% if enemy.is_boss %}Boss Battle{% else %}Battle Begins{% endif %}</h2>
 
-    <!--
-        #battle-state — the ONLY element HTMX swaps on each turn.
-        Everything outside this div persists across turns:
-        audio elements, scripts, overlay effects, body attributes.
-    -->
     <div id="battle-state">
 
         <!-- Player HUD -->
@@ -91,7 +79,6 @@ HTMX integration:
                 alt="{{ character['class_name'] }}"
                 class="battle-player-portrait"
             >
-            {# ── Starting gift badge ── #}
             {% set gift_display = {
                 'estus_plus':    ('fas fa-flask',             'Estus +1'),
                 'hunters_charm': ('fas fa-bullseye',          "Hunter's Charm"),
@@ -120,7 +107,6 @@ HTMX integration:
                         ></div>
                     </div>
                 </div>
-                <!-- MP bar — grouped with player stats -->
                 <div class="stat-bar-group mp-bar-group">
                     <div class="stat-bar-label">
                         <span>✨ MP</span>
@@ -139,6 +125,11 @@ HTMX integration:
                         >
                     {% endfor %}
                 </div>
+                <!-- Souls counter -->
+                <div class="battle-souls-counter" title="Souls collected this run" aria-label="Souls: {{ souls }}">
+                    <i class="fas fa-coins"></i>
+                    <span>{{ souls }}</span>
+                </div>
             </div>
         </div>
 
@@ -152,15 +143,22 @@ HTMX integration:
             <p class="enemy-lore">{{ enemy.lore }}</p>
         </div>
 
-        <!-- Enemy HP bar -->
+        <!-- Enemy HP bar — phase 2 indicator -->
         <div class="stat-bar-group">
             <div class="stat-bar-label">
-                <span><i class="fas fa-skull-crossbones"></i> {{ enemy.name }}</span>
+                <span>
+                    <i class="fas fa-skull-crossbones"></i>
+                    {{ enemy.name }}
+                    {% if boss_phase == 2 %}
+                        <span class="phase2-badge">⚠ PHASE II</span>
+                    {% endif %}
+                </span>
                 <span>{{ enemy.hp }}/{{ enemy.max_hp }}</span>
             </div>
-            <div class="stat-bar-track" role="img" aria-label="{{ enemy.name }} HP {{ enemy.hp }} of {{ enemy.max_hp }}">
+            <div class="stat-bar-track {% if boss_phase == 2 %}phase2-track{% endif %}"
+                 role="img" aria-label="{{ enemy.name }} HP {{ enemy.hp }} of {{ enemy.max_hp }}">
                 <div
-                    class="stat-bar-fill stat-bar-fill--enemy {{ enemy_hp_cls }}"
+                    class="stat-bar-fill stat-bar-fill--enemy {% if boss_phase == 2 %}stat-bar-fill--phase2{% endif %} {{ enemy_hp_cls }}"
                     style="width: {{ enemy_pct }}%;"
                 ></div>
             </div>
@@ -168,7 +166,7 @@ HTMX integration:
 
         <!-- Move hint -->
         {% if move_hint %}
-            <div class="lore-box move-hint-box">
+            <div class="lore-box move-hint-box {% if boss_phase == 2 %}move-hint-box--phase2{% endif %}">
                 <p id="move-hint"><strong>Enemy Stance:</strong> {{ move_hint }}</p>
             </div>
         {% endif %}
@@ -180,7 +178,7 @@ HTMX integration:
             </div>
         {% endif %}
 
-        <!-- Action buttons — type="button" so they don't trigger native submit -->
+        <!-- Action buttons -->
         <form id="battleForm" class="battle-actions">
             <button type="button" data-action="attack" class="battle-btn">
                 <i class="fas fa-hand-fist"></i> Attack
@@ -202,14 +200,13 @@ HTMX integration:
             </button>
         </form>
 
-        <!-- ── ATB Timer bar ── -->
+        <!-- ATB Timer bar -->
         <div id="timer-bar" class="timer-bar" aria-label="Turn timer">
             <div id="timer-bar-fill" class="timer-bar-fill timer-phase--normal"></div>
         </div>
 
     </div><!-- /#battle-state -->
 
-    <!-- Audio controls — OUTSIDE #battle-state so they persist across HTMX swaps -->
     <div class="audio-controls" aria-label="Music controls">
         <button id="playMusic"  aria-label="Play music">&#128266; Play</button>
         <button id="pauseMusic" aria-label="Pause music">&#128263; Pause</button>
@@ -217,21 +214,24 @@ HTMX integration:
 
 </div><!-- /.bonfire-bg -->
 
-<!-- ── Overlay effects — OUTSIDE #battle-state, never swapped ── -->
-<!-- Timer danger vignette — activates when <15% time remains -->
+<!-- Overlay effects — OUTSIDE #battle-state, never swapped -->
 <div id="timer-vignette" class="timer-vignette"></div>
-
 <div id="flurry-flash">
     <div class="flurry-vignette"></div>
 </div>
 <div id="healing-flash"></div>
 <div id="bubble-container"></div>
 
-<!-- Accessibility progress (outside swap zone) -->
+<!--
+  #phase-flash — fired by battle_sounds.js when data-phase-change="true"
+  is detected on htmx:afterSwap. Sits outside #battle-state so it
+  persists and isn't cleared by subsequent HTMX swaps.
+-->
+<div id="phase-flash"></div>
+
 <progress value="{{ player_hp }}" max="{{ character.max_hp }}" aria-label="Player HP">{{ player_hp }}/{{ character.max_hp }}</progress>
 <progress value="{{ enemy.hp }}" max="{{ enemy.max_hp }}" aria-label="Enemy HP">{{ enemy.hp }}/{{ enemy.max_hp }}</progress>
 
-<!-- SFX — outside #battle-state so they persist across swaps -->
 <audio id="attack-knight" src="{{ url_for('static', filename='sounds/sound_effects/attack/knight.mp3') }}" preload="auto"></audio>
 <audio id="attack-mage"   src="{{ url_for('static', filename='sounds/sound_effects/attack/mage.mp3') }}"   preload="auto"></audio>
 <audio id="attack-rogue"  src="{{ url_for('static', filename='sounds/sound_effects/attack/rogue.mp3') }}"  preload="auto"></audio>
@@ -241,7 +241,6 @@ HTMX integration:
 <audio id="estus"         src="{{ url_for('static', filename='sounds/sound_effects/estus_sip.mp3') }}"     preload="auto"></audio>
 <audio id="music" loop></audio>
 
-<!-- Scripts — outside #battle-state so they are never re-executed by HTMX -->
 <script src="{{ url_for('static', filename='js/audio_manager.js') }}"></script>
 <script src="{{ url_for('static', filename='js/battle_sounds.js') }}"></script>
 <script src="{{ url_for('static', filename='js/battle_timer.js') }}"></script>

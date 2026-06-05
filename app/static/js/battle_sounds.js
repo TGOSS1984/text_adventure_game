@@ -2,6 +2,12 @@
  * battle_sounds.js
  * SFX, background music, and battle visual effects for battle.html.
  * Depends on: audio_manager.js (must be loaded first)
+ *
+ * Commit 11 addition:
+ * - triggerPhaseTransition(): fires #phase-flash + enemy image shake
+ * - htmx:afterSwap handler reads data-phase-change="true" on the swapped
+ *   fragment root div and calls triggerPhaseTransition() once, then clears
+ *   the attribute so it cannot double-fire.
  */
 
 // ── Music ──────────────────────────────────────────────────────────────────
@@ -56,8 +62,6 @@ const EstusBubbles = (() => {
   }
 
   // ── Opacity envelope ───────────────────────────────────────────────────────
-  // Fade in over first 15% of lifetime, hold, fade out over last 30%.
-  // Each bubble also has a baseAlpha baked in at spawn for variety.
   function envelope(t) {
     if (t < 0.15) return ss(0, 0.15, t);
     if (t > 0.82) return ss(1.0, 0.82, t);
@@ -88,35 +92,24 @@ const EstusBubbles = (() => {
     const W   = canvas.width;
     const H   = canvas.height;
 
-    // 25 bubbles total — wide size range, nothing huge
-    // Sizes: 4px–28px radius
     const count = 40;
     for (let i = 0; i < count; i++) {
-      // Bias toward smaller bubbles — feels more natural
-      const r = 4 + Math.pow(Math.random(), 1.6) * 24;  // 4–28px, skewed small
+      const r = 4 + Math.pow(Math.random(), 1.6) * 24;
 
-      // Each bubble starts anywhere along the full bottom edge
       const startX = W * (0.04 + Math.random() * 0.92);
-      const startY = H + r;                               // just below visible area
+      const startY = H + r;
 
-      // Travel: each bubble rises 85–97% of screen height
-      // This guarantees they reach near the top before fading
       const travelFrac = 0.92 + Math.random() * 0.07;
-      const endY       = H * (1 - travelFrac);           // absolute Y near top
+      const endY       = H * (1 - travelFrac);
 
-      // Lifetime drives perceived speed: longer = slower
-      // Larger bubbles rise slightly slower (heavier feel)
-      const lifetime = 3500 + (r / 28) * 2000 + Math.random() * 1000; // 3.5–6.5s
+      const lifetime = 3500 + (r / 28) * 2000 + Math.random() * 1000;
 
-      // Per-bubble base transparency — varies 0.55–0.90 for visual variety
       const baseAlpha = 0.55 + Math.random() * 0.35;
 
-      // Horizontal drift
-      const driftAmp  = r * (1.4 + Math.random() * 2.0); // scales with size
-      const driftFreq = 0.00035 + Math.random() * 0.00045; // slow, dreamy
+      const driftAmp   = r * (1.4 + Math.random() * 2.0);
+      const driftFreq  = 0.00035 + Math.random() * 0.00045;
       const driftPhase = Math.random() * Math.PI * 2;
 
-      // Stagger spawn so bubbles emerge as a wave, not all at once
       const startTime = now + i * 90;
 
       bubbles.push({
@@ -140,35 +133,22 @@ const EstusBubbles = (() => {
 
     for (const b of bubbles) {
       const elapsed = now - b.startTime;
-      if (elapsed < 0) { alive++; continue; }     // not yet spawned
+      if (elapsed < 0) { alive++; continue; }
 
       const t = elapsed / b.lifetime;
-      if (t >= 1) continue;                        // expired
+      if (t >= 1) continue;
 
       alive++;
 
-      // ── Position ───────────────────────────────────────────────────────────
-      // LINEAR rise — constant speed, no easing on Y
-      // This ensures the bubble is always moving at the same pace and
-      // actually reaches the top rather than slowing to a crawl
       const y = b.startY + (b.endY - b.startY) * t;
-
-      // True sinusoidal drift — no direction-reversal artefacts
       const x = b.startX + b.driftAmp * Math.sin(elapsed * b.driftFreq + b.driftPhase);
 
-      // ── Opacity ────────────────────────────────────────────────────────────
       const alpha = envelope(t) * b.baseAlpha;
       if (alpha < 0.01) continue;
 
       const r = b.r;
 
-      // ── Soap bubble gradient ───────────────────────────────────────────────
-      // Real soap bubble: near-transparent dark centre + bright glowing rim
-      // We use two gradients layered:
-      //   1. Outer glow  — large soft green halo behind the bubble
-      //   2. Bubble body — transparent centre, opaque green ring at edge
-
-      // 1. Soft outer glow (larger radius, very faint)
+      // 1. Soft outer glow
       const glow = ctx.createRadialGradient(x, y, r * 0.5, x, y, r * 2.4);
       glow.addColorStop(0,   `rgba(0, 220, 100, ${(alpha * 0.15).toFixed(3)})`);
       glow.addColorStop(1,   `rgba(0, 220, 100, 0)`);
@@ -178,11 +158,6 @@ const EstusBubbles = (() => {
       ctx.fill();
 
       // 2. Bubble body — transparent centre, bright rim
-      // Gradient goes from centre outward:
-      //   centre (0.0): fully transparent dark
-      //   inner edge (0.6): still mostly transparent
-      //   rim (0.82): full bright green
-      //   outer edge (1.0): fades back to transparent (thin rim, not a filled disc)
       const body = ctx.createRadialGradient(x, y, 0, x, y, r);
       body.addColorStop(0.00, `rgba(0,  30,  15, ${(alpha * 0.08).toFixed(3)})`);
       body.addColorStop(0.60, `rgba(0,  80,  40, ${(alpha * 0.12).toFixed(3)})`);
@@ -196,8 +171,7 @@ const EstusBubbles = (() => {
       ctx.fillStyle = body;
       ctx.fill();
 
-      // 3. Specular highlight — small bright white spot, offset top-left
-      //    Makes the bubble look like a 3D sphere catching light
+      // 3. Specular highlight
       const hx = x - r * 0.30;
       const hy = y - r * 0.28;
       const hr = r * 0.22;
@@ -211,7 +185,6 @@ const EstusBubbles = (() => {
       ctx.fill();
     }
 
-    // Prune expired bubbles
     bubbles = bubbles.filter(b => {
       const e = now - b.startTime;
       return e < 0 || (e / b.lifetime) < 1;
@@ -233,16 +206,12 @@ const EstusBubbles = (() => {
 // ── Estus animation trigger ────────────────────────────────────────────────
 
 function triggerEstusAnimation() {
-  // Green screen pulse — stays active for the full bubble animation duration (3500ms)
-  // so the overlay fades out in sync with the bubbles disappearing
   const flash = document.getElementById('healing-flash');
   if (flash) {
     flash.classList.add('active');
-    // Remove class after animation completes so it resets cleanly for next use
     setTimeout(() => flash.classList.remove('active'), 1800);
   }
 
-  // Show canvas and spawn bubbles
   const c = document.getElementById('estus-bubble-canvas');
   if (c) c.style.display = 'block';
   EstusBubbles.spawn();
@@ -257,9 +226,38 @@ function triggerFlurryFlash() {
   setTimeout(() => flash.classList.remove('flurry-animate'), 1200);
 }
 
-// ── Main init ──────────────────────────────────────────────────────────────
+// ── Commit 11: Boss phase 2 transition ────────────────────────────────────
+//
+// Called when data-phase-change="true" is detected on htmx:afterSwap.
+// Two effects:
+//   1. #phase-flash red screen wash (.phase-flash-animate CSS keyframe)
+//   2. .enemy-img shake (.phase-change class — keyframe in style.css §9)
 
-// ── Battle button binding ─────────────────────────────────────────────────
+function triggerPhaseTransition() {
+  // 1 — full-screen red flash
+  const flash = document.getElementById('phase-flash');
+  if (flash) {
+    flash.classList.remove('phase-flash-animate');
+    void flash.offsetWidth;   // force reflow so re-adding the class restarts animation
+    flash.classList.add('phase-flash-animate');
+    flash.addEventListener(
+      'animationend',
+      () => flash.classList.remove('phase-flash-animate'),
+      { once: true }
+    );
+  }
+
+  // 2 — enemy image shake (img is inside #battle-state, freshly swapped in)
+  const enemyImg = document.querySelector('.enemy-img');
+  if (enemyImg) {
+    enemyImg.classList.remove('phase-change');
+    void enemyImg.offsetWidth;
+    enemyImg.classList.add('phase-change');
+    setTimeout(() => enemyImg.classList.remove('phase-change'), 700);
+  }
+}
+
+// ── Battle button binding ──────────────────────────────────────────────────
 // Extracted into a named function so it can be called:
 //   1. On initial DOMContentLoaded
 //   2. After every HTMX swap (htmx:afterSwap) — new DOM nodes need new listeners
@@ -267,12 +265,10 @@ function triggerFlurryFlash() {
 function bindBattleButtons() {
   const playerClass = document.body.dataset.class || 'knight';
 
-  // Re-query every time — HTMX swap creates fresh DOM nodes
   document.querySelectorAll('.battle-btn').forEach(btn => {
     btn.addEventListener('click', e => {
       e.preventDefault();
 
-      // Buttons use data-action (type="button" has no .value)
       const action = btn.dataset.action;
       if (!action) return;
 
@@ -293,7 +289,6 @@ function bindBattleButtons() {
       }
 
       // Estus: longer delay so bubbles visibly rise before the swap.
-      // All other actions use SFX duration.
       const submitDelay = action === 'estus' ? 1750 : (sfxId ? getSfxDelay(sfxId) : 400);
 
       setTimeout(() => {
@@ -317,13 +312,7 @@ function bindBattleButtons() {
     });
   });
 
-  // Re-bind play/pause using .onclick (not addEventListener) so repeated calls
-  // from bindBattleButtons never stack duplicate listeners on the same node.
-  // AudioManager.bindControls uses addEventListener so we bypass it here.
-  const playBtn  = document.getElementById('playMusic');
-  const pauseBtn = document.getElementById('pauseMusic');
-  // Clone node to strip any stacked listeners from previous bindControls calls,
-  // then let AudioManager attach exactly one fresh listener.
+  // Re-bind play/pause — clone node to strip stacked listeners from previous calls
   ['playMusic', 'pauseMusic'].forEach(id => {
     const el = document.getElementById(id);
     if (!el) return;
@@ -345,11 +334,20 @@ document.addEventListener('DOMContentLoaded', () => {
   const isBoss = document.body.dataset.boss === 'true';
   initBattleMusic(isBoss);
 
-  // Bind buttons on initial load
   bindBattleButtons();
 
-  // Re-bind after every HTMX swap — new fragment = new DOM nodes
-  document.body.addEventListener('htmx:afterSwap', () => {
+  document.body.addEventListener('htmx:afterSwap', e => {
     bindBattleButtons();
+
+    // ── Commit 11: phase transition check ─────────────────────────────────
+    // Fragment wraps content in <div data-phase-change="true/false">.
+    // If "true" on this swap, fire the transition and clear the attribute
+    // immediately to prevent double-firing.
+    const wrapper = document.querySelector('#battle-state [data-phase-change]');
+    if (wrapper && wrapper.dataset.phaseChange === 'true') {
+      wrapper.dataset.phaseChange = 'false';
+      triggerPhaseTransition();
+    }
+    // ─────────────────────────────────────────────────────────────────────
   });
 });

@@ -1695,3 +1695,159 @@ body.shop-page .shop-wrapper {
     text-shadow: 1px 1px 3px #000;
     box-shadow: 0 0 8px rgba(201, 168, 76, 0.25);
 }
+
+/*
+ * style_patch_commit11.css
+ *
+ * Append to the END of style.css (after the battle-souls-counter block).
+ * Commit 11: Boss phase 2 visual indicators.
+ */
+
+/* ── Phase II badge in enemy HP label ───────────────────────────────────── */
+.phase2-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.2rem;
+    margin-left: 0.5rem;
+    padding: 1px 7px;
+    background: rgba(180, 0, 0, 0.75);
+    border: 1px solid #c0392b;
+    border-radius: 4px;
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    color: #ffcccc;
+    text-shadow: 0 0 6px rgba(255, 0, 0, 0.60);
+    vertical-align: middle;
+    /* Subtle pulse so the badge doesn't just sit static */
+    animation: phase2BadgePulse 2s ease-in-out infinite;
+}
+
+@keyframes phase2BadgePulse {
+    0%, 100% { box-shadow: 0 0 4px rgba(200, 0, 0, 0.40); }
+    50%       { box-shadow: 0 0 12px rgba(200, 0, 0, 0.80); }
+}
+
+/* ── Phase 2 enemy HP bar track — red border glow ───────────────────────── */
+.phase2-track {
+    border-color: rgba(192, 57, 43, 0.60) !important;
+    box-shadow: 0 0 10px rgba(192, 57, 43, 0.45), inset 0 2px 6px rgba(0,0,0,0.6);
+}
+
+/* ── Phase 2 enemy HP bar fill — deeper crimson with pulse ──────────────── */
+.stat-bar-fill--phase2 {
+    background-color: #8b0000 !important;
+    box-shadow: 0 0 8px rgba(139, 0, 0, 0.80);
+    animation: barShimmer 2.4s linear infinite,
+               phase2BarPulse 1.4s ease-in-out infinite;
+}
+
+@keyframes phase2BarPulse {
+    0%, 100% { background-color: #8b0000; }
+    50%       { background-color: #c0392b; }
+}
+
+/* ── Phase 2 move hint box — darker red tint ────────────────────────────── */
+.move-hint-box--phase2 {
+    background-color: rgba(120, 0, 0, 0.75) !important;
+    border-left-color: #ff4444 !important;
+    box-shadow: 0 0 12px rgba(180, 0, 0, 0.40);
+}
+
+/* ── Phase transition battle log — highlighted box ──────────────────────── */
+.battle-log-box--phase2 {
+    border: 1px solid rgba(200, 0, 0, 0.60);
+    background: rgba(80, 0, 0, 0.75) !important;
+    box-shadow: 0 0 20px rgba(180, 0, 0, 0.50);
+    animation: phase2LogEntrance 0.5s ease-out forwards;
+}
+
+@keyframes phase2LogEntrance {
+    from {
+        opacity: 0;
+        transform: scale(0.97);
+        box-shadow: 0 0 40px rgba(200, 0, 0, 0.80);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+        box-shadow: 0 0 20px rgba(180, 0, 0, 0.50);
+    }
+}
+
+/* ── #phase-flash overlay — triggered by JS on phase transition ─────────── */
+/*
+  JS adds .phase-flash-animate to #phase-flash when data-phase-change="true"
+  is detected on htmx:afterSwap.
+  Two layers via ::before (red wash) and ::after (radial vignette).
+*/
+#phase-flash {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 10000;   /* above flurry-flash (9999) */
+}
+
+#phase-flash::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-color: rgba(160, 0, 0, 0.55);
+    opacity: 0;
+    will-change: opacity;
+}
+
+#phase-flash::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(
+        ellipse at center,
+        transparent 30%,
+        rgba(140, 0, 0, 0.75) 100%
+    );
+    opacity: 0;
+    will-change: opacity;
+}
+
+.phase-flash-animate::before {
+    animation: phaseFlashWash 1.8s ease-out forwards;
+}
+
+.phase-flash-animate::after {
+    animation: phaseFlashVignette 2.2s ease-out forwards;
+}
+
+@keyframes phaseFlashWash {
+    0%   { opacity: 0; }
+    8%   { opacity: 0.90; }     /* hard initial hit */
+    22%  { opacity: 0.20; }
+    38%  { opacity: 0.65; }     /* second pulse */
+    55%  { opacity: 0.15; }
+    72%  { opacity: 0.40; }     /* third — dimming */
+    100% { opacity: 0; }
+}
+
+@keyframes phaseFlashVignette {
+    0%   { opacity: 0; }
+    12%  { opacity: 1.0; }
+    40%  { opacity: 0.60; }
+    70%  { opacity: 0.35; }
+    100% { opacity: 0; }
+}
+
+/* ── Enemy image shake on phase transition (class added by JS) ───────────── */
+/*
+  .phase-change is already defined in section 9 of style.css via
+  .enemy-img.phase-change — no duplicate needed here.
+  The JS adds it, plays the animation, then removes it after 700ms.
+*/
+
+/* ── Reduced motion overrides ── */
+@media (prefers-reduced-motion: reduce) {
+    .phase2-badge              { animation: none; }
+    .stat-bar-fill--phase2     { animation: barShimmer 2.4s linear infinite; }
+    .battle-log-box--phase2    { animation: none; }
+    .phase-flash-animate::before,
+    .phase-flash-animate::after { animation: none; opacity: 0; }
+}

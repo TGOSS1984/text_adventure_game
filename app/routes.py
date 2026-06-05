@@ -7,21 +7,24 @@ Commit 7 additions:
 - Each turn: regen MP (capped at mp_max), decrement cooldown
 - Stun flag: if session['stunned'], skip enemy counter for that turn
 - Smoke screen flag: if session['smoke_screen_active'], pass to resolve_player_action
-- Both flags are single-use and cleared after consumption
 
 Commit 10 additions:
 - Enemy soul_reward stored in session["enemy"]["soul_reward"]
-- On enemy kill: award soul_reward to session["souls"]
-  Boss bonus: award an additional 50% (rounded) on top of base reward
-- /shop GET: render shop.html with available items and player's souls
-- /buy  POST: validate item key, check funds, apply upgrade, deduct souls
-  Items: estus_refill, attack_shard, defense_shard, hp_vessel
-  Each item can only be bought once per run (session["shop_bought"] set)
+- On enemy kill: award soul_reward + boss 50% bonus
+- /shop GET + /buy POST routes with 4 shop items
+
+Commit 11 additions:
+- session["boss_phase"]: 1 or 2, initialised in /start and when enemy is set
+- session["phase_changed"]: single-use flag set when boss crosses 50% HP threshold
+  for the first time — consumed by the template on the next fragment render
+- boss_phase passed to enemy_attack() and predict_enemy_move() so phase 2
+  uses heavier move weights and 1.20× damage multiplier
+- Phase transition prepends the boss phase 2 lore message to the battle log
 """
 
 from flask import Blueprint, render_template, request, redirect, url_for, session, flash, Response
 from app.story.story_engine import Story
-from .combat import BattleManager, MP_REGEN_ATTACK
+from .combat import BattleManager, MP_REGEN_ATTACK, PHASE2_HP_TRIGGER
 from .models import Character
 from .save_load import save_game, load_game, has_save
 from .models import Enemy
@@ -40,15 +43,14 @@ BOSS_BATTLE_BGS = [
     "images/areas/erdtree.jpg",
 ]
 
-# ── Commit 10: Shop catalogue ─────────────────────────────────────────────────
-# Each item: cost (souls), one-time purchase per run, effect applied in /buy
+# ── Shop catalogue ────────────────────────────────────────────────────────────
 SHOP_ITEMS = {
     "estus_refill": {
         "name":        "Estus Refill",
         "description": "Restore all Estus Flasks to full.",
         "cost":        150,
         "icon":        "fas fa-flask",
-        "repeatable":  True,   # can buy every time you visit a bonfire
+        "repeatable":  True,
     },
     "attack_shard": {
         "name":        "Cracked Red Shard",
@@ -72,10 +74,9 @@ SHOP_ITEMS = {
         "repeatable":  False,
     },
 }
-# ─────────────────────────────────────────────────────────────────────────────
 
-main        = Blueprint("main", __name__)
-story       = Story()
+main           = Blueprint("main", __name__)
+story          = Story()
 battle_manager = BattleManager()
 
 
@@ -108,33 +109,33 @@ def start():
         return redirect(url_for("main.index"))
 
     session["character"] = {
-        "name":             character.name,
-        "attack":           character.attack,
-        "defense":          character.defense,
-        "max_hp":           character.max_hp,
-        "class_name":       character.class_name,
-        "image":            character.image,
-        "crit_chance":      getattr(character, "crit_chance", 0.0),
-        "crit_multiplier":  getattr(character, "crit_multiplier", 1.0),
-        "char_class":       char_class,
-        "mp_max":           character.mp_max,
+        "name":            character.name,
+        "attack":          character.attack,
+        "defense":         character.defense,
+        "max_hp":          character.max_hp,
+        "class_name":      character.class_name,
+        "image":           character.image,
+        "crit_chance":     getattr(character, "crit_chance", 0.0),
+        "crit_multiplier": getattr(character, "crit_multiplier", 1.0),
+        "char_class":      char_class,
+        "mp_max":          character.mp_max,
     }
-    session["chapter"]          = 0
-    session["hp"]               = character.max_hp
-    session["enemy"]            = {}
-    session["estus"]            = 5
-    # ── Commit 7: MP and special move state ──────────────────────────────────
-    session["mp"]               = 0      # start at 0 — must be earned
-    session["special_cooldown"] = 0      # ready immediately (no MP yet anyway)
-    session["stunned"]          = False  # enemy stun flag
-    session["smoke_screen_active"] = False  # Rogue smoke screen flag
-    session["souls"]            = 0      # souls currency (Commit 10)
-    session["estus_max"]        = 5      # default; raised to 6 by estus_plus gift
-    # ── Commit 10: track one-time shop purchases ─────────────────────────────
-    session["shop_bought"]      = []     # list of item keys bought this run
+    session["chapter"]             = 0
+    session["hp"]                  = character.max_hp
+    session["enemy"]               = {}
+    session["estus"]               = 5
+    session["mp"]                  = 0
+    session["special_cooldown"]    = 0
+    session["stunned"]             = False
+    session["smoke_screen_active"] = False
+    session["souls"]               = 0
+    session["estus_max"]           = 5
+    session["shop_bought"]         = []
+    # ── Commit 11: boss phase state ───────────────────────────────────────────
+    session["boss_phase"]          = 1     # reset at start of every run
+    session["phase_changed"]       = False # transition animation flag
     # ─────────────────────────────────────────────────────────────────────────
 
-    # ── Apply starting gift ───────────────────────────────────────────────────
     gift = (request.form.get("gift") or "fading_soul").strip()
     session["gift"] = gift
 
@@ -151,11 +152,8 @@ def start():
         session["character"]["attack"] += 3
     elif gift == "old_coin":
         session["souls"] = 200
-    # fading_soul: no effect — intentional
-    # ─────────────────────────────────────────────────────────────────────────
 
     session.pop("_flashes", None)
-
     return redirect(url_for("main.game"))
 
 
@@ -168,18 +166,18 @@ def no_cache(resp):
 @main.route("/game", methods=["GET", "POST"])
 def game():
     if request.method == "POST":
-        choice     = request.form["choice"]
+        choice       = request.form["choice"]
         next_chapter = story.choose_path(choice)
-        next_data  = story.get_chapter(next_chapter)
+        next_data    = story.get_chapter(next_chapter)
 
         session["choices"] = next_data.get("choices", [])
 
         if next_data.get("battle"):
-            is_boss    = next_data.get("boss", False)
-            bg_pool    = BOSS_BATTLE_BGS if is_boss else NORMAL_BATTLE_BGS
+            is_boss   = next_data.get("boss", False)
+            bg_pool   = BOSS_BATTLE_BGS if is_boss else NORMAL_BATTLE_BGS
             session["battle_bg"] = random.choice(bg_pool)
-            boss_name  = next_data.get("boss_name") if is_boss else None
-            enemy      = battle_manager.generate_enemy(boss=is_boss, boss_name=boss_name)
+            boss_name = next_data.get("boss_name") if is_boss else None
+            enemy     = battle_manager.generate_enemy(boss=is_boss, boss_name=boss_name)
 
             session["enemy"] = {
                 "name":        enemy.name,
@@ -188,10 +186,14 @@ def game():
                 "attack":      enemy.attack,
                 "image":       enemy.image,
                 "lore":        enemy.lore,
-                "soul_reward": enemy.soul_reward,   # Commit 10
+                "soul_reward": enemy.soul_reward,
             }
-            session["enemy_is_boss"]       = is_boss
+            session["enemy_is_boss"]        = is_boss
             session["chapter_after_battle"] = next_chapter
+            # ── Commit 11: reset phase for every new enemy ────────────────────
+            session["boss_phase"]    = 1
+            session["phase_changed"] = False
+            # ─────────────────────────────────────────────────────────────────
             return redirect(url_for("main.battle"))
         else:
             session["chapter"] = next_chapter
@@ -218,7 +220,7 @@ def game():
         character=session["character"],
         is_rest=bool(data.get("rest", False)),
         gift=session.get("gift", "fading_soul"),
-        souls=session.get("souls", 0),   # Commit 10
+        souls=session.get("souls", 0),
     )
 
 
@@ -237,22 +239,28 @@ def battle():
         image=enemy_image,
         lore=enemy_lore,
         is_boss=session.get("enemy_is_boss", False),
-        soul_reward=enemy_data.get("soul_reward", 0),   # Commit 10
+        soul_reward=enemy_data.get("soul_reward", 0),
     )
     enemy.max_hp = enemy_data.get("max_hp", enemy.hp)
 
-    character    = session.get("character", {})
-    player_hp    = session.get("hp", 100)
-    estus_count  = session.get("estus", 0)
-    mp           = session.get("mp", 0)
-    mp_max       = character.get("mp_max", 100)
-    cooldown     = session.get("special_cooldown", 0)
-    souls        = session.get("souls", 0)   # Commit 10
-    message      = ""
+    character   = session.get("character", {})
+    player_hp   = session.get("hp", 100)
+    estus_count = session.get("estus", 0)
+    mp          = session.get("mp", 0)
+    mp_max      = character.get("mp_max", 100)
+    cooldown    = session.get("special_cooldown", 0)
+    souls       = session.get("souls", 0)
+    # ── Commit 11 ─────────────────────────────────────────────────────────────
+    boss_phase    = session.get("boss_phase", 1)
+    phase_changed = session.get("phase_changed", False)
+    # ─────────────────────────────────────────────────────────────────────────
+    message = ""
 
     # ── GET ────────────────────────────────────────────────────────────────────
     if request.method == "GET":
-        predicted_move, predicted_msg, _ = battle_manager.predict_enemy_move(character)
+        predicted_move, predicted_msg, _ = battle_manager.predict_enemy_move(
+            character, boss_phase=boss_phase
+        )
         session["predicted_move"] = predicted_move
         session["predicted_msg"]  = predicted_msg
         battle_bg = session.get("battle_bg", "images/areas/undead_settlement.jpg")
@@ -270,7 +278,9 @@ def battle():
             cooldown=cooldown,
             gift=session.get("gift", "fading_soul"),
             estus_max=session.get("estus_max", 5),
-            souls=souls,   # Commit 10
+            souls=souls,
+            boss_phase=boss_phase,
+            phase_changed=False,   # never fire transition on initial load
         )
 
     # ── POST ───────────────────────────────────────────────────────────────────
@@ -279,7 +289,9 @@ def battle():
     stunned             = session.get("stunned", False)
     smoke_screen_active = session.get("smoke_screen_active", False)
 
-    # ── Cooldown tick (every turn) ───────────────────────────────────────────
+    # Consume and clear the phase_changed flag — it's only valid for one render
+    session["phase_changed"] = False
+
     cooldown = max(0, cooldown - 1)
 
     # ── Player action ──────────────────────────────────────────────────────────
@@ -305,17 +317,34 @@ def battle():
         )
 
     elif action == "timeout":
-        _, warn_msg, dmg = battle_manager.enemy_attack(character, enemy, action=predicted_move)
+        _, warn_msg, dmg = battle_manager.enemy_attack(
+            character, enemy, action=predicted_move, boss_phase=boss_phase
+        )
         player_hp, result = battle_manager.resolve_player_action(
             predicted_move, "none", dmg, player_hp, character
         )
         message = "⏰ You hesitated! " + warn_msg + " " + result
 
+    # ── Check boss phase transition BEFORE enemy counter ──────────────────────
+    # Only triggers once: boss_phase==1, enemy is a boss, and hp just crossed 50%
+    phase_changed = False
+    if (
+        session.get("enemy_is_boss", False)
+        and boss_phase == 1
+        and enemy.hp > 0
+        and enemy.hp <= enemy.max_hp * PHASE2_HP_TRIGGER
+    ):
+        boss_phase             = 2
+        session["boss_phase"]  = 2
+        phase_changed          = True
+        phase_lore             = battle_manager.get_phase2_lore(enemy.name)
+        # Prepend phase lore to whatever battle message already exists
+        message = phase_lore + (" — " + message if message else "")
+
     # ── Enemy counter-attack ───────────────────────────────────────────────────
-    enemy_acted = False
     if enemy.hp > 0 and not stunned and action not in ("timeout", "estus"):
         _, warn_msg, dmg = battle_manager.enemy_attack(
-            character, enemy, action=predicted_move
+            character, enemy, action=predicted_move, boss_phase=boss_phase
         )
         player_hp, counter_result = battle_manager.resolve_player_action(
             predicted_move,
@@ -326,11 +355,10 @@ def battle():
             smoke_screen_active=smoke_screen_active,
         )
         message = (message + " " + warn_msg + " " + counter_result).strip()
-        enemy_acted = True
 
     if action == "estus" and enemy.hp > 0:
         _, warn_msg, dmg = battle_manager.enemy_attack(
-            character, enemy, action=predicted_move
+            character, enemy, action=predicted_move, boss_phase=boss_phase
         )
         player_hp, counter_result = battle_manager.resolve_player_action(
             predicted_move, "none", dmg, player_hp, character,
@@ -343,17 +371,15 @@ def battle():
 
     # ── Battle outcome ─────────────────────────────────────────────────────────
     if enemy.hp <= 0:
-        # ── Commit 10: award souls on kill ────────────────────────────────────
         reward = enemy.soul_reward
         if session.get("enemy_is_boss", False):
-            # Boss bonus: +50% souls rounded to nearest 5
             bonus  = round(reward * 0.5 / 5) * 5
             reward = reward + bonus
             flash(f"⚔️ Boss slain! You gain {reward} souls ({bonus} bonus).", "info")
         else:
             flash(f"💀 Enemy defeated. You gain {reward} souls.", "info")
         session["souls"] = session.get("souls", 0) + reward
-        # ─────────────────────────────────────────────────────────────────────
+
         session["chapter"] = session.get("chapter_after_battle", 0)
         victory_url = url_for("main.game")
         if _is_htmx():
@@ -372,8 +398,11 @@ def battle():
     session["estus"]            = estus_count
     session["mp"]               = mp
     session["special_cooldown"] = cooldown
+    session["phase_changed"]    = phase_changed   # consumed on next render
 
-    next_move, next_msg, _ = battle_manager.predict_enemy_move(character)
+    next_move, next_msg, _ = battle_manager.predict_enemy_move(
+        character, boss_phase=boss_phase
+    )
     session["predicted_move"] = next_move
     session["predicted_msg"]  = next_msg
 
@@ -392,7 +421,9 @@ def battle():
         cooldown=cooldown,
         gift=session.get("gift", "fading_soul"),
         estus_max=session.get("estus_max", 5),
-        souls=session.get("souls", 0),   # Commit 10
+        souls=souls,
+        boss_phase=boss_phase,
+        phase_changed=phase_changed,
     )
 
     if _is_htmx():
@@ -400,25 +431,22 @@ def battle():
     return render_template("battle.html", **template_vars)
 
 
-# ── Commit 10: Shop routes ────────────────────────────────────────────────────
+# ── Shop routes ───────────────────────────────────────────────────────────────
 
 @main.route("/shop")
 def shop():
-    """Bonfire shop — only reachable from rest chapters via game.html link."""
-    souls      = session.get("souls", 0)
-    bought     = session.get("shop_bought", [])
-    character  = session.get("character", {})
-    estus      = session.get("estus", 0)
-    estus_max  = session.get("estus_max", 5)
+    souls     = session.get("souls", 0)
+    bought    = session.get("shop_bought", [])
+    character = session.get("character", {})
+    estus     = session.get("estus", 0)
+    estus_max = session.get("estus_max", 5)
 
-    # Build display list: mark items as bought/unavailable
     items = []
     for key, item in SHOP_ITEMS.items():
-        can_buy = souls >= item["cost"]
+        can_buy        = souls >= item["cost"]
         already_bought = (not item["repeatable"]) and (key in bought)
-        # estus_refill is pointless if already full
         if key == "estus_refill" and estus >= estus_max:
-            already_bought = True  # show as "unavailable" label rather than "sold out"
+            already_bought = True
         items.append({
             "key":            key,
             "name":           item["name"],
@@ -440,35 +468,30 @@ def shop():
 
 @main.route("/buy", methods=["POST"])
 def buy():
-    """Process a shop purchase. Validates funds, applies effect, deducts souls."""
     item_key = request.form.get("item_key", "").strip()
 
     if item_key not in SHOP_ITEMS:
         flash("Unknown item.", "error")
         return redirect(url_for("main.shop"))
 
-    item       = SHOP_ITEMS[item_key]
-    souls      = session.get("souls", 0)
-    bought     = session.get("shop_bought", [])
-    estus      = session.get("estus", 0)
-    estus_max  = session.get("estus_max", 5)
+    item      = SHOP_ITEMS[item_key]
+    souls     = session.get("souls", 0)
+    bought    = session.get("shop_bought", [])
+    estus     = session.get("estus", 0)
+    estus_max = session.get("estus_max", 5)
 
-    # Guard: one-time items
     if not item["repeatable"] and item_key in bought:
         flash(f"You have already purchased {item['name']}.", "error")
         return redirect(url_for("main.shop"))
 
-    # Guard: estus_refill when already full
     if item_key == "estus_refill" and estus >= estus_max:
         flash("Your Estus Flasks are already full.", "error")
         return redirect(url_for("main.shop"))
 
-    # Guard: afford?
     if souls < item["cost"]:
         flash(f"Not enough souls. You need {item['cost']}, you have {souls}.", "error")
         return redirect(url_for("main.shop"))
 
-    # ── Apply effect ──────────────────────────────────────────────────────────
     session["souls"] = souls - item["cost"]
 
     if item_key == "estus_refill":
@@ -490,14 +513,9 @@ def buy():
         session["hp"] = min(session.get("hp", 0) + 20, session["character"]["max_hp"])
         session["shop_bought"] = bought + [item_key]
         flash(f"❤️ Max HP increased by 20. ({item['cost']} souls spent)", "info")
-    # ─────────────────────────────────────────────────────────────────────────
 
-    # Mark session as modified (mutable nested dict)
     session.modified = True
-
     return redirect(url_for("main.shop"))
-
-# ─────────────────────────────────────────────────────────────────────────────
 
 
 @main.route("/death")
