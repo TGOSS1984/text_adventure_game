@@ -2,20 +2,13 @@
 index.html
 Title / class selection screen for Elden Souls.
 
-Changes in this commit:
-- Title "Elden Souls" gets a CSS entrance animation (letter-spacing
-  expansion + gold glow pulse) on page load.
-- Ember particle canvas injected by ember_particles.js sits above the
-  video layer but behind all content.
-- .overlay dark gradient is now defined in CSS (was missing from style.css).
-- Class lore text is always visible on desktop (was hidden on mobile only —
-  that mobile hide is preserved via media query).
-- Class cards now show a golden border glow when selected via the
-  :has(:checked) selector — no JS needed.
-- Resume Journey button appears below Begin Journey when a save exists
-  (has_save passed from routes.py).
-- audio_manager.js loaded before char_select_music.js (already done in
-  Commit 2 but confirmed here).
+Commit 9 additions:
+- Gift selection panel (#gift-panel) hidden by default, slides in
+  when a class card is selected (JS detects radio change)
+- 6 gifts rendered as selectable cards matching class card style
+- Begin Journey button moved inside gift panel so it only appears
+  after both class AND gift are chosen
+- gift radio input submitted with the form to /start
 -->
 
 <!DOCTYPE html>
@@ -33,26 +26,23 @@ Changes in this commit:
 
 <body class="home-page">
 
-    <!-- Video background -->
     <video autoplay muted loop playsinline preload="auto" id="bg-video">
         <source src="{{ url_for('static', filename='videos/landing_video_2.mp4') }}" type="video/mp4">
     </video>
 
-    <!-- Dark gradient overlay (defined in CSS as .overlay) -->
     <div class="overlay" aria-hidden="true"></div>
 
     <div class="bonfire-bg">
 
-        <!-- Title with entrance animation -->
         <h1 class="title-animate">Elden Souls</h1>
-
-        <p class="battle-info">Select your class:</p>
 
         <form method="POST" action="{{ url_for('main.start') }}" class="class-selector">
 
+            <!-- ── Step 1: Class selection ── -->
+            <p class="battle-info">Select your class:</p>
+
             <div class="class-options-wrapper">
 
-                <!-- Knight -->
                 <div class="class-option">
                     <label>
                         <input type="radio" name="class" value="Knight" required>
@@ -70,7 +60,6 @@ Changes in this commit:
                     </label>
                 </div>
 
-                <!-- Mage -->
                 <div class="class-option">
                     <label>
                         <input type="radio" name="class" value="Mage">
@@ -88,7 +77,6 @@ Changes in this commit:
                     </label>
                 </div>
 
-                <!-- Rogue -->
                 <div class="class-option">
                     <label>
                         <input type="radio" name="class" value="Rogue">
@@ -106,7 +94,6 @@ Changes in this commit:
                     </label>
                 </div>
 
-                <!-- Archer -->
                 <div class="class-option">
                     <label>
                         <input type="radio" name="class" value="Archer">
@@ -126,12 +113,78 @@ Changes in this commit:
 
             </div><!-- /.class-options-wrapper -->
 
-            <!-- Primary action -->
-            <button type="submit" class="begin-journey">
-                <i class="fas fa-fire"></i> Begin Journey
-            </button>
+            <!-- ── Step 2: Gift selection — hidden until class is chosen ── -->
+            <div id="gift-panel" class="gift-panel" aria-hidden="true">
 
-            <!-- Resume button — only rendered if a save file exists -->
+                <p class="battle-info gift-panel__heading">
+                    <i class="fas fa-gift"></i> Choose your starting gift:
+                </p>
+
+                <div class="gift-options-wrapper">
+
+                    <div class="gift-option">
+                        <label>
+                            <input type="radio" name="gift" value="estus_plus" required>
+                            <span class="gift-icon"><i class="fas fa-flask"></i></span>
+                            <span class="gift-name">Estus +1</span>
+                            <span class="gift-desc">Begin with 6 Estus Flasks instead of 5. One extra chance to survive.</span>
+                        </label>
+                    </div>
+
+                    <div class="gift-option">
+                        <label>
+                            <input type="radio" name="gift" value="hunters_charm">
+                            <span class="gift-icon"><i class="fas fa-bullseye"></i></span>
+                            <span class="gift-name">Hunter's Charm</span>
+                            <span class="gift-desc">+5% critical hit chance. The blade finds the gap between breath and bone.</span>
+                        </label>
+                    </div>
+
+                    <div class="gift-option">
+                        <label>
+                            <input type="radio" name="gift" value="iron_talisman">
+                            <span class="gift-icon"><i class="fas fa-shield-halved"></i></span>
+                            <span class="gift-name">Iron Talisman</span>
+                            <span class="gift-desc">+3 defence. A ward carved from iron, soaked in the prayers of the fallen.</span>
+                        </label>
+                    </div>
+
+                    <div class="gift-option">
+                        <label>
+                            <input type="radio" name="gift" value="witchs_ember">
+                            <span class="gift-icon"><i class="fas fa-fire-flame-curved"></i></span>
+                            <span class="gift-name">Witch's Ember</span>
+                            <span class="gift-desc">+3 attack. A shard of captured flame, still hungry.</span>
+                        </label>
+                    </div>
+
+                    <div class="gift-option">
+                        <label>
+                            <input type="radio" name="gift" value="old_coin">
+                            <span class="gift-icon"><i class="fas fa-coins"></i></span>
+                            <span class="gift-name">Old Coin</span>
+                            <span class="gift-desc">Begin with 200 souls. Minted in a kingdom that no longer remembers its name.</span>
+                        </label>
+                    </div>
+
+                    <div class="gift-option">
+                        <label>
+                            <input type="radio" name="gift" value="fading_soul">
+                            <span class="gift-icon"><i class="fas fa-ghost"></i></span>
+                            <span class="gift-name">Fading Soul</span>
+                            <span class="gift-desc">Nothing. For those who need no comfort at the end of all things.</span>
+                        </label>
+                    </div>
+
+                </div><!-- /.gift-options-wrapper -->
+
+                <!-- Begin Journey only appears once class + gift are chosen -->
+                <button type="submit" class="begin-journey" id="begin-btn">
+                    <i class="fas fa-fire"></i> Begin Journey
+                </button>
+
+            </div><!-- /#gift-panel -->
+
             {% if has_save %}
             <a href="{{ url_for('main.load') }}" class="btn-resume">
                 <i class="fas fa-book-open"></i> Resume Journey
@@ -140,7 +193,6 @@ Changes in this commit:
 
         </form>
 
-        <!-- Music controls -->
         <div class="audio-controls">
             <button id="playMusic">&#128266; Play</button>
             <button id="pauseMusic">&#128263; Pause</button>
@@ -151,6 +203,23 @@ Changes in this commit:
     <script src="{{ url_for('static', filename='js/audio_manager.js') }}"></script>
     <script src="{{ url_for('static', filename='js/char_select_music.js') }}"></script>
     <script src="{{ url_for('static', filename='js/ember_particles.js') }}"></script>
+
+    <script>
+    // Reveal gift panel when a class is selected
+    // Uses the capture-phase change event on the radio inputs
+    document.querySelectorAll('input[name="class"]').forEach(radio => {
+        radio.addEventListener('change', () => {
+            const panel = document.getElementById('gift-panel');
+            if (panel.classList.contains('gift-panel--visible')) return;
+            panel.classList.add('gift-panel--visible');
+            panel.setAttribute('aria-hidden', 'false');
+            // Smooth scroll so the gift panel comes into view
+            setTimeout(() => {
+                panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }, 350); // wait for slide-down animation to begin
+        });
+    });
+    </script>
 
 </body>
 </html>

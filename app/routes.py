@@ -85,7 +85,30 @@ def start():
     session["special_cooldown"] = 0      # ready immediately (no MP yet anyway)
     session["stunned"]          = False  # enemy stun flag
     session["smoke_screen_active"] = False  # Rogue smoke screen flag
+    session["souls"]            = 0      # souls currency (Commit 10)
+    session["estus_max"]        = 5      # default; raised to 6 by estus_plus gift
     # ─────────────────────────────────────────────────────────────────────────
+
+    # ── Apply starting gift ───────────────────────────────────────────────────
+    gift = (request.form.get("gift") or "fading_soul").strip()
+    session["gift"] = gift  # store for display / future reference
+
+    if gift == "estus_plus":
+        session["estus"]     = 6
+        session["estus_max"] = 6   # permanent max for this run
+    elif gift == "hunters_charm":
+        session["character"]["crit_chance"] = round(
+            session["character"]["crit_chance"] + 0.05, 4
+        )
+    elif gift == "iron_talisman":
+        session["character"]["defense"] += 3
+    elif gift == "witchs_ember":
+        session["character"]["attack"] += 3
+    elif gift == "old_coin":
+        session["souls"] = 200
+    # fading_soul: no effect — intentional
+    # ─────────────────────────────────────────────────────────────────────────
+
     session.pop("_flashes", None)
 
     return redirect(url_for("main.game"))
@@ -133,9 +156,10 @@ def game():
 
     if data.get("rest") and not session.get("rested_here"):
         session["hp"]    = session["character"]["max_hp"]
-        session["estus"] = 5
+        # Estus restores to 6 if player chose the Estus +1 starting gift
+        session["estus"] = session.get("estus_max", 5)
         session["mp"]    = 0   # MP resets to 0 at bonfire — fresh start, not a free refill
-        flash("🔥 You rest at the bonfire. HP and Estus Flasks restored.", "info")
+        flash("🔥 You rest at the bonfire. HP, Estus Flasks and MP restored.", "info")
         session["rested_here"] = True
         return redirect(url_for("main.game"))
 
@@ -148,6 +172,7 @@ def game():
         hp=hp,
         character=session["character"],
         is_rest=bool(data.get("rest", False)),
+        gift=session.get("gift", "fading_soul"),
     )
 
 
@@ -195,6 +220,8 @@ def battle():
             mp=mp,
             mp_max=mp_max,
             cooldown=cooldown,
+            gift=session.get("gift", "fading_soul"),
+            estus_max=session.get("estus_max", 5),
         )
 
     # ── POST ───────────────────────────────────────────────────────────────────
@@ -315,6 +342,8 @@ def battle():
         mp=mp,
         mp_max=mp_max,
         cooldown=cooldown,
+        gift=session.get("gift", "fading_soul"),
+        estus_max=session.get("estus_max", 5),
     )
 
     if _is_htmx():

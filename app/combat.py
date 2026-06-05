@@ -155,10 +155,13 @@ class BattleManager:
 
         # ── Rogue: Smoke Screen ───────────────────────────────────────────────
         elif class_name == 'Rogue':
+            # 50% attack damage — blade thrown from the shadows before vanishing
+            dmg = max(3, int(round(player['attack'] * 0.5)))
+            enemy.hp -= dmg
             smoke_screen = True
             msg = (
-                "💨 Smoke Screen! You vanish into shadow — the enemy's next "
-                "attack will find nothing but smoke."
+                f"💨 Smoke Screen! You hurl a blade from the shadows, dealing {dmg} damage, "
+                "then vanish — the enemy's next attack will find nothing but smoke."
             )
 
         # ── Archer: Mark Target ───────────────────────────────────────────────

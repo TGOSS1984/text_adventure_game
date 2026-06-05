@@ -1333,3 +1333,172 @@ body.home-page .bonfire-bg {
 @media (prefers-reduced-motion: reduce) {
     .battle-btn--special:not([disabled]) { animation: none; }
 }
+
+
+/* ── 22. Starting gift selection (Commit 9) ──────────────── */
+
+/* Gift panel — hidden by default, slides down when class is chosen */
+.gift-panel {
+    width: 100%;
+    max-width: 860px;
+    overflow: hidden;
+    max-height: 0;
+    opacity: 0;
+    pointer-events: none;
+    transition:
+        max-height 0.55s cubic-bezier(0.16, 1, 0.3, 1),
+        opacity    0.40s ease 0.10s;
+}
+
+.gift-panel--visible {
+    max-height: 600px;   /* large enough for all content */
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.gift-panel__heading {
+    margin: var(--space-lg) 0 var(--space-md);
+    font-size: 1.1rem;
+}
+
+/* Gift cards grid — 3 columns on desktop, 2 on tablet, 1 on mobile */
+.gift-options-wrapper {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+    margin-bottom: var(--space-lg);
+    width: 100%;
+}
+
+/* Individual gift card */
+.gift-option {
+    background-color: rgba(0, 0, 0, 0.72);
+    border: 2px solid var(--clr-border);
+    border-radius: var(--radius-md);
+    padding: var(--space-md);
+    cursor: pointer;
+    transition:
+        border-color var(--transition-fast),
+        transform    var(--transition-fast),
+        box-shadow   var(--transition-fast);
+    text-align: center;
+}
+
+.gift-option:hover {
+    border-color: var(--clr-gold);
+    transform: scale(1.03);
+    box-shadow: 0 0 12px rgba(201, 168, 76, 0.30);
+}
+
+.gift-option input[type="radio"] {
+    display: none;
+}
+
+/* Selected gift — gold glow matching class card style */
+.gift-option:has(input[type="radio"]:checked) {
+    border-color: var(--clr-gold-bright);
+    box-shadow:
+        0 0 0 1px var(--clr-gold),
+        0 0 18px rgba(255, 215, 0, 0.40);
+    transform: scale(1.03);
+}
+
+.gift-icon {
+    display: block;
+    font-size: 1.8rem;
+    margin-bottom: var(--space-sm);
+    color: var(--clr-gold);
+    filter: drop-shadow(0 0 6px rgba(201, 168, 76, 0.50));
+}
+
+.gift-option:has(input:checked) .gift-icon {
+    filter: drop-shadow(0 0 10px rgba(255, 215, 0, 0.70));
+}
+
+.gift-name {
+    display: block;
+    font-size: 0.9rem;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--clr-text);
+    margin-bottom: var(--space-xs);
+}
+
+.gift-option:has(input:checked) .gift-name {
+    color: var(--clr-gold-bright);
+}
+
+.gift-desc {
+    display: block;
+    font-size: 0.75rem;
+    font-style: italic;
+    color: rgba(255, 255, 255, 0.65);
+    line-height: 1.4;
+    text-transform: none;
+    font-weight: normal;
+    letter-spacing: 0;
+}
+
+/* Fading Soul — muted treatment to hint at its emptiness */
+.gift-option:has(input[value="fading_soul"]) .gift-icon {
+    color: rgba(255, 255, 255, 0.35);
+    filter: none;
+}
+.gift-option:has(input[value="fading_soul"]) .gift-name {
+    color: rgba(255, 255, 255, 0.50);
+}
+
+/* Begin Journey button inside gift panel */
+.gift-panel .begin-journey {
+    margin-top: var(--space-sm);
+}
+
+/* ── Responsive ── */
+@media (max-width: 768px) {
+    .gift-options-wrapper {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .gift-panel--visible {
+        max-height: 900px;  /* taller on mobile due to wrapping */
+    }
+}
+
+@media (max-width: 480px) {
+    .gift-options-wrapper {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .gift-panel {
+        transition: none;
+    }
+}
+
+
+/* ── 23. Gift badge (final tweaks) ───────────────────────── */
+
+/* Small pill shown on story and battle screens below the player portrait */
+.gift-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-xs);
+    padding: 3px 10px;
+    background-color: rgba(0, 0, 0, 0.60);
+    border: 1px solid var(--clr-gold);
+    border-radius: 20px;
+    color: var(--clr-gold);
+    font-size: 0.72rem;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin: var(--space-xs) auto;
+    pointer-events: none;
+}
+
+.gift-badge i {
+    font-size: 0.75rem;
+    opacity: 0.90;
+}

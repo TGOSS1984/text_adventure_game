@@ -47,6 +47,22 @@ It is swapped into <div id="battle-state"> by HTMX.
         alt="{{ character['class_name'] }}"
         class="battle-player-portrait"
     >
+    {# Starting gift badge #}
+    {% set gift_display = {
+        'estus_plus':    ('fas fa-flask',             'Estus +1'),
+        'hunters_charm': ('fas fa-bullseye',          "Hunter's Charm"),
+        'iron_talisman': ('fas fa-shield-halved',     'Iron Talisman'),
+        'witchs_ember':  ('fas fa-fire-flame-curved', "Witch's Ember"),
+        'old_coin':      ('fas fa-coins',             'Old Coin'),
+        'fading_soul':   ('fas fa-ghost',             'Fading Soul'),
+    } %}
+    {% if gift and gift != 'fading_soul' %}
+    {% set g = gift_display.get(gift, ('fas fa-gift', gift)) %}
+    <div class="gift-badge" title="Starting gift: {{ g[1] }}">
+        <i class="fas {{ g[0] }}"></i>
+        <span>{{ g[1] }}</span>
+    </div>
+    {% endif %}
     <div class="player-hud-bars">
         <div class="stat-bar-group">
             <div class="stat-bar-label">
@@ -71,7 +87,7 @@ It is swapped into <div id="battle-state"> by HTMX.
     </div>
 </div>
 <div class="estus-icons" aria-label="Estus Flasks remaining: {{ session['estus'] }}">
-            {% for i in range(5) %}
+            {% for i in range(estus_max) %}
                 <img
                     src="{{ url_for('static', filename='images/icons/estus.png') }}"
                     alt="Estus Flask"
@@ -141,15 +157,11 @@ It is swapped into <div id="battle-state"> by HTMX.
         {{ s_label }}{% if cooldown > 0 %} ({{ cooldown }}){% endif %}
     </button>
 </form>
-    </div>
-</div>
 
 <!-- ── ATB Timer bar — reset to full on every swap ── -->
 <div id="timer-bar" class="timer-bar" aria-label="Turn timer">
     <div id="timer-bar-fill" class="timer-bar-fill timer-phase--normal" style="width:100%;"></div>
 </div>
 
-<!-- ── MP bar placeholder (Commit 7) ── -->
-<div id="mp-bar-placeholder" class="mp-bar-placeholder" aria-hidden="true"></div>
 
 <!-- Audio controls rendered in battle.html outside swap zone -->

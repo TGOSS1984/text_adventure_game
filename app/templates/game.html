@@ -77,6 +77,23 @@ Changes in this commit:
             </div>
         </div>
 
+
+        {# ── Starting gift badge ── #}
+        {% set gift_display = {
+            'estus_plus':    ('fas fa-flask',              'Estus +1'),
+            'hunters_charm': ('fas fa-bullseye',           "Hunter's Charm"),
+            'iron_talisman': ('fas fa-shield-halved',      'Iron Talisman'),
+            'witchs_ember':  ('fas fa-fire-flame-curved',  "Witch's Ember"),
+            'old_coin':      ('fas fa-coins',              'Old Coin'),
+            'fading_soul':   ('fas fa-ghost',              'Fading Soul'),
+        } %}
+        {% if gift and gift != 'fading_soul' %}
+        {% set g = gift_display.get(gift, ('fas fa-gift', gift)) %}
+        <div class="gift-badge" title="Starting gift: {{ g[1] }}">
+            <i class="fas {{ g[0] }}"></i>
+            <span>{{ g[1] }}</span>
+        </div>
+        {% endif %}
         <!-- Hidden native progress for screen-reader fallback -->
         <progress value="{{ hp }}" max="{{ character.max_hp }}"
             aria-label="Player HP">{{ hp }}/{{ character.max_hp }}</progress>
