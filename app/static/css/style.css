@@ -524,6 +524,8 @@ progress {
 /* ── 10. Estus animation (IMPROVED) ───────────────────────── */
 
 /* Screen flash on drink */
+/* Healing flash — pulses green for the full bubble animation duration,
+   then fades out. The keyframe drives opacity so no JS transition needed. */
 #healing-flash {
     position: fixed;
     inset: 0;
@@ -531,92 +533,55 @@ progress {
     pointer-events: none;
     opacity: 0;
     z-index: 9998;
-    transition: opacity 0.15s ease-in, opacity 0.55s ease-out 0.15s;
 }
 
 #healing-flash.active {
-    opacity: 1;
-    transition: opacity 0.15s ease-in;
+    animation: estusPulse 3.5s ease-out forwards;
 }
 
-/* Bubble / orb container */
-#bubble-container {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    pointer-events: none;
-    z-index: 9997;
-    overflow: hidden;
-}
-
-/* Base bubble — drifts upward with sinusoidal horizontal sway */
-.bubble {
-    position: absolute;
-    bottom: -60px;          /* start just below the screen */
-    border-radius: 50%;
-    background: radial-gradient(
-        circle at 35% 35%,
-        rgba(160, 255, 200, 0.90),
-        var(--clr-estus) 50%,
-        rgba(0, 140, 70, 0.30)
-    );
-    box-shadow:
-        0 0 6px var(--clr-estus-glow),
-        inset 0 0 4px rgba(255,255,255,0.35);
-    opacity: 0;
-    /* --drift is set inline by JS (-40px … +40px) */
-    animation: estusBubbleRise 2.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
-}
-
-/* Large orb variant — more opaque, slower, stronger glow */
-.bubble--orb {
-    background: radial-gradient(
-        circle at 38% 32%,
-        rgba(200, 255, 225, 0.95),
-        var(--clr-estus-orb) 45%,
-        rgba(0, 100, 55, 0.40)
-    );
-    box-shadow:
-        0 0 14px var(--clr-estus-glow),
-        0 0 28px rgba(0, 255, 120, 0.25),
-        inset 0 0 8px rgba(255,255,255,0.45);
-    animation-duration: 3.4s;
-    animation-timing-function: cubic-bezier(0.20, 0.50, 0.40, 0.96);
-}
-
-/* Rise + drift animation — uses --drift CSS variable */
-@keyframes estusBubbleRise {
-    0% {
-        transform: translateY(0) translateX(0) scale(0.75);
-        opacity: 0;
-    }
-    8% {
-        opacity: 0.85;
-    }
-    30% {
-        transform: translateY(-28vh) translateX(var(--drift, 0px)) scale(1.05);
-        opacity: 0.95;
-    }
-    55% {
-        transform: translateY(-55vh) translateX(calc(var(--drift, 0px) * -0.6)) scale(1.15);
-        opacity: 0.80;
-    }
-    78% {
-        transform: translateY(-80vh) translateX(calc(var(--drift, 0px) * 0.4)) scale(1.20);
-        opacity: 0.45;
-    }
-    100% {
-        transform: translateY(-105vh) translateX(0) scale(1.28);
-        opacity: 0;
-    }
+/* Pulse pattern:
+   - Snappy bright flash at the moment of drinking (0–8%)
+   - Settles to a mid glow, then pulses 3 more times as bubbles rise
+   - Gradually dims and fades out over the final third               */
+@keyframes estusPulse {
+    0%   { opacity: 0; }
+    4%   { opacity: 0.85; }   /* initial hit flash */
+    12%  { opacity: 0.30; }
+    22%  { opacity: 0.65; }   /* pulse 1 */
+    32%  { opacity: 0.20; }
+    44%  { opacity: 0.55; }   /* pulse 2 */
+    56%  { opacity: 0.18; }
+    68%  { opacity: 0.40; }   /* pulse 3 — dimming */
+    80%  { opacity: 0.12; }
+    90%  { opacity: 0.22; }   /* final flicker */
+    100% { opacity: 0; }      /* fully gone as page reloads */
 }
 
 @media (prefers-reduced-motion: reduce) {
-    .bubble, .bubble--orb { animation: none; opacity: 0; }
+    #healing-flash.active {
+        animation: none;
+        opacity: 0;
+    }
 }
 
+/* Bubble container — kept for DOM bubble fallback; canvas version in battle_sounds.js */
+#bubble-container {
+    display: none;  /* canvas renderer replaces DOM bubbles — hidden but kept for safety */
+}
+
+/* Canvas bubble renderer — injected by EstusBubbles in battle_sounds.js */
+#estus-bubble-canvas {
+    position: fixed;
+    inset: 0;
+    width: 100vw;
+    height: 100vh;
+    pointer-events: none;
+    z-index: 9997;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    #estus-bubble-canvas { display: none !important; }
+}
 
 /* ── 11. Flurry flash (IMPROVED — separated layers) ──────── */
 
@@ -647,7 +612,7 @@ progress {
     background-image: url('../images/icons/flurry.png');
     background-repeat: no-repeat;
     background-position: center;
-    background-size: min(380px, 60vw) auto;
+    background-size: min(600px, 85vw) auto;
     opacity: 0;
     transform: scale(0.55) rotate(-4deg);
     will-change: transform, opacity;
@@ -995,4 +960,195 @@ progress {
     body {
         background-attachment: scroll;
     }
+}
+
+
+/* ── 18. Title screen additions (Commit 4) ────────────────── */
+
+/* Dark gradient overlay on the video background */
+.overlay {
+    position: fixed;
+    inset: 0;
+    background: linear-gradient(
+        to bottom,
+        rgba(0, 0, 0, 0.55) 0%,
+        rgba(0, 0, 0, 0.35) 40%,
+        rgba(0, 0, 0, 0.60) 100%
+    );
+    pointer-events: none;
+    z-index: 0;
+}
+
+/* Ember canvas sits above video (-1) but below overlay (0) */
+#ember-canvas {
+    z-index: 0;
+    pointer-events: none;
+}
+
+/* All .bonfire-bg content sits above overlay */
+body.home-page .bonfire-bg {
+    position: relative;
+    z-index: 1;
+}
+
+/* ── Title entrance animation ── */
+.title-animate {
+    opacity: 0;
+    letter-spacing: -0.02em;
+    animation: titleEntrance 2.0s cubic-bezier(0.16, 1, 0.3, 1) 0.3s forwards;
+}
+
+@keyframes titleEntrance {
+    0% {
+        opacity: 0;
+        letter-spacing: -0.05em;
+        text-shadow: 0 0 0px transparent;
+    }
+    40% {
+        opacity: 0.85;
+        letter-spacing: 0.04em;
+    }
+    70% {
+        letter-spacing: 0.01em;
+        text-shadow:
+            2px 2px 4px #000,
+            0 0 18px rgba(201, 168, 76, 0.55),
+            0 0 40px rgba(201, 168, 76, 0.25);
+    }
+    100% {
+        opacity: 1;
+        letter-spacing: 0.01em;
+        text-shadow:
+            2px 2px 4px #000,
+            0 0 22px rgba(201, 168, 76, 0.50),
+            0 0 50px rgba(201, 168, 76, 0.20);
+    }
+}
+
+/* Subtle gold glow pulse after entrance settles */
+.title-animate {
+    animation:
+        titleEntrance 2.0s cubic-bezier(0.16, 1, 0.3, 1) 0.3s forwards,
+        titleGlow     3.5s ease-in-out 2.3s infinite;
+}
+
+@keyframes titleGlow {
+    0%, 100% {
+        text-shadow:
+            2px 2px 4px #000,
+            0 0 22px rgba(201, 168, 76, 0.50),
+            0 0 50px rgba(201, 168, 76, 0.20);
+    }
+    50% {
+        text-shadow:
+            2px 2px 4px #000,
+            0 0 30px rgba(201, 168, 76, 0.75),
+            0 0 70px rgba(201, 168, 76, 0.35);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .title-animate {
+        animation: none;
+        opacity: 1;
+        letter-spacing: 0.01em;
+    }
+}
+
+/* ── Resume Journey button ── */
+.btn-resume {
+    display: inline-block;
+    margin: 8px 5px 5px;
+    padding: 10px 20px;
+    font-family: var(--font-body);
+    font-size: 1rem;
+    font-weight: bold;
+    text-transform: uppercase;
+    color: var(--clr-gold);
+    background-color: rgba(0, 0, 0, 0.65);
+    border: 2px solid var(--clr-gold);
+    border-radius: var(--radius-md);
+    text-decoration: none;
+    letter-spacing: 0.05em;
+    transition:
+        background-color var(--transition-fast),
+        color var(--transition-fast),
+        box-shadow var(--transition-fast),
+        transform var(--transition-fast);
+}
+
+.btn-resume:hover {
+    background-color: var(--clr-gold);
+    color: #111;
+    box-shadow: 0 0 16px rgba(201, 168, 76, 0.55);
+    transform: scale(1.04);
+    text-decoration: none;
+}
+
+/* ── Class card — selected state via :has ── */
+/*
+  :has(:checked) is supported in all modern browsers (Chrome 105+,
+  Safari 15.4+, Firefox 121+). Falls back gracefully — the existing
+  input:checked ~ img rule still works in older browsers.
+*/
+.class-option:has(input[type="radio"]:checked) {
+    border-color: var(--clr-gold-bright);
+    box-shadow:
+        0 0 0 1px var(--clr-gold),
+        0 0 20px rgba(255, 215, 0, 0.40),
+        2px 2px 10px rgba(255,255,255,0.2);
+    transform: scale(1.05);
+}
+
+
+/* ── 19. Typewriter effect (Commit 4) ─────────────────────── */
+
+/* Blinking cursor appended by typewriter.js */
+.typewriter-cursor {
+    display: inline-block;
+    font-weight: 300;
+    color: var(--clr-gold);
+    margin-left: 1px;
+    /* Opacity toggled by JS interval — CSS blink as fallback */
+    animation: cursorBlink 1.06s step-end infinite;
+}
+
+@keyframes cursorBlink {
+    0%, 100% { opacity: 1; }
+    50%       { opacity: 0; }
+}
+
+/* Choices hidden while typewriter is running */
+.choices-hidden {
+    visibility: hidden;
+    opacity: 0;
+    pointer-events: none;
+}
+
+/* Fade-in once typewriter finishes */
+.choices-reveal {
+    visibility: visible;
+    animation: choicesFadeIn 0.55s ease forwards;
+}
+
+@keyframes choicesFadeIn {
+    from { opacity: 0; transform: translateY(6px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+/* Lore-box pointer cursor while typewriter is active (set by JS) */
+.lore-box[style*="cursor: pointer"] {
+    /* Subtle hint that it's clickable — dim pulse on the border */
+    animation: loreBoxHint 2s ease-in-out infinite;
+}
+
+@keyframes loreBoxHint {
+    0%, 100% { border-color: var(--clr-border); }
+    50%       { border-color: rgba(201, 168, 76, 0.55); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .typewriter-cursor { animation: none; }
+    .choices-hidden    { visibility: visible; opacity: 1; pointer-events: auto; }
+    .choices-reveal    { animation: none; }
 }

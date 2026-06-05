@@ -1,7 +1,21 @@
 <!--
-Main HMTL file
 index.html
-Used for the class selector screen & main game screen
+Title / class selection screen for Elden Souls.
+
+Changes in this commit:
+- Title "Elden Souls" gets a CSS entrance animation (letter-spacing
+  expansion + gold glow pulse) on page load.
+- Ember particle canvas injected by ember_particles.js sits above the
+  video layer but behind all content.
+- .overlay dark gradient is now defined in CSS (was missing from style.css).
+- Class lore text is always visible on desktop (was hidden on mobile only —
+  that mobile hide is preserved via media query).
+- Class cards now show a golden border glow when selected via the
+  :has(:checked) selector — no JS needed.
+- Resume Journey button appears below Begin Journey when a save exists
+  (has_save passed from routes.py).
+- audio_manager.js loaded before char_select_music.js (already done in
+  Commit 2 but confirmed here).
 -->
 
 <!DOCTYPE html>
@@ -10,119 +24,133 @@ Used for the class selector screen & main game screen
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Elden Souls is a Flask-based, text-driven adventure game inspired by Dark Souls and Elden Ring. Choose your class, battle lore-rich enemies, explore branching story paths, and make impactful decisions that shape the fate of a fallen world. Built in Python with deep narrative, RPG mechanics, and session-based progression.">
-    <title>Elden Souls - Choose Your Class</title>
+    <title>Elden Souls — Choose Your Class</title>
 
-    <!--CSS Link-->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-
-    <!--Font Awesome Link-->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-
-    <!-- Preload your background video -->
-    <link rel="preload" as="video" href="{{ url_for('static', filename='videos/landing_video.mp4') }}" type="video/mp4">
-    
+    <link rel="preload" as="video" href="{{ url_for('static', filename='videos/landing_video_2.mp4') }}" type="video/mp4">
 </head>
+
 <body class="home-page">
+
     <!-- Video background -->
     <video autoplay muted loop playsinline preload="auto" id="bg-video">
         <source src="{{ url_for('static', filename='videos/landing_video_2.mp4') }}" type="video/mp4">
     </video>
-    
-    <!-- Optional dark overlay -->
-    <div class="overlay"></div>
+
+    <!-- Dark gradient overlay (defined in CSS as .overlay) -->
+    <div class="overlay" aria-hidden="true"></div>
+
     <div class="bonfire-bg">
 
-        <h1>Elden Souls</h1>
+        <!-- Title with entrance animation -->
+        <h1 class="title-animate">Elden Souls</h1>
 
         <p class="battle-info">Select your class:</p>
 
         <form method="POST" action="{{ url_for('main.start') }}" class="class-selector">
-            
-        <div class="class-options-wrapper">
-            <div class="class-option">
-                <label>
-                    <input type="radio" name="class" value="Knight" required>
-                    <img src="{{ url_for('static', filename='images/classes/knight.png') }}" alt="Knight">
-                    <span><i class="fas fa-chess-knight"></i> Knight</span>
-                    <!--Show class stats-->
-                    <div class="class-stats">
-                        <span><i class="fas fa-crosshairs"></i> Attack: {{ class_stats["Knight"].attack }}</span>
-                        <span><i class="fas fa-shield-alt"></i> Defense: {{ class_stats["Knight"].defense }}</span>
-                        <span><i class="fas fa-heart"></i> HP: {{ class_stats["Knight"].max_hp }}</span>
-                        <span><i class="fas fa-bullseye"></i> Crit Chance: {{ (class_stats["Knight"].crit_chance * 100) | round(0) }}%</span>
-                        <span><i class="fas fa-running"></i> Dodge Chance: {{ (class_stats["Knight"].dodge_chance * 100) | round(0) }}%</span>
-                        <span><i class="fas fa-shield-virus"></i> Block (Damage Reduced): {{ (100 - class_stats["Knight"].block_multiplier * 100) | round(0) }}%</span>
-                    </div>
-                    <span class="class-lore">Once a sentinel of the Sunken Citadel, their oath was not broken — only forgotten. Clad in rusted honor, they march through death unbent.</span>
-                </label>
-            </div>
 
-            <div class="class-option">
-                <label>
-                    <input type="radio" name="class" value="Mage">
-                    <img src="{{ url_for('static', filename='images/classes/mage.png') }}" alt="Mage">
-                    <span><i class="fas fa-wand-magic-sparkles"></i> Mage</span>
-                    <!--Show class stats-->
-                    <div class="class-stats">
-                        <span><i class="fas fa-crosshairs"></i> Attack: {{ class_stats["Mage"].attack }}</span>
-                        <span><i class="fas fa-shield-alt"></i> Defense: {{ class_stats["Mage"].defense }}</span>
-                        <span><i class="fas fa-heart"></i> HP: {{ class_stats["Mage"].max_hp }}</span>
-                        <span><i class="fas fa-bullseye"></i> Crit Chance: {{ (class_stats["Mage"].crit_chance * 100) | round(0) }}%</span>
-                        <span><i class="fas fa-running"></i> Dodge Chance: {{ (class_stats["Mage"].dodge_chance * 100) | round(0) }}%</span>
-                        <span><i class="fas fa-shield-virus"></i> Block (Damage Reduced): {{ (100 - class_stats["Mage"].block_multiplier * 100) | round(0) }}%</span>
-                    </div>
-                    <span class="class-lore">Bearer of forbidden glintfire, the Mage whispers truths carved in starlight. Each spell flung is a shard of a dream long devoured.</span>
-                </label>
-            </div>
+            <div class="class-options-wrapper">
 
-            <div class="class-option">
-                <label>
-                    <input type="radio" name="class" value="Rogue">
-                    <img src="{{ url_for('static', filename='images/classes/rogue.png') }}" alt="Rogue">
-                    <span><i class="fas fa-skull-crossbones"></i> Rogue</span>
-                    <!--Show class stats-->
-                    <div class="class-stats">
-                        <span><i class="fas fa-crosshairs"></i> Attack: {{ class_stats["Rogue"].attack }}</span>
-                        <span><i class="fas fa-shield-alt"></i> Defense: {{ class_stats["Rogue"].defense }}</span>
-                        <span><i class="fas fa-heart"></i> HP: {{ class_stats["Rogue"].max_hp }}</span>
-                        <span><i class="fas fa-bullseye"></i> Crit Chance: {{ (class_stats["Rogue"].crit_chance * 100) | round(0) }}%</span>
-                        <span><i class="fas fa-running"></i> Dodge Chance: {{ (class_stats["Rogue"].dodge_chance * 100) | round(0) }}%</span>
-                        <span><i class="fas fa-shield-virus"></i> Block (Damage Reduced): {{ (100 - class_stats["Rogue"].block_multiplier * 100) | round(0) }}%</span>
-                    </div>
-                    <span class="class-lore">Born in the shadow of the Ashen Spires, the Rogue strikes like regret — unseen, swift, and final. No name, no past, only the blade.</span>
-                </label>
-            </div>
+                <!-- Knight -->
+                <div class="class-option">
+                    <label>
+                        <input type="radio" name="class" value="Knight" required>
+                        <img src="{{ url_for('static', filename='images/classes/knight.png') }}" alt="Knight">
+                        <span><i class="fas fa-chess-knight"></i> Knight</span>
+                        <div class="class-stats">
+                            <span><i class="fas fa-crosshairs"></i> Attack: {{ class_stats["Knight"].attack }}</span>
+                            <span><i class="fas fa-shield-alt"></i> Defense: {{ class_stats["Knight"].defense }}</span>
+                            <span><i class="fas fa-heart"></i> HP: {{ class_stats["Knight"].max_hp }}</span>
+                            <span><i class="fas fa-bullseye"></i> Crit: {{ (class_stats["Knight"].crit_chance * 100) | round(0) }}%</span>
+                            <span><i class="fas fa-running"></i> Dodge: {{ (class_stats["Knight"].dodge_chance * 100) | round(0) }}%</span>
+                            <span><i class="fas fa-shield-virus"></i> Block: {{ (100 - class_stats["Knight"].block_multiplier * 100) | round(0) }}% reduced</span>
+                        </div>
+                        <span class="class-lore">Once a sentinel of the Sunken Citadel, their oath was not broken — only forgotten. Clad in rusted honour, they march through death unbent.</span>
+                    </label>
+                </div>
 
-            <div class="class-option">
-                <label>
-                    <input type="radio" name="class" value="Archer">
-                    <img src="{{ url_for('static', filename='images/classes/archer.png') }}" alt="Archer">
-                    <span><i class="fas fa-feather"></i> Archer</span>
-                    <!--Show class stats-->
-                    <div class="class-stats">
-                        <span><i class="fas fa-crosshairs"></i> Attack: {{ class_stats["Archer"].attack }}</span>
-                        <span><i class="fas fa-shield-alt"></i> Defense: {{ class_stats["Archer"].defense }}</span>
-                        <span><i class="fas fa-heart"></i> HP: {{ class_stats["Archer"].max_hp }}</span>
-                        <span><i class="fas fa-bullseye"></i> Crit Chance: {{ (class_stats["Archer"].crit_chance * 100) | round(0) }}%</span>
-                        <span><i class="fas fa-running"></i> Dodge Chance: {{ (class_stats["Archer"].dodge_chance * 100) | round(0) }}%</span>
-                        <span><i class="fas fa-shield-virus"></i> Block (Damage Reduced): {{ (100 - class_stats["Archer"].block_multiplier * 100) | round(0) }}%</span>
-                    </div>
-                    <span class="class-lore">From the ruins of Eldergrove they come, eyes hollow with distant wars. Each arrow loosed is a memory exiled into the dark.</span>
-                </label>
-            </div>
-        </div>
+                <!-- Mage -->
+                <div class="class-option">
+                    <label>
+                        <input type="radio" name="class" value="Mage">
+                        <img src="{{ url_for('static', filename='images/classes/mage.png') }}" alt="Mage">
+                        <span><i class="fas fa-wand-magic-sparkles"></i> Mage</span>
+                        <div class="class-stats">
+                            <span><i class="fas fa-crosshairs"></i> Attack: {{ class_stats["Mage"].attack }}</span>
+                            <span><i class="fas fa-shield-alt"></i> Defense: {{ class_stats["Mage"].defense }}</span>
+                            <span><i class="fas fa-heart"></i> HP: {{ class_stats["Mage"].max_hp }}</span>
+                            <span><i class="fas fa-bullseye"></i> Crit: {{ (class_stats["Mage"].crit_chance * 100) | round(0) }}%</span>
+                            <span><i class="fas fa-running"></i> Dodge: {{ (class_stats["Mage"].dodge_chance * 100) | round(0) }}%</span>
+                            <span><i class="fas fa-shield-virus"></i> Block: {{ (100 - class_stats["Mage"].block_multiplier * 100) | round(0) }}% reduced</span>
+                        </div>
+                        <span class="class-lore">Bearer of forbidden glintfire, the Mage whispers truths carved in starlight. Each spell flung is a shard of a dream long devoured.</span>
+                    </label>
+                </div>
 
-            <button type="submit" class="begin-journey">Begin Journey</button>
+                <!-- Rogue -->
+                <div class="class-option">
+                    <label>
+                        <input type="radio" name="class" value="Rogue">
+                        <img src="{{ url_for('static', filename='images/classes/rogue.png') }}" alt="Rogue">
+                        <span><i class="fas fa-skull-crossbones"></i> Rogue</span>
+                        <div class="class-stats">
+                            <span><i class="fas fa-crosshairs"></i> Attack: {{ class_stats["Rogue"].attack }}</span>
+                            <span><i class="fas fa-shield-alt"></i> Defense: {{ class_stats["Rogue"].defense }}</span>
+                            <span><i class="fas fa-heart"></i> HP: {{ class_stats["Rogue"].max_hp }}</span>
+                            <span><i class="fas fa-bullseye"></i> Crit: {{ (class_stats["Rogue"].crit_chance * 100) | round(0) }}%</span>
+                            <span><i class="fas fa-running"></i> Dodge: {{ (class_stats["Rogue"].dodge_chance * 100) | round(0) }}%</span>
+                            <span><i class="fas fa-shield-virus"></i> Block: {{ (100 - class_stats["Rogue"].block_multiplier * 100) | round(0) }}% reduced</span>
+                        </div>
+                        <span class="class-lore">Born in the shadow of the Ashen Spires, the Rogue strikes like regret — unseen, swift, and final. No name, no past, only the blade.</span>
+                    </label>
+                </div>
+
+                <!-- Archer -->
+                <div class="class-option">
+                    <label>
+                        <input type="radio" name="class" value="Archer">
+                        <img src="{{ url_for('static', filename='images/classes/archer.png') }}" alt="Archer">
+                        <span><i class="fas fa-feather"></i> Archer</span>
+                        <div class="class-stats">
+                            <span><i class="fas fa-crosshairs"></i> Attack: {{ class_stats["Archer"].attack }}</span>
+                            <span><i class="fas fa-shield-alt"></i> Defense: {{ class_stats["Archer"].defense }}</span>
+                            <span><i class="fas fa-heart"></i> HP: {{ class_stats["Archer"].max_hp }}</span>
+                            <span><i class="fas fa-bullseye"></i> Crit: {{ (class_stats["Archer"].crit_chance * 100) | round(0) }}%</span>
+                            <span><i class="fas fa-running"></i> Dodge: {{ (class_stats["Archer"].dodge_chance * 100) | round(0) }}%</span>
+                            <span><i class="fas fa-shield-virus"></i> Block: {{ (100 - class_stats["Archer"].block_multiplier * 100) | round(0) }}% reduced</span>
+                        </div>
+                        <span class="class-lore">From the ruins of Eldergrove they come, eyes hollow with distant wars. Each arrow loosed is a memory exiled into the dark.</span>
+                    </label>
+                </div>
+
+            </div><!-- /.class-options-wrapper -->
+
+            <!-- Primary action -->
+            <button type="submit" class="begin-journey">
+                <i class="fas fa-fire"></i> Begin Journey
+            </button>
+
+            <!-- Resume button — only rendered if a save file exists -->
+            {% if has_save %}
+            <a href="{{ url_for('main.load') }}" class="btn-resume">
+                <i class="fas fa-book-open"></i> Resume Journey
+            </a>
+            {% endif %}
+
         </form>
-        <!-- Audio Controls (optional) -->
+
+        <!-- Music controls -->
         <div class="audio-controls">
-            <button id="playMusic">🔊 Play</button>
-            <button id="pauseMusic">🔇 Pause</button>
+            <button id="playMusic">&#128266; Play</button>
+            <button id="pauseMusic">&#128263; Pause</button>
         </div>
 
-    </div>
-    <!-- Add JS file -->
+    </div><!-- /.bonfire-bg -->
+
     <script src="{{ url_for('static', filename='js/audio_manager.js') }}"></script>
     <script src="{{ url_for('static', filename='js/char_select_music.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/ember_particles.js') }}"></script>
+
 </body>
 </html>
