@@ -121,6 +121,9 @@ def start():
         "crit_multiplier": getattr(character, "crit_multiplier", 1.0),
         "char_class":      char_class,
         "mp_max":          character.mp_max,
+        "magic_attack":    character.magic_attack,
+        "magic_defense":   character.magic_defense,
+        "damage_type":     character.damage_type,
     }
     session["chapter"]             = 0
     session["hp"]                  = character.max_hp
@@ -149,9 +152,17 @@ def start():
             session["character"]["crit_chance"] + 0.05, 4
         )
     elif gift == "iron_talisman":
-        session["character"]["defense"] += 3
+        #  class-aware — Mage benefits from magic_defense
+        if session["character"]["damage_type"] == "magic":
+            session["character"]["magic_defense"] += 3
+        else:
+            session["character"]["defense"] += 3
     elif gift == "witchs_ember":
-        session["character"]["attack"] += 3
+        #  class-aware — Mage benefits from magic_attack
+        if session["character"]["damage_type"] == "magic":
+            session["character"]["magic_attack"] += 3
+        else:
+            session["character"]["attack"] += 3
     elif gift == "old_coin":
         session["souls"] = 200
 
@@ -189,6 +200,10 @@ def game():
                 "image":       enemy.image,
                 "lore":        enemy.lore,
                 "soul_reward": enemy.soul_reward,
+                "magic_attack":  enemy.magic_attack,
+                "magic_defense": enemy.magic_defense,
+                "defense":       enemy.defense,
+                "damage_type":   enemy.damage_type,
             }
             session["enemy_is_boss"]        = is_boss
             session["chapter_after_battle"] = next_chapter
@@ -242,6 +257,10 @@ def battle():
         lore=enemy_lore,
         is_boss=session.get("enemy_is_boss", False),
         soul_reward=enemy_data.get("soul_reward", 0),
+        magic_attack=enemy_data.get("magic_attack", 0),
+        magic_defense=enemy_data.get("magic_defense", 0),
+        defense=enemy_data.get("defense", 0),
+        damage_type=enemy_data.get("damage_type", "physical"),
     )
     enemy.max_hp = enemy_data.get("max_hp", enemy.hp)
 
@@ -501,14 +520,24 @@ def buy():
         flash(f"🔥 Estus Flasks refilled. ({item['cost']} souls spent)", "info")
 
     elif item_key == "attack_shard":
-        session["character"]["attack"] += 3
+        # Cclass-aware — Mage boosts magic_attack
+        if session["character"].get("damage_type") == "magic":
+            session["character"]["magic_attack"] += 3
+            flash(f"✨ Magic Attack increased by 3. ({item['cost']} souls spent)", "info")
+        else:
+            session["character"]["attack"] += 3
+            flash(f"⚔️ Attack increased by 3. ({item['cost']} souls spent)", "info")
         session["shop_bought"] = bought + [item_key]
-        flash(f"⚔️ Attack increased by 3. ({item['cost']} souls spent)", "info")
 
     elif item_key == "defense_shard":
-        session["character"]["defense"] += 3
+        # class-aware — Mage boosts magic_defense
+        if session["character"].get("damage_type") == "magic":
+            session["character"]["magic_defense"] += 3
+            flash(f"🔮 Magic Defense increased by 3. ({item['cost']} souls spent)", "info")
+        else:
+            session["character"]["defense"] += 3
+            flash(f"🛡️ Defense increased by 3. ({item['cost']} souls spent)", "info")
         session["shop_bought"] = bought + [item_key]
-        flash(f"🛡️ Defense increased by 3. ({item['cost']} souls spent)", "info")
 
     elif item_key == "hp_vessel":
         session["character"]["max_hp"] += 20

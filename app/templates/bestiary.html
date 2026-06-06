@@ -12,6 +12,12 @@ Uses <details>/<summary> for collapsibles — no JS needed, fully accessible.
 Commit 19 addition:
 - mid_run flag passed from route; shows "Continue Story" button alongside
   "Return to Title" when player is mid-run, so they don't lose progress.
+
+Commit 21 additions:
+- Magic Defense stat pill added to regular enemy and boss codex entries
+- Damage type badge added to regular enemy and boss codex entries
+- Enemy codex inline stat row updated to show magic_attack where relevant
+- Physical & Magic Damage section added to How to Play
 -->
 
 <!DOCTYPE html>
@@ -34,7 +40,6 @@ Commit 19 addition:
             padding: 1.5rem 1rem 5rem;
         }
 
-        /* Page header */
         .bestiary-header {
             text-align: center;
             margin-bottom: 2rem;
@@ -57,12 +62,10 @@ Commit 19 addition:
             text-shadow: 1px 1px 3px #000;
         }
 
-        /* Section blocks */
         .bestiary-section {
             margin-bottom: 2rem;
         }
 
-        /* ── <details> collapsible wrapper ── */
         .bestiary-details {
             background: rgba(0,0,0,0.78);
             border: 1px solid rgba(201,168,76,0.25);
@@ -76,7 +79,6 @@ Commit 19 addition:
             border-color: rgba(201,168,76,0.50);
         }
 
-        /* Section-level summary (How to Play / Enemy Codex headings) */
         .bestiary-summary--section {
             display: flex;
             align-items: center;
@@ -111,7 +113,6 @@ Commit 19 addition:
             background: rgba(201,168,76,0.08);
         }
 
-        /* How to Play content */
         .how-to-play {
             padding: 1.2rem 1.4rem 1.4rem;
         }
@@ -148,7 +149,6 @@ Commit 19 addition:
             margin-bottom: 0.25rem;
         }
 
-        /* Mechanic row — icon + label + description */
         .mechanic-row {
             display: grid;
             grid-template-columns: 1.8rem 7rem 1fr;
@@ -178,19 +178,16 @@ Commit 19 addition:
             text-shadow: 1px 1px 3px #000;
         }
 
-        /* Divider */
         .bestiary-divider {
             border: none;
             border-top: 1px solid rgba(201,168,76,0.18);
             margin: 1rem 0;
         }
 
-        /* ── Codex section ── */
         .codex-wrapper {
             padding: 0.8rem 1rem 1rem;
         }
 
-        /* Boss separator heading */
         .codex-separator {
             font-size: 0.72rem;
             font-weight: 700;
@@ -207,7 +204,6 @@ Commit 19 addition:
             margin-top: 0;
         }
 
-        /* Individual enemy entry */
         .codex-entry {
             background: rgba(255,255,255,0.03);
             border: 1px solid rgba(255,255,255,0.07);
@@ -221,7 +217,6 @@ Commit 19 addition:
             border-color: rgba(201,168,76,0.30);
         }
 
-        /* Entry summary row */
         .codex-summary {
             display: flex;
             align-items: center;
@@ -239,7 +234,6 @@ Commit 19 addition:
             background: rgba(201,168,76,0.06);
         }
 
-        /* Thumbnail */
         .codex-thumb {
             width: 42px;
             height: 42px;
@@ -262,6 +256,7 @@ Commit 19 addition:
             display: flex;
             align-items: center;
             gap: 0.5rem;
+            flex-wrap: wrap;
         }
 
         .boss-badge {
@@ -295,7 +290,6 @@ Commit 19 addition:
             transform: rotate(180deg);
         }
 
-        /* Entry expanded body */
         .codex-body {
             display: grid;
             grid-template-columns: 140px 1fr;
@@ -320,7 +314,6 @@ Commit 19 addition:
             object-fit: contain;
         }
 
-        /* Stat pills */
         .codex-stat-grid {
             display: flex;
             flex-direction: column;
@@ -403,7 +396,6 @@ Commit 19 addition:
             text-shadow: 1px 1px 3px #000;
         }
 
-        /* Continue Story — prominent gold button */
         .bestiary-nav .btn-continue {
             padding: 0.65rem 1.8rem;
             background: rgba(0,0,0,0.65);
@@ -425,7 +417,6 @@ Commit 19 addition:
             text-decoration: none;
         }
 
-        /* Return to Title — subtle muted link */
         .bestiary-nav .btn-return {
             color: rgba(210,195,160,0.65);
         }
@@ -538,12 +529,12 @@ Commit 19 addition:
                 <div class="mechanic-row">
                     <i class="fas fa-wand-magic-sparkles"></i>
                     <span class="mechanic-label">Mage</span>
-                    <span class="mechanic-desc"><strong>Arcane Burst</strong> — 2× attack, bypasses all defence. Pure magic damage.</span>
+                    <span class="mechanic-desc"><strong>Arcane Burst</strong> — 2× magic attack, bypasses all defence. Pure magic damage.</span>
                 </div>
                 <div class="mechanic-row">
                     <i class="fas fa-skull-crossbones"></i>
                     <span class="mechanic-label">Rogue</span>
-                    <span class="mechanic-desc"><strong>Smoke Screen</strong> — 50% damage + guaranteed dodge on the enemy's next counter.</span>
+                    <span class="mechanic-desc"><strong>Smoke Screen</strong> — Full attack damage + guaranteed dodge on the enemy's counter.</span>
                 </div>
                 <div class="mechanic-row">
                     <i class="fas fa-feather"></i>
@@ -570,6 +561,12 @@ Commit 19 addition:
 
                 <h3><i class="fas fa-skull"></i> &nbsp;Boss Phases</h3>
                 <p>Bosses enter <strong>Phase II</strong> when reduced to 50% HP. Move weights shift heavily toward big hits and flurries, and all damage increases by 20%. A unique lore message announces the transition. Plan your Estus and MP accordingly.</p>
+
+                <hr class="bestiary-divider">
+
+                {# Commit 21: Physical & Magic damage explanation #}
+                <h3><i class="fas fa-hat-wizard"></i> &nbsp;Physical &amp; Magic Damage</h3>
+                <p>Every class and enemy has a damage type — <span class="damage-type-badge badge--physical">⚔ Physical</span> or <span class="damage-type-badge badge--magic">✨ Magic</span>. Physical attacks are reduced by the target's physical defence; magic attacks are reduced by their magic defence. Some bosses deal <span class="damage-type-badge badge--mixed">⚔✨ Mixed</span> damage, alternating between both types. Check the Enemy Codex to see what you're up against before you fight.</p>
 
                 <hr class="bestiary-divider">
 
@@ -613,9 +610,18 @@ Commit 19 addition:
                             loading="lazy"
                         >
                         <div class="codex-summary-text">
-                            <div class="codex-name">{{ enemy.name }}</div>
+                            <div class="codex-name">
+                                {{ enemy.name }}
+                                {# Commit 21: damage type badge in summary #}
+                                {% if enemy.damage_type == 'magic' %}
+                                    <span class="damage-type-badge badge--magic">✨ Magic</span>
+                                {% else %}
+                                    <span class="damage-type-badge badge--physical">⚔ Physical</span>
+                                {% endif %}
+                            </div>
                             <div class="codex-stats-inline">
-                                HP {{ enemy.hp }} &nbsp;·&nbsp; ATK {{ enemy.attack }}
+                                HP {{ enemy.hp }} &nbsp;·&nbsp;
+                                ATK {{ enemy.magic_attack if enemy.damage_type == 'magic' else enemy.attack }}
                                 &nbsp;·&nbsp; <i class="fas fa-coins" style="color:var(--clr-gold);font-size:0.7rem;"></i> {{ enemy.soul_reward }}
                             </div>
                         </div>
@@ -636,12 +642,35 @@ Commit 19 addition:
                                     <span class="codex-stat-val">{{ enemy.hp }}</span>
                                 </div>
                                 <div class="codex-stat">
-                                    <span class="codex-stat-label"><i class="fas fa-hand-fist"></i> ATK</span>
-                                    <span class="codex-stat-val">{{ enemy.attack }}</span>
+                                    {# Commit 21: show correct attack label and value by damage type #}
+                                    <span class="codex-stat-label">
+                                        {% if enemy.damage_type == 'magic' %}
+                                            <i class="fas fa-wand-magic-sparkles"></i> M.ATK
+                                        {% else %}
+                                            <i class="fas fa-hand-fist"></i> ATK
+                                        {% endif %}
+                                    </span>
+                                    <span class="codex-stat-val">{{ enemy.magic_attack if enemy.damage_type == 'magic' else enemy.attack }}</span>
                                 </div>
                                 <div class="codex-stat">
                                     <span class="codex-stat-label"><i class="fas fa-coins"></i> Souls</span>
                                     <span class="codex-stat-val">{{ enemy.soul_reward }}</span>
+                                </div>
+                                {# Commit 21: magic defense stat pill #}
+                                <div class="codex-stat">
+                                    <span class="codex-stat-label"><i class="fas fa-hat-wizard"></i> Mag.Def</span>
+                                    <span class="codex-stat-val">{{ enemy.magic_defense }}</span>
+                                </div>
+                                {# Commit 21: damage type pill #}
+                                <div class="codex-stat">
+                                    <span class="codex-stat-label">Type</span>
+                                    <span class="codex-stat-val">
+                                        {% if enemy.damage_type == 'magic' %}
+                                            <span class="damage-type-badge badge--magic">✨ Magic</span>
+                                        {% else %}
+                                            <span class="damage-type-badge badge--physical">⚔ Physical</span>
+                                        {% endif %}
+                                    </span>
                                 </div>
                             </div>
                         </div>
@@ -668,9 +697,18 @@ Commit 19 addition:
                             <div class="codex-name">
                                 {{ name }}
                                 <span class="boss-badge">Boss</span>
+                                {# Commit 21: damage type badge in summary #}
+                                {% if boss.damage_type == 'magic' %}
+                                    <span class="damage-type-badge badge--magic">✨ Magic</span>
+                                {% elif boss.damage_type == 'mixed' %}
+                                    <span class="damage-type-badge badge--mixed">⚔✨ Mixed</span>
+                                {% else %}
+                                    <span class="damage-type-badge badge--physical">⚔ Physical</span>
+                                {% endif %}
                             </div>
                             <div class="codex-stats-inline">
-                                HP {{ boss.hp }} &nbsp;·&nbsp; ATK {{ boss.attack }}
+                                HP {{ boss.hp }} &nbsp;·&nbsp;
+                                ATK {{ boss.magic_attack if boss.damage_type == 'magic' else boss.attack }}
                                 &nbsp;·&nbsp; <i class="fas fa-coins" style="color:var(--clr-gold);font-size:0.7rem;"></i> {{ boss.soul_reward }}
                             </div>
                         </div>
@@ -691,9 +729,25 @@ Commit 19 addition:
                                     <span class="codex-stat-val">{{ boss.hp }}</span>
                                 </div>
                                 <div class="codex-stat">
-                                    <span class="codex-stat-label"><i class="fas fa-hand-fist"></i> ATK</span>
-                                    <span class="codex-stat-val">{{ boss.attack }}</span>
+                                    {# Commit 21: label and value by damage type #}
+                                    <span class="codex-stat-label">
+                                        {% if boss.damage_type == 'magic' %}
+                                            <i class="fas fa-wand-magic-sparkles"></i> M.ATK
+                                        {% elif boss.damage_type == 'mixed' %}
+                                            <i class="fas fa-hand-fist"></i> P.ATK
+                                        {% else %}
+                                            <i class="fas fa-hand-fist"></i> ATK
+                                        {% endif %}
+                                    </span>
+                                    <span class="codex-stat-val">{{ boss.magic_attack if boss.damage_type == 'magic' else boss.attack }}</span>
                                 </div>
+                                {# Commit 21: mixed bosses also show magic attack #}
+                                {% if boss.damage_type == 'mixed' %}
+                                <div class="codex-stat">
+                                    <span class="codex-stat-label"><i class="fas fa-wand-magic-sparkles"></i> M.ATK</span>
+                                    <span class="codex-stat-val">{{ boss.magic_attack }}</span>
+                                </div>
+                                {% endif %}
                                 <div class="codex-stat">
                                     <span class="codex-stat-label"><i class="fas fa-coins"></i> Souls</span>
                                     <span class="codex-stat-val">{{ boss.soul_reward }}</span>
@@ -701,6 +755,24 @@ Commit 19 addition:
                                 <div class="codex-stat">
                                     <span class="codex-stat-label"><i class="fas fa-skull"></i> Phase</span>
                                     <span class="codex-stat-val">II at 50%</span>
+                                </div>
+                                {# Commit 21: magic defense stat pill #}
+                                <div class="codex-stat">
+                                    <span class="codex-stat-label"><i class="fas fa-hat-wizard"></i> Mag.Def</span>
+                                    <span class="codex-stat-val">{{ boss.magic_defense }}</span>
+                                </div>
+                                {# Commit 21: damage type pill #}
+                                <div class="codex-stat">
+                                    <span class="codex-stat-label">Type</span>
+                                    <span class="codex-stat-val">
+                                        {% if boss.damage_type == 'magic' %}
+                                            <span class="damage-type-badge badge--magic">✨ Magic</span>
+                                        {% elif boss.damage_type == 'mixed' %}
+                                            <span class="damage-type-badge badge--mixed">⚔✨ Mixed</span>
+                                        {% else %}
+                                            <span class="damage-type-badge badge--physical">⚔ Physical</span>
+                                        {% endif %}
+                                    </span>
                                 </div>
                             </div>
                         </div>

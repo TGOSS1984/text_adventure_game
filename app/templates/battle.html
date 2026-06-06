@@ -94,9 +94,17 @@ Commit 14: Enemy lore wrapped in collapsible <details> to reduce vertical footpr
             <div class="player-hud-bars">
                 <div class="stat-bar-group">
                     <div class="stat-bar-label">
-                        <span><i class="fas {{ class_icon }}"></i> {{ character['class_name'] }}</span>
-                        <span>{{ player_hp }}/{{ character.max_hp }}</span>
-                    </div>
+                    <span>
+                        <i class="fas {{ class_icon }}"></i> {{ character['class_name'] }}
+                        {# Commit 21: player damage type badge #}
+                        {% if character.get('damage_type') == 'magic' %}
+                            <span class="damage-type-badge badge--magic">✨ Magic</span>
+                        {% else %}
+                            <span class="damage-type-badge badge--physical">⚔ Physical</span>
+                        {% endif %}
+                    </span>
+                    <span>{{ player_hp }}/{{ character.max_hp }}</span>
+                </div>
                     <div class="stat-bar-track" role="img" aria-label="Player HP {{ player_hp }} of {{ character.max_hp }}">
                         <div
                             class="stat-bar-fill stat-bar-fill--player {{ player_hp_cls }}"
@@ -150,14 +158,22 @@ Commit 14: Enemy lore wrapped in collapsible <details> to reduce vertical footpr
         <!-- Enemy HP bar -->
         <div class="stat-bar-group">
             <div class="stat-bar-label">
-                <span>
-                    <i class="fas fa-skull-crossbones"></i>
-                    {{ enemy.name }}
-                    {% if boss_phase == 2 %}
-                        <span class="phase2-badge">⚠ PHASE II</span>
-                    {% endif %}
-                </span>
-                <span>{{ enemy.hp }}/{{ enemy.max_hp }}</span>
+             <span>
+                 <i class="fas fa-skull-crossbones"></i>
+                 {{ enemy.name }}
+                 {% if boss_phase == 2 %}
+                     <span class="phase2-badge">⚠ PHASE II</span>
+                 {% endif %}
+                 {# Commit 21: enemy damage type badge #}
+                 {% if enemy.damage_type == 'magic' %}
+                     <span class="damage-type-badge badge--magic">✨ Magic</span>
+                 {% elif enemy.damage_type == 'mixed' %}
+                     <span class="damage-type-badge badge--mixed">⚔✨ Mixed</span>
+                 {% else %}
+                     <span class="damage-type-badge badge--physical">⚔ Physical</span>
+                 {% endif %}
+             </span>
+             <span>{{ enemy.hp }}/{{ enemy.max_hp }}</span>
             </div>
             <div class="stat-bar-track {% if boss_phase == 2 %}phase2-track{% endif %}"
                  role="img" aria-label="{{ enemy.name }} HP {{ enemy.hp }} of {{ enemy.max_hp }}">

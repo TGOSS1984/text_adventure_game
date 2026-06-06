@@ -2933,3 +2933,79 @@ body.home-page .overlay {
         opacity: 0;
     }
 }
+
+
+/* ── Damage type badge — base ───────────────────────────────────────────────
+   Shared pill shape. Colour modifier classes (.badge--physical / .badge--magic
+   / .badge--mixed) applied alongside to set the colour scheme.
+── */
+.damage-type-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    padding: 2px 8px;
+    border-radius: 999px;
+    font-size: 0.68rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    vertical-align: middle;
+    white-space: nowrap;
+    pointer-events: none;
+}
+
+/* Physical — steel blue-grey */
+.badge--physical {
+    background: rgba(100, 130, 160, 0.18);
+    border: 1px solid rgba(100, 140, 180, 0.45);
+    color: #9bbcd4;
+}
+
+/* Magic — gold-purple */
+.badge--magic {
+    background: rgba(160, 100, 220, 0.18);
+    border: 1px solid rgba(180, 120, 240, 0.45);
+    color: #c89fe8;
+}
+
+/* Mixed — amber/gold */
+.badge--mixed {
+    background: rgba(201, 168, 76, 0.15);
+    border: 1px solid rgba(201, 168, 76, 0.40);
+    color: var(--clr-gold);
+}
+
+/* Slightly larger variant for class selection cards */
+.damage-type-badge--lg {
+    font-size: 0.75rem;
+    padding: 3px 10px;
+}
+
+/* ── Battle HUD damage type row ─────────────────────────────────────────────
+   Sits below the class name / enemy name label in the stat bar header.
+── */
+.hud-type-row {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    margin-top: 2px;
+}
+
+/* ── Bestiary codex stat adjustments ────────────────────────────────────────
+   The magic_defense and damage_type badge sit alongside existing stat pills.
+   No new layout needed — they reuse .codex-stat. This rule just ensures
+   the badge inside a stat pill doesn't break the row.
+── */
+.codex-stat .damage-type-badge {
+    font-size: 0.65rem;
+    padding: 1px 6px;
+}
+
+/* ── Class card damage type badge ───────────────────────────────────────────
+   Sits below the class stats block on the index class selection card.
+── */
+.class-type-row {
+    margin-top: 0.5rem;
+    display: flex;
+    justify-content: center;
+}

@@ -12,6 +12,11 @@ Commit 9 additions:
 
 Commit 12 addition:
 - Bestiary link below audio controls
+
+Commit 21 additions:
+- Magic Defense stat row added to each class card stats block
+- Damage type badge added below each class stats block
+- Mage Attack stat now reads magic_attack (not attack which is 0)
 -->
 
 <!DOCTYPE html>
@@ -58,6 +63,12 @@ Commit 12 addition:
                             <span><i class="fas fa-bullseye"></i> Crit: {{ (class_stats["Knight"].crit_chance * 100) | round(0) }}%</span>
                             <span><i class="fas fa-running"></i> Dodge: {{ (class_stats["Knight"].dodge_chance * 100) | round(0) }}%</span>
                             <span><i class="fas fa-shield-virus"></i> Block: {{ (100 - class_stats["Knight"].block_multiplier * 100) | round(0) }}% reduced</span>
+                            {# Commit 21: magic defense stat #}
+                            <span><i class="fas fa-hat-wizard"></i> Mag.Def: {{ class_stats["Knight"].magic_defense }}</span>
+                        </div>
+                        {# Commit 21: damage type badge #}
+                        <div class="class-type-row">
+                            <span class="damage-type-badge damage-type-badge--lg badge--physical">⚔ Physical</span>
                         </div>
                         <span class="class-lore">Once a sentinel of the Sunken Citadel, their oath was not broken — only forgotten. Clad in rusted honour, they march through death unbent.</span>
                     </label>
@@ -69,12 +80,19 @@ Commit 12 addition:
                         <img src="{{ url_for('static', filename='images/classes/mage.png') }}" alt="Mage">
                         <span><i class="fas fa-wand-magic-sparkles"></i> Mage</span>
                         <div class="class-stats">
-                            <span><i class="fas fa-crosshairs"></i> Attack: {{ class_stats["Mage"].attack }}</span>
+                            {# Commit 21: Mage uses magic_attack not attack (attack is 0) #}
+                            <span><i class="fas fa-crosshairs"></i> Mag.Atk: {{ class_stats["Mage"].magic_attack }}</span>
                             <span><i class="fas fa-shield-alt"></i> Defense: {{ class_stats["Mage"].defense }}</span>
                             <span><i class="fas fa-heart"></i> HP: {{ class_stats["Mage"].max_hp }}</span>
                             <span><i class="fas fa-bullseye"></i> Crit: {{ (class_stats["Mage"].crit_chance * 100) | round(0) }}%</span>
                             <span><i class="fas fa-running"></i> Dodge: {{ (class_stats["Mage"].dodge_chance * 100) | round(0) }}%</span>
                             <span><i class="fas fa-shield-virus"></i> Block: {{ (100 - class_stats["Mage"].block_multiplier * 100) | round(0) }}% reduced</span>
+                            {# Commit 21: magic defense stat #}
+                            <span><i class="fas fa-hat-wizard"></i> Mag.Def: {{ class_stats["Mage"].magic_defense }}</span>
+                        </div>
+                        {# Commit 21: damage type badge #}
+                        <div class="class-type-row">
+                            <span class="damage-type-badge damage-type-badge--lg badge--magic">✨ Magic</span>
                         </div>
                         <span class="class-lore">Bearer of forbidden glintfire, the Mage whispers truths carved in starlight. Each spell flung is a shard of a dream long devoured.</span>
                     </label>
@@ -92,6 +110,12 @@ Commit 12 addition:
                             <span><i class="fas fa-bullseye"></i> Crit: {{ (class_stats["Rogue"].crit_chance * 100) | round(0) }}%</span>
                             <span><i class="fas fa-running"></i> Dodge: {{ (class_stats["Rogue"].dodge_chance * 100) | round(0) }}%</span>
                             <span><i class="fas fa-shield-virus"></i> Block: {{ (100 - class_stats["Rogue"].block_multiplier * 100) | round(0) }}% reduced</span>
+                            {# Commit 21: magic defense stat #}
+                            <span><i class="fas fa-hat-wizard"></i> Mag.Def: {{ class_stats["Rogue"].magic_defense }}</span>
+                        </div>
+                        {# Commit 21: damage type badge #}
+                        <div class="class-type-row">
+                            <span class="damage-type-badge damage-type-badge--lg badge--physical">⚔ Physical</span>
                         </div>
                         <span class="class-lore">Born in the shadow of the Ashen Spires, the Rogue strikes like regret — unseen, swift, and final. No name, no past, only the blade.</span>
                     </label>
@@ -109,6 +133,12 @@ Commit 12 addition:
                             <span><i class="fas fa-bullseye"></i> Crit: {{ (class_stats["Archer"].crit_chance * 100) | round(0) }}%</span>
                             <span><i class="fas fa-running"></i> Dodge: {{ (class_stats["Archer"].dodge_chance * 100) | round(0) }}%</span>
                             <span><i class="fas fa-shield-virus"></i> Block: {{ (100 - class_stats["Archer"].block_multiplier * 100) | round(0) }}% reduced</span>
+                            {# Commit 21: magic defense stat #}
+                            <span><i class="fas fa-hat-wizard"></i> Mag.Def: {{ class_stats["Archer"].magic_defense }}</span>
+                        </div>
+                        {# Commit 21: damage type badge #}
+                        <div class="class-type-row">
+                            <span class="damage-type-badge damage-type-badge--lg badge--physical">⚔ Physical</span>
                         </div>
                         <span class="class-lore">From the ruins of Eldergrove they come, eyes hollow with distant wars. Each arrow loosed is a memory exiled into the dark.</span>
                     </label>
