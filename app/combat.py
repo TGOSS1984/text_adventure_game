@@ -12,113 +12,33 @@ Commit 10 fix:
 - generate_enemy() passes soul_reward= to Enemy() constructor
 
 Commit 11 additions:
-- BOSS_PHASE2_LORE: dict of per-boss phase transition lore messages
 - enemy_attack() accepts boss_phase param; phase 2 uses heavier move weights
   and applies a 1.20× damage multiplier across all move types
 - predict_enemy_move() also accepts boss_phase so the hint reflects real weights
 
 Commit 21 additions:
-- PHYS_PEN constant: physical attacks apply only 55% of enemy physical defense,
-  preventing physical classes from being completely walled by armoured enemies
-- Player attack() routes through magic_attack vs enemy magic_defense for Mage,
-  physical attack vs enemy defense (× PHYS_PEN) for all other classes
-- use_special() uses the class damage type — Mage special is magic damage,
-  all others are physical
-- enemy_attack() uses enemy damage_type to select the correct player defense stat:
-  physical enemies reduce against player defense, magic against player magic_defense,
-  mixed bosses use physical for attack/flurry moves and magic for big_hit
-- resolve_player_action() unchanged — damage is already resolved before this call
-- generate_enemy() passes all new Enemy fields: magic_attack, magic_defense,
-  defense, damage_type
-- Battle log messages updated to include damage type label
+- PHYS_PEN constant: physical attacks apply only 55% of enemy physical defense
+- Player attack() routes through magic_attack vs enemy magic_defense for Mage
+- use_special() uses the class damage type
+- enemy_attack() uses enemy damage_type to select correct player defense stat
+
+Refactor:
+- All constants (MP_COST, MP_REGEN_ATTACK, COOLDOWN_TURNS, PHYS_PEN,
+  PHASE2_DMG_MULT, PHASE2_HP_TRIGGER, PHASE1_WEIGHTS, PHASE2_WEIGHTS)
+  moved to config.py — imported from there
+- BOSS_PHASE2_LORE and PHASE2_LORE_DEFAULT removed — phase2_lore now lives
+  as a field on each boss dict in enemies.py
+- get_phase2_lore() reads from the boss dict via BOSSES lookup
 """
 
 import numpy as np
 from .models import Enemy, Character
-from .enemies import ENEMIES, BOSSES
-
-# ── Constants ──────────────────────────────────────────────────────────────────
-MP_COST         = 50
-MP_REGEN_ATTACK = 25
-COOLDOWN_TURNS  = 4
-
-# Commit 21: physical penetration constant.
-# Physical attacks (player and enemy) apply only PHYS_PEN × enemy/player
-# physical defense, preventing armoured enemies from being unkillable walls.
-# Value 0.55 means 55% of defense is applied; 45% is ignored.
-# Tunable here without touching any other logic.
-PHYS_PEN = 0.55
-
-# Phase 2 modifiers
-PHASE2_DMG_MULT   = 1.20   # all phase 2 damage ×1.20
-PHASE2_HP_TRIGGER = 0.50   # phase 2 begins when boss HP ≤ 50%
-
-# Phase 1 vs Phase 2 move probability weights
-PHASE1_WEIGHTS = [0.60, 0.25, 0.15]   # attack / big_hit / flurry
-PHASE2_WEIGHTS = [0.30, 0.38, 0.32]   # attack ↓, big_hit ↑, flurry ↑↑
-
-# ── Per-boss phase 2 lore messages ────────────────────────────────────────────
-BOSS_PHASE2_LORE = {
-    "Cindergloom": (
-        "🔥 SECOND PHASE — The Flame Lord's wounds crack open, "
-        "spilling rivers of molten gold. The air itself ignites. "
-        "\"You dare fan the dying flame? Then burn with it!\""
-    ),
-    "Lothric and Lorian": (
-        "⚡ SECOND PHASE — Lorian collapses — and Lothric descends upon his "
-        "brother's back, pouring forbidden lightning into the broken body. "
-        "They rise as one. The air crackles with desperate power."
-    ),
-    "Ashen Knight": (
-        "💀 SECOND PHASE — The Ashen Knight tears the visor from his helm "
-        "and screams. The ash fused to his flesh begins to glow. "
-        "\"I have endured centuries of penance. You will not end it!\""
-    ),
-    "Pale Drake": (
-        "❄️ SECOND PHASE — The Pale Drake rears back and shatters the ice "
-        "shelf beneath you. His eyes, once clouded, blaze white. "
-        "\"The stars do not forgive trespassers.\""
-    ),
-    "The Lord of Chains": (
-        "⛓️ SECOND PHASE — The chains binding the Lord of Chains snap "
-        "one by one. Each break draws blood — his own. He laughs. "
-        "\"Pain is the only throne I need.\""
-    ),
-    "The Ember Tyrant": (
-        "🌋 SECOND PHASE — The Ember Tyrant tears the fused chains "
-        "free from his own flesh, roaring as obsidian skin splits. "
-        "Magma pours from the wounds. The ground begins to melt."
-    ),
-    "The Mireborn Serpent": (
-        "🐍 SECOND PHASE — The Mireborn Serpent submerges entirely — "
-        "then erupts through the floor behind you, twice the size. "
-        "The parasite within pulses with sickly green light."
-    ),
-    "The Gravewarden": (
-        "☠️ SECOND PHASE — The Gravewarden removes his funeral crown "
-        "and drives it into the earth. The buried dead begin to stir. "
-        "\"Every soul here is mine to command.\""
-    ),
-    "The Abyss Watcher": (
-        "🌑 SECOND PHASE — The Abyss Watcher drives his own sword "
-        "through his chest and pulls it free glowing red. "
-        "\"The Abyss does not kill me. It feeds me.\""
-    ),
-    "The Thorn Matriarch": (
-        "🌹 SECOND PHASE — Crimson thorns erupt from the Thorn Matriarch's "
-        "wounds, spreading across the chapel floor. She raises her arms "
-        "and the briars respond. \"Every cut is a garden.\""
-    ),
-    "The Blacksteel Sentinel": (
-        "⚒️ SECOND PHASE — The Blacksteel Sentinel drives both fists "
-        "into the forge-floor. The entire bastion shudders. His armour "
-        "glows white-hot. \"The walls do not fall. Neither do I.\""
-    ),
-}
-
-PHASE2_LORE_DEFAULT = (
-    "⚠️ SECOND PHASE — The boss staggers — then steadies. "
-    "Something ancient and terrible wakes behind its eyes."
+from .enemies import ENEMIES, BOSSES, BOSS_PHASE2_LORE_DEFAULT
+from .config import (
+    MP_COST, MP_REGEN_ATTACK, COOLDOWN_TURNS,
+    PHYS_PEN,
+    PHASE2_DMG_MULT, PHASE2_HP_TRIGGER,
+    PHASE1_WEIGHTS, PHASE2_WEIGHTS,
 )
 
 
@@ -166,12 +86,11 @@ class BattleManager:
 
     def attack(self, player, enemy):
         """
-        Commit 21: routes damage through physical or magic channel
-        depending on the player's damage_type.
+        Routes damage through physical or magic channel depending on the
+        player's damage_type.
 
         Physical classes use player['attack'] vs enemy.defense × PHYS_PEN.
-        Mage uses player['magic_attack'] vs enemy.magic_defense (no pen —
-        magic enemies naturally have low magic_defense values).
+        Mage uses player['magic_attack'] vs enemy.magic_defense (no pen).
         """
         crit_chance     = float(player.get('crit_chance', 0.0))
         crit_multiplier = float(player.get('crit_multiplier', 1.0))
@@ -188,9 +107,9 @@ class BattleManager:
             eff_def    = int(enemy.defense * PHYS_PEN)
             type_label = "physical"
 
-        raw    = base_atk * crit_multiplier if is_crit else base_atk
-        dmg    = raw - np.random.randint(0, 6) - eff_def
-        dmg    = max(5, int(round(dmg)))
+        raw = base_atk * crit_multiplier if is_crit else base_atk
+        dmg = raw - np.random.randint(0, 6) - eff_def
+        dmg = max(5, int(round(dmg)))
         enemy.hp -= dmg
 
         if is_crit:
@@ -211,10 +130,9 @@ class BattleManager:
 
     def use_special(self, player, enemy, current_mp, cooldown):
         """
-        Commit 21: special moves respect class damage type.
+        Special moves respect class damage type.
         Mage's Arcane Burst is magic damage (vs enemy magic_defense).
         Knight, Rogue, Archer specials are physical (vs enemy defense × PHYS_PEN).
-        Rogue special multiplier increased to 1.0× (from 0.5×) per balance pass.
         """
         class_name = player.get('class_name', 'Knight')
 
@@ -235,7 +153,6 @@ class BattleManager:
         smoke_screen = False
 
         if class_name == 'Knight':
-            # Physical: vs enemy defense × PHYS_PEN
             eff_def = int(enemy.defense * PHYS_PEN)
             dmg = player['attack'] - np.random.randint(0, 4) - eff_def
             dmg = max(5, int(round(dmg)))
@@ -247,7 +164,6 @@ class BattleManager:
             )
 
         elif class_name == 'Mage':
-            # Magic: vs enemy magic_defense — no PHYS_PEN (magic bypasses armour)
             dmg = int(round(player.get('magic_attack', 0) * 2.0)) - enemy.magic_defense
             dmg = max(10, dmg)
             enemy.hp -= dmg
@@ -257,7 +173,6 @@ class BattleManager:
             )
 
         elif class_name == 'Rogue':
-            # Physical: 1.0× attack (boosted from 0.5× in balance pass)
             eff_def = int(enemy.defense * PHYS_PEN)
             dmg = max(5, int(round(player['attack'] * 1.0)) - eff_def)
             enemy.hp -= dmg
@@ -268,7 +183,6 @@ class BattleManager:
             )
 
         elif class_name == 'Archer':
-            # Physical: 2.0× attack crit
             eff_def = int(enemy.defense * PHYS_PEN)
             dmg = int(round(player['attack'] * 2.0)) - eff_def
             dmg = max(5, dmg)
@@ -287,15 +201,11 @@ class BattleManager:
 
     def enemy_attack(self, player, enemy, action=None, boss_phase=1):
         """
-        Commit 21: selects the correct player defense stat based on
-        the enemy's damage_type.
+        Selects the correct player defense stat based on the enemy's damage_type.
 
         physical → player['defense'] × PHYS_PEN
         magic    → player['magic_defense']
         mixed    → attack/flurry use physical; big_hit uses magic
-                   (mixed bosses alternate damage flavour by move type)
-
-        Returns (action, warning_message, damage).
         """
         weights = PHASE2_WEIGHTS if boss_phase == 2 else PHASE1_WEIGHTS
 
@@ -306,14 +216,11 @@ class BattleManager:
 
         damage_type = getattr(enemy, 'damage_type', 'physical')
 
-        # ── Resolve which attack stat and which player defense to use ──────────
         if damage_type == 'magic':
-            atk_stat = getattr(enemy, 'magic_attack', enemy.attack)
-            eff_def  = player.get('magic_defense', 0)
+            atk_stat  = getattr(enemy, 'magic_attack', enemy.attack)
+            eff_def   = player.get('magic_defense', 0)
             dmg_label = "magic"
         elif damage_type == 'mixed':
-            # Physical moves (attack, flurry) vs player physical defense
-            # Magic move (big_hit) vs player magic defense
             if action in ('attack', 'flurry'):
                 atk_stat  = enemy.attack
                 eff_def   = int(player.get('defense', 0) * PHYS_PEN)
@@ -323,12 +230,10 @@ class BattleManager:
                 eff_def   = player.get('magic_defense', 0)
                 dmg_label = "magic"
         else:
-            # physical (default)
             atk_stat  = enemy.attack
             eff_def   = int(player.get('defense', 0) * PHYS_PEN)
             dmg_label = "physical"
 
-        # ── Resolve move ───────────────────────────────────────────────────────
         if action == 'flurry':
             hits       = np.random.randint(3, 6)
             single_hit = max(2, atk_stat // 3) + np.random.randint(6, 10)
@@ -346,7 +251,6 @@ class BattleManager:
             dmg = max(5, dmg)
             msg = f"A swift {dmg_label} strike!"
 
-        # Phase 2: all damage multiplied
         if boss_phase == 2:
             dmg = max(1, int(round(dmg * PHASE2_DMG_MULT)))
 
@@ -355,8 +259,6 @@ class BattleManager:
     def resolve_player_action(self, move_type, player_action, dmg, current_hp, player,
                                smoke_screen_active=False):
         """
-        Unchanged from previous commits — damage value passed in is already
-        resolved against the correct defense stat by enemy_attack().
         smoke_screen_active guarantees a dodge regardless of dodge_chance.
         """
         class_name = player.get('class_name', 'Knight')
@@ -388,7 +290,6 @@ class BattleManager:
         """
         Predict the enemy's next move for the UI hint.
         Uses the correct weight set for the current phase.
-        Returns (move, hint_message, None).
         """
         weights = PHASE2_WEIGHTS if boss_phase == 2 else PHASE1_WEIGHTS
         move = np.random.choice(['attack', 'big_hit', 'flurry'], p=weights)
@@ -402,5 +303,10 @@ class BattleManager:
     # ── Phase transition helper ────────────────────────────────────────────────
 
     def get_phase2_lore(self, boss_name):
-        """Return the phase 2 transition lore message for this boss."""
-        return BOSS_PHASE2_LORE.get(boss_name, PHASE2_LORE_DEFAULT)
+        """Return the phase 2 transition lore message for this boss.
+        Reads from the boss dict in enemies.py — no local dict needed.
+        """
+        boss = BOSSES.get(boss_name)
+        if boss:
+            return boss.get('phase2_lore', BOSS_PHASE2_LORE_DEFAULT)
+        return BOSS_PHASE2_LORE_DEFAULT
