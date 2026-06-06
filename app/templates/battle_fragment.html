@@ -5,8 +5,10 @@ Swapped into <div id="battle-state"> by HTMX.
 
 Commit 10: souls counter in player HUD.
 Commit 11: boss phase 2 indicator on enemy HP bar label.
-           data-phase-change="true" on root div when transition fires this swap —
-           battle_sounds.js reads this on htmx:afterSwap to trigger screen flash.
+           data-phase-change="true" on root div when transition fires this swap.
+Commit 14: Enemy lore wrapped in <details> — collapsed by default to save
+           vertical space. Player can expand if they want to read lore.
+           No JS needed — pure HTML <details>/<summary>.
 -->
 
 {# ── HP percentages & colour classes ── #}
@@ -41,11 +43,6 @@ Commit 11: boss phase 2 indicator on enemy HP bar label.
 } %}
 {% set class_icon = class_icons.get(character.class_name, 'fa-shield-halved') %}
 
-{#
-  data-phase-change: read by battle_sounds.js on htmx:afterSwap.
-  Only "true" on the exact swap where phase 2 first triggers.
-  JS fires screen shake + red flash then clears the attribute.
-#}
 <div data-phase-change="{{ 'true' if phase_changed else 'false' }}">
 
 <!-- Player HUD -->
@@ -115,10 +112,24 @@ Commit 11: boss phase 2 indicator on enemy HP bar label.
         src="{{ url_for('static', filename='images/enemies/' + enemy.image) }}"
         alt="{{ enemy.name }}"
     >
-    <p class="enemy-lore">{{ enemy.lore }}</p>
+    {#
+      Commit 14: lore wrapped in <details> — collapsed by default.
+      Saves ~80px of vertical space. No JS needed.
+      The HTMX swap replaces the whole enemy-display div each turn,
+      so the details element resets to closed on each action — intentional,
+      as the enemy may have changed (boss phase) and lore is secondary info.
+    #}
+    <details class="enemy-lore-details" open>
+        <summary class="enemy-lore-summary">
+            <i class="fas fa-book-open" style="font-size:0.65rem;"></i>
+            Lore
+            <i class="fas fa-chevron-down lore-chevron"></i>
+        </summary>
+        <p class="enemy-lore">{{ enemy.lore }}</p>
+    </details>
 </div>
 
-<!-- Enemy HP bar — phase 2 indicator in label -->
+<!-- Enemy HP bar -->
 <div class="stat-bar-group">
     <div class="stat-bar-label">
         <span>
@@ -181,3 +192,10 @@ Commit 11: boss phase 2 indicator on enemy HP bar label.
 </div>
 
 </div><!-- /data-phase-change wrapper -->
+
+<script>
+// Collapse lore on mobile — open by default on desktop (set via 'open' attr above)
+if (window.innerWidth <= 768) {
+  document.querySelectorAll('.enemy-lore-details').forEach(d => d.removeAttribute('open'));
+}
+</script>

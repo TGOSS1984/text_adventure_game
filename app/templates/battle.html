@@ -2,11 +2,8 @@
 battle.html
 Full battle page — served on GET and on non-HTMX POSTs (fallback).
 
-Commit 11 additions:
-- boss_phase and phase_changed vars wired through from routes.py
-- Phase 2 badge on enemy HP bar label (matching battle_fragment.html)
-- #phase-flash overlay div added outside #battle-state for JS to trigger
-- souls displayed in player HUD (matching battle_fragment.html)
+Commit 11: boss_phase / phase_changed vars, #phase-flash overlay, souls in HUD.
+Commit 14: Enemy lore wrapped in collapsible <details> to reduce vertical footprint.
 -->
 
 <!DOCTYPE html>
@@ -125,7 +122,6 @@ Commit 11 additions:
                         >
                     {% endfor %}
                 </div>
-                <!-- Souls counter -->
                 <div class="battle-souls-counter" title="Souls collected this run" aria-label="Souls: {{ souls }}">
                     <i class="fas fa-coins"></i>
                     <span>{{ souls }}</span>
@@ -140,10 +136,18 @@ Commit 11 additions:
                 src="{{ url_for('static', filename='images/enemies/' + enemy.image) }}"
                 alt="{{ enemy.name }}"
             >
-            <p class="enemy-lore">{{ enemy.lore }}</p>
+            <!-- Commit 14: lore collapsible — saves ~80px vertical space -->
+            <details class="enemy-lore-details" open>
+                <summary class="enemy-lore-summary">
+                    <i class="fas fa-book-open" style="font-size:0.65rem;"></i>
+                    Lore
+                    <i class="fas fa-chevron-down lore-chevron"></i>
+                </summary>
+                <p class="enemy-lore">{{ enemy.lore }}</p>
+            </details>
         </div>
 
-        <!-- Enemy HP bar — phase 2 indicator -->
+        <!-- Enemy HP bar -->
         <div class="stat-bar-group">
             <div class="stat-bar-label">
                 <span>
@@ -214,19 +218,12 @@ Commit 11 additions:
 
 </div><!-- /.bonfire-bg -->
 
-<!-- Overlay effects — OUTSIDE #battle-state, never swapped -->
 <div id="timer-vignette" class="timer-vignette"></div>
 <div id="flurry-flash">
     <div class="flurry-vignette"></div>
 </div>
 <div id="healing-flash"></div>
 <div id="bubble-container"></div>
-
-<!--
-  #phase-flash — fired by battle_sounds.js when data-phase-change="true"
-  is detected on htmx:afterSwap. Sits outside #battle-state so it
-  persists and isn't cleared by subsequent HTMX swaps.
--->
 <div id="phase-flash"></div>
 
 <progress value="{{ player_hp }}" max="{{ character.max_hp }}" aria-label="Player HP">{{ player_hp }}/{{ character.max_hp }}</progress>
@@ -241,6 +238,12 @@ Commit 11 additions:
 <audio id="estus"         src="{{ url_for('static', filename='sounds/sound_effects/estus_sip.mp3') }}"     preload="auto"></audio>
 <audio id="music" loop></audio>
 
+<script>
+// Commit 14: collapse lore details on mobile — open by default on desktop
+if (window.innerWidth <= 768) {
+  document.querySelectorAll(".enemy-lore-details").forEach(d => d.removeAttribute("open"));
+}
+</script>
 <script src="{{ url_for('static', filename='js/audio_manager.js') }}"></script>
 <script src="{{ url_for('static', filename='js/settings.js') }}"></script>
 <script src="{{ url_for('static', filename='js/battle_sounds.js') }}"></script>

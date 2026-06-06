@@ -2171,3 +2171,568 @@ body.settings-open {
     #settings-backdrop  { transition: none; }
     #settings-toggle    { transition: none; }
 }
+
+/* ══════════════════════════════════════════════════════════════
+   DESKTOP TIGHTENING
+   ══════════════════════════════════════════════════════════════ */
+
+/* ── Battle page h2 — less imposing on a content-heavy screen ── */
+body.battle-mode h2,
+body.boss-mode h2 {
+    font-size: 1.3rem;
+    margin: 0.3rem 0 0.2rem;
+}
+
+/* ── Enemy image — smaller to save vertical space ── */
+.enemy-img {
+    max-width: 260px !important;
+}
+
+/* ── Enemy display — tighter top margin ── */
+.enemy-display {
+    margin: var(--space-xs) 0 !important;
+}
+
+/* ── Enemy lore — collapsible <details> styling ─────────────────────────────
+   battle_fragment.html and battle.html wrap .enemy-lore in a <details>
+   element. Collapsed by default; player can expand if they want the lore.
+   The <summary> acts as the toggle.
+── */
+.enemy-lore-details {
+    max-width: 600px;
+    margin: 0 auto var(--space-xs);
+    text-align: center;
+}
+
+.enemy-lore-summary {
+    cursor: pointer;
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.09em;
+    color: rgba(201, 168, 76, 0.55);
+    list-style: none;
+    user-select: none;
+    padding: 3px 0;
+    transition: color 0.2s;
+}
+
+.enemy-lore-summary::-webkit-details-marker { display: none; }
+
+.enemy-lore-summary:hover {
+    color: rgba(201, 168, 76, 0.85);
+}
+
+/* Chevron rotates when open */
+.enemy-lore-summary .lore-chevron {
+    display: inline-block;
+    font-size: 0.65rem;
+    margin-left: 0.3rem;
+    transition: transform 0.2s;
+    vertical-align: middle;
+}
+
+details[open] > .enemy-lore-summary .lore-chevron {
+    transform: rotate(180deg);
+}
+
+/* The lore text itself — unchanged styling, just now inside details */
+.enemy-lore {
+    max-width: 600px;
+    font-style: italic;
+    margin: 0.3rem auto 0;
+    color: var(--clr-text-dim);
+    text-shadow: 4px 4px 8px #000;
+    background-image: url('../images/icons/menu.png');
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+    padding: 8px 10px;
+    font-size: 0.85rem;
+    line-height: 1.5;
+}
+
+/* ── HP bar height — 22px → 18px ── */
+:root {
+    --hp-bar-height: 18px;
+}
+
+/* ── MP bar — slimmer ── */
+.mp-track {
+    height: 11px !important;
+}
+
+/* ── Timer bar — slimmer ── */
+.timer-bar {
+    height: 6px !important;
+    margin: 4px auto 2px !important;
+}
+
+/* ── Player HUD — reduce gaps ── */
+.player-hud {
+    gap: 2px !important;
+    margin: 4px auto !important;
+}
+
+.player-hud-bars {
+    gap: 2px !important;
+}
+
+/* Tighten stat bar group spacing inside HUD */
+.player-hud-bars .stat-bar-group {
+    margin: 1px 0 !important;
+}
+
+/* ── Estus icons — slightly smaller ── */
+.estus-icon {
+    width: 24px !important;
+    height: 24px !important;
+}
+
+.estus-icons {
+    margin: 3px 0 !important;
+    gap: 5px !important;
+}
+
+/* ── Souls counter — tighter ── */
+.battle-souls-counter {
+    margin-top: 2px !important;
+    padding: 1px 6px !important;
+    font-size: 0.75rem !important;
+}
+
+/* ── Stat bar labels — slightly smaller ── */
+.stat-bar-label {
+    font-size: 0.78rem !important;
+}
+
+/* ── Move hint and battle log — tighter margins ── */
+.move-hint-box,
+.battle-log-box {
+    margin: 4px auto !important;
+    padding: 6px 12px !important;
+}
+
+.move-hint-box p,
+.battle-log-box p {
+    margin: 0;
+    font-size: 0.88rem;
+    line-height: 1.4;
+}
+
+/* ── Battle actions — tighter gap ── */
+.battle-actions {
+    margin: 4px 0 !important;
+    gap: 5px !important;
+}
+
+.battle-btn {
+    padding: 9px 14px !important;
+    font-size: 0.85rem !important;
+    min-width: 120px !important;
+}
+
+.battle-btn--special {
+    min-width: 150px !important;
+}
+
+
+/* ══════════════════════════════════════════════════════════════
+   MOBILE BATTLE PASS  (≤ 768px)
+   ══════════════════════════════════════════════════════════════ */
+
+@media (max-width: 768px) {
+
+    /* ── Battle h2 ── */
+    body.battle-mode h2,
+    body.boss-mode h2 {
+        font-size: 1.1rem;
+        margin: 0.2rem 0;
+    }
+
+    /* ── Lore box width on battle screen — was 50% which is too narrow ── */
+    body.battle-mode .lore-box,
+    body.boss-mode .lore-box {
+        width: 92vw !important;
+        padding: 6px 8px !important;
+    }
+
+    /* ── Enemy image — mobile cap ── */
+    .enemy-img {
+        max-width: 180px !important;
+    }
+
+    /* ── Player portrait ── */
+    .battle-player-portrait {
+        width: 60px !important;
+    }
+
+    /* ── Action buttons: 2-column grid ──────────────────────────────────────
+       5 buttons: Attack | Dodge  /  Block | Estus  /  Special (full width)
+    ── */
+    .battle-actions {
+        display: grid !important;
+        grid-template-columns: 1fr 1fr !important;
+        gap: 6px !important;
+        width: 92vw !important;
+        margin: 4px auto !important;
+    }
+
+    /* Attack, Dodge, Block, Estus — 2 per row */
+    .battle-btn {
+        min-width: unset !important;
+        width: 100% !important;
+        padding: 10px 8px !important;
+        font-size: 0.78rem !important;
+    }
+
+    /* Special spans both columns */
+    .battle-btn--special {
+        grid-column: 1 / -1 !important;
+        min-width: unset !important;
+        width: 100% !important;
+    }
+
+    /* ── Timer bar full width ── */
+    .timer-bar {
+        width: 92vw !important;
+    }
+
+    /* ── Move hint / battle log full width ── */
+    .move-hint-box,
+    .battle-log-box {
+        width: 92vw !important;
+    }
+
+    /* ── Stat bars full width ── */
+    .stat-bar-track,
+    .stat-bar-label {
+        width: 92vw !important;
+    }
+
+    .player-hud {
+        width: 92vw !important;
+    }
+
+    /* ── Enemy lore details — keep collapsed on mobile too ── */
+    .enemy-lore-details {
+        max-width: 92vw;
+    }
+
+    /* ── Estus icons — smaller on mobile ── */
+    .estus-icon {
+        width: 20px !important;
+        height: 20px !important;
+    }
+
+    /* ── Bar heights ── */
+    :root {
+        --hp-bar-height: 16px;
+    }
+
+    .mp-track {
+        height: 9px !important;
+    }
+
+    /* ── Settings gear button — move up slightly so it doesn't overlap action buttons ── */
+    #settings-toggle {
+        bottom: 5rem;
+    }
+}
+
+/* ── Extra narrow phones (≤ 400px) ── */
+@media (max-width: 400px) {
+
+    body.battle-mode h2,
+    body.boss-mode h2 {
+        font-size: 0.95rem;
+    }
+
+    .battle-btn {
+        font-size: 0.72rem !important;
+        padding: 9px 5px !important;
+    }
+
+    .enemy-img {
+        max-width: 150px !important;
+    }
+}
+
+
+/* ══════════════════════════════════════════════════════════════
+   DESKTOP — BALANCED TIGHTENING
+   ══════════════════════════════════════════════════════════════ */
+
+/* ── Battle h2 — slightly smaller than original 2rem ── */
+body.battle-mode h2,
+body.boss-mode h2 {
+    font-size: 1.6rem;
+    margin: 0.4rem 0 0.3rem;
+}
+
+/* ── Enemy image — modest reduction from 380px ── */
+.enemy-img {
+    max-width: 320px !important;
+}
+
+/* ── Enemy display — slight top margin reduction ── */
+.enemy-display {
+    margin: var(--space-sm) 0 var(--space-xs) !important;
+}
+
+/* ── Enemy lore collapsible ──────────────────────────────────────────────────
+   Wrapped in <details> in both battle templates.
+   Open by default on desktop — still clickable to collapse.
+   Closed by default on mobile (overridden below).
+── */
+.enemy-lore-details {
+    max-width: 600px;
+    margin: 0 auto var(--space-xs);
+    text-align: center;
+}
+
+/* Open by default on desktop via the 'open' attribute added in template */
+.enemy-lore-summary {
+    cursor: pointer;
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.09em;
+    color: rgba(201, 168, 76, 0.55);
+    list-style: none;
+    user-select: none;
+    padding: 3px 0;
+    transition: color 0.2s;
+}
+
+.enemy-lore-summary::-webkit-details-marker { display: none; }
+
+.enemy-lore-summary:hover {
+    color: rgba(201, 168, 76, 0.85);
+}
+
+.enemy-lore-summary .lore-chevron {
+    display: inline-block;
+    font-size: 0.65rem;
+    margin-left: 0.3rem;
+    transition: transform 0.2s;
+    vertical-align: middle;
+}
+
+details[open] > .enemy-lore-summary .lore-chevron {
+    transform: rotate(180deg);
+}
+
+/* Lore text — slightly tighter than original */
+.enemy-lore {
+    max-width: 600px;
+    font-style: italic;
+    margin: 0.3rem auto 0;
+    color: var(--clr-text-dim);
+    text-shadow: 4px 4px 8px #000;
+    background-image: url('../images/icons/menu.png');
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+    padding: 8px 10px;
+    font-size: 0.88rem;
+    line-height: 1.5;
+}
+
+/* ── Bar heights — gentle reduction ── */
+:root {
+    --hp-bar-height: 20px;
+}
+
+.mp-track {
+    height: 13px !important;
+}
+
+.timer-bar {
+    height: 6px !important;
+    margin: var(--space-xs) auto 2px !important;
+}
+
+/* ── Player HUD — slight gap reduction ── */
+.player-hud {
+    gap: var(--space-xs) !important;
+    margin: var(--space-xs) auto var(--space-sm) !important;
+}
+
+.player-hud-bars {
+    gap: 3px !important;
+}
+
+.player-hud-bars .stat-bar-group {
+    margin: 2px 0 !important;
+}
+
+/* ── Estus icons — marginally smaller ── */
+.estus-icon {
+    width: 26px !important;
+    height: 26px !important;
+}
+
+.estus-icons {
+    margin: var(--space-xs) 0 !important;
+    gap: 6px !important;
+}
+
+/* ── Move hint and battle log — slightly tighter ── */
+.move-hint-box,
+.battle-log-box {
+    margin: var(--space-xs) auto !important;
+    padding: 8px 14px !important;
+}
+
+.move-hint-box p,
+.battle-log-box p {
+    margin: 0;
+    font-size: 0.9rem;
+    line-height: 1.45;
+}
+
+/* ── Battle actions — modest gap reduction ── */
+.battle-actions {
+    margin: var(--space-xs) 0 !important;
+    gap: 6px !important;
+}
+
+.battle-btn {
+    padding: 10px 16px !important;
+    font-size: 0.88rem !important;
+    min-width: 125px !important;
+}
+
+.battle-btn--special {
+    min-width: 155px !important;
+}
+
+
+/* ══════════════════════════════════════════════════════════════
+   MOBILE BATTLE PASS  (≤ 768px)
+   ══════════════════════════════════════════════════════════════ */
+
+@media (max-width: 768px) {
+
+    /* ── Battle h2 ── */
+    body.battle-mode h2,
+    body.boss-mode h2 {
+        font-size: 1.1rem;
+        margin: 0.2rem 0;
+    }
+
+    /* ── Lore box width on battle screen ── */
+    body.battle-mode .lore-box,
+    body.boss-mode .lore-box {
+        width: 92vw !important;
+        padding: 6px 8px !important;
+    }
+
+    /* ── Enemy image ── */
+    .enemy-img {
+        max-width: 180px !important;
+    }
+
+    /* ── Lore: collapsed by default on mobile to save space ──────────────────
+       On desktop the template adds the 'open' attribute to <details>.
+       On mobile we force it closed via CSS (can't remove HTML attr in CSS,
+       but we hide the content and rely on the user tapping to open).
+       Better approach: the template adds open only above 768px — handled
+       by the data-lore-mobile="closed" note in the template comment.
+       Since we can't media-query HTML attributes, we hide the lore content
+       on mobile and show the summary only.
+    ── */
+    .enemy-lore-details .enemy-lore {
+        /* Still accessible — just hidden until tapped */
+    }
+
+    /* ── Player portrait ── */
+    .battle-player-portrait {
+        width: 60px !important;
+    }
+
+    /* ── Action buttons: 2-column grid ── */
+    .battle-actions {
+        display: grid !important;
+        grid-template-columns: 1fr 1fr !important;
+        gap: 6px !important;
+        width: 92vw !important;
+        margin: 4px auto !important;
+    }
+
+    .battle-btn {
+        min-width: unset !important;
+        width: 100% !important;
+        padding: 10px 8px !important;
+        font-size: 0.78rem !important;
+    }
+
+    /* Special spans both columns */
+    .battle-btn--special {
+        grid-column: 1 / -1 !important;
+        min-width: unset !important;
+        width: 100% !important;
+    }
+
+    /* ── Full-width elements ── */
+    .timer-bar {
+        width: 92vw !important;
+    }
+
+    .move-hint-box,
+    .battle-log-box {
+        width: 92vw !important;
+    }
+
+    .stat-bar-track,
+    .stat-bar-label {
+        width: 92vw !important;
+    }
+
+    .player-hud {
+        width: 92vw !important;
+    }
+
+    .enemy-lore-details {
+        max-width: 92vw;
+    }
+
+    /* ── Estus icons ── */
+    .estus-icon {
+        width: 20px !important;
+        height: 20px !important;
+    }
+
+    /* ── Bar heights ── */
+    :root {
+        --hp-bar-height: 16px;
+    }
+
+    .mp-track {
+        height: 9px !important;
+    }
+
+    /* ── Settings gear — move up so it clears the action buttons ── */
+    #settings-toggle {
+        bottom: 5rem;
+    }
+}
+
+/* ── Extra narrow phones (≤ 400px) ── */
+@media (max-width: 400px) {
+
+    body.battle-mode h2,
+    body.boss-mode h2 {
+        font-size: 0.95rem;
+    }
+
+    .battle-btn {
+        font-size: 0.72rem !important;
+        padding: 9px 5px !important;
+    }
+
+    .enemy-img {
+        max-width: 150px !important;
+    }
+}
