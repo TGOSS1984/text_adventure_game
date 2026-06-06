@@ -17,6 +17,9 @@
 # Boss HP values adjusted for balance (see simulation notes in commit 21 spec):
 #   Ashen Knight 290->240, Blacksteel Sentinel 300->250,
 #   Ember Tyrant 400->320, Abyss Watcher 270->230
+#
+# Refactor: phase2_lore moved here from combat.py — lives alongside the boss
+# it describes. combat.py reads boss["phase2_lore"] instead of its own dict.
 
 # ── Regular enemies ───────────────────────────────────────────────────────────
 
@@ -182,18 +185,29 @@ ENEMIES = [
 # ── Boss enemies ──────────────────────────────────────────────────────────────
 # soul_reward formula: floor((hp * 0.8) + (attack * 5))
 # Commit 21: HP adjustments noted inline where changed from original values.
+# Refactor: phase2_lore field added to each boss — previously in combat.py.
+
+BOSS_PHASE2_LORE_DEFAULT = (
+    "⚠️ SECOND PHASE — The boss staggers — then steadies. "
+    "Something ancient and terrible wakes behind its eyes."
+)
 
 BOSSES = {
     "Cindergloom": {
         "hp":            250,
         "attack":        0,
-        "magic_attack":  26,     # reduced from 30 (balance pass)
+        "magic_attack":  26,
         "defense":       6,
         "magic_defense": 16,
         "damage_type":   "magic",
         "image":         "cindergloom.png",
         "lore":          "The final Flame Lord, bound in cinders and regret. Born of divine fire and destined to consume the end of all things. Within the lightless halls of the Forgotten Citadel, his throne rises from a lake of slow-burning ash, each ember a whisper of worlds already claimed. His flesh is a tapestry of charred fissures, glowing faintly with the molten pulse beneath. Horns wreathed in fire arc from his brow like the spires of a dying sun, and his talons drip molten gold that hisses against the blackened stones",
         "soul_reward":   350,
+        "phase2_lore": (
+            "🔥 SECOND PHASE — The Flame Lord's wounds crack open, "
+            "spilling rivers of molten gold. The air itself ignites. "
+            "\"You dare fan the dying flame? Then burn with it!\""
+        ),
     },
     "Lothric and Lorian": {
         "hp":            200,
@@ -205,28 +219,43 @@ BOSSES = {
         "image":         "lothric_lorian.png",
         "lore":          "Twin princes of fading flame. One silent and seething, the other bound to a cursed destiny of rekindling.",
         "soul_reward":   270,
+        "phase2_lore": (
+            "⚡ SECOND PHASE — Lorian collapses — and Lothric descends upon his "
+            "brother's back, pouring forbidden lightning into the broken body. "
+            "They rise as one. The air crackles with desperate power."
+        ),
     },
     "Ashen Knight": {
-        "hp":            240,    # reduced from 290 (balance pass)
+        "hp":            240,
         "attack":        24,
         "magic_attack":  0,
-        "defense":       11,     # reduced from 14 (balance pass)
+        "defense":       11,
         "magic_defense": 5,
         "damage_type":   "physical",
         "image":         "ashen_knight.png",
         "lore":          "The Ashen Knight looms, his form a grotesque amalgam of charred steel and twisted flesh, as though the armor has grown into him over centuries of penance",
         "soul_reward":   352,
+        "phase2_lore": (
+            "💀 SECOND PHASE — The Ashen Knight tears the visor from his helm "
+            "and screams. The ash fused to his flesh begins to glow. "
+            "\"I have endured centuries of penance. You will not end it!\""
+        ),
     },
     "Pale Drake": {
         "hp":            250,
         "attack":        0,
-        "magic_attack":  24,     # reduced from 28 (balance pass)
+        "magic_attack":  24,
         "defense":       5,
         "magic_defense": 15,
         "damage_type":   "magic",
         "image":         "pale_drake.png",
         "lore":          "In the wind-scoured depths of the Forgotten Valley, where frost clings even to the bones of the mountains, the Pale Drake slumbers beneath a sky that remembers no sun. His scales, the color of moonlit marble, shimmer with the faint light of dying stars.",
         "soul_reward":   340,
+        "phase2_lore": (
+            "❄️ SECOND PHASE — The Pale Drake rears back and shatters the ice "
+            "shelf beneath you. His eyes, once clouded, blaze white. "
+            "\"The stars do not forgive trespassers.\""
+        ),
     },
     "The Lord of Chains": {
         "hp":            220,
@@ -238,17 +267,27 @@ BOSSES = {
         "image":         "the_lord_of_chains.png",
         "lore":          "At the shattered heart of the Keep, upon a throne of rusted iron and broken manacles, sits the Lord of Chains. Once a conqueror whose name was a warcry, he traded crown and kin for the thrill of battle's red haze.",
         "soul_reward":   301,
+        "phase2_lore": (
+            "⛓️ SECOND PHASE — The chains binding the Lord of Chains snap "
+            "one by one. Each break draws blood — his own. He laughs. "
+            "\"Pain is the only throne I need.\""
+        ),
     },
     "The Ember Tyrant": {
-        "hp":            320,    # reduced from 400 (balance pass)
+        "hp":            320,
         "attack":        0,
-        "magic_attack":  24,     # increased from 22 (balance pass)
+        "magic_attack":  24,
         "defense":       6,
         "magic_defense": 14,
         "damage_type":   "magic",
         "image":         "the_ember_tyrant.png",
         "lore":          "The Ember Tyrant towers above the blackened earth, his skin a tapestry of cracked obsidian and veins of molten fire. Chains, long since fused to his flesh, drag behind him like the echoes of a broken throne.",
         "soul_reward":   430,
+        "phase2_lore": (
+            "🌋 SECOND PHASE — The Ember Tyrant tears the fused chains "
+            "free from his own flesh, roaring as obsidian skin splits. "
+            "Magma pours from the wounds. The ground begins to melt."
+        ),
     },
     "The Mireborn Serpent": {
         "hp":            230,
@@ -260,6 +299,11 @@ BOSSES = {
         "image":         "the_mireborn_serpent.png",
         "lore":          "From the depths of the drowned fen rises the Mireborn Serpent, a colossal coil of rotting scales and slick, peat-soaked flesh. Once a lord of the marshlands, he offered his body to an ancient parasite in exchange for dominion eternal.",
         "soul_reward":   309,
+        "phase2_lore": (
+            "🐍 SECOND PHASE — The Mireborn Serpent submerges entirely — "
+            "then erupts through the floor behind you, twice the size. "
+            "The parasite within pulses with sickly green light."
+        ),
     },
     "The Gravewarden": {
         "hp":            250,
@@ -271,9 +315,14 @@ BOSSES = {
         "image":         "the_gravewarden.png",
         "lore":          "Beyond the final descent of the Hollow Catacombs, where the air hangs heavy with the dust of centuries, the Gravewarden stands vigil. Draped in funeral raiments stitched from the shrouds of kings, his form is gaunt yet towering, a silhouette crowned with jagged bone and tarnished gold",
         "soul_reward":   320,
+        "phase2_lore": (
+            "☠️ SECOND PHASE — The Gravewarden removes his funeral crown "
+            "and drives it into the earth. The buried dead begin to stir. "
+            "\"Every soul here is mine to command.\""
+        ),
     },
     "The Abyss Watcher": {
-        "hp":            230,    # reduced from 270 (balance pass)
+        "hp":            230,
         "attack":        26,
         "magic_attack":  18,
         "defense":       10,
@@ -282,6 +331,11 @@ BOSSES = {
         "image":         "the_abyss_watcher.png",
         "lore":          "At the brink of the world where the Abyss swallows all light, the Abyss Watcher stands sentinel. Cloaked in tattered black, his form is both man and beast — a knight's frame twisted by the long years in darkness.",
         "soul_reward":   346,
+        "phase2_lore": (
+            "🌑 SECOND PHASE — The Abyss Watcher drives his own sword "
+            "through his chest and pulls it free glowing red. "
+            "\"The Abyss does not kill me. It feeds me.\""
+        ),
     },
     "The Thorn Matriarch": {
         "hp":            240,
@@ -293,16 +347,26 @@ BOSSES = {
         "image":         "the_thorn_matriarch.png",
         "lore":          "In the heart of the Chapel of Thorns, where rose and briar drink alike from bloodied soil, the Thorn Matriarch waits. Her armor blooms with living barbs, each petal forged from the steel of fallen pilgrims. Long strands of crimson hair drift like banners in the still, suffocating air. She moves with the elegance of a saint and the certainty of a blade, her every step sowing thorns that pierce flesh and spirit alike",
         "soul_reward":   317,
+        "phase2_lore": (
+            "🌹 SECOND PHASE — Crimson thorns erupt from the Thorn Matriarch's "
+            "wounds, spreading across the chapel floor. She raises her arms "
+            "and the briars respond. \"Every cut is a garden.\""
+        ),
     },
     "The Blacksteel Sentinel": {
-        "hp":            250,    # reduced from 300 (balance pass)
+        "hp":            250,
         "attack":        23,
         "magic_attack":  0,
-        "defense":       11,     # reduced from 15 (balance pass)
+        "defense":       11,
         "magic_defense": 4,
         "damage_type":   "physical",
         "image":         "the_blacksteel_sentinel.png",
         "lore":          "Within the furnace-lit shadow of the Iron Bastion, the Blacksteel Sentinel waits astride the wreckage of a thousand sieges. His armor is hammered from the very walls he has defended, blackened by the soot of endless forges and scarred by the weapons of would-be conquerors.",
         "soul_reward":   355,
+        "phase2_lore": (
+            "⚒️ SECOND PHASE — The Blacksteel Sentinel drives both fists "
+            "into the forge-floor. The entire bastion shudders. His armour "
+            "glows white-hot. \"The walls do not fall. Neither do I.\""
+        ),
     },
 }
