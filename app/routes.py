@@ -35,6 +35,7 @@ from .config import (
     PHASE2_HP_TRIGGER,
 )
 from .models import Character, Enemy
+from .classes import CLASSES
 from .save_load import save_game, load_game, has_save, delete_save
 from .enemies import ENEMIES, BOSSES
 import random
@@ -54,8 +55,7 @@ def _htmx_redirect(location):
 
 @main.route("/")
 def index():
-    class_stats = Character.get_class_stats()
-    return render_template("index.html", class_stats=class_stats, has_save=has_save())
+    return render_template("index.html", classes=CLASSES, has_save=has_save())
 
 
 @main.route("/start", methods=["POST"])

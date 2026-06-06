@@ -21,6 +21,11 @@ Commit 21 additions:
 Commit 21b addition:
 - Mage attack label updated to Mag.Atk with wand icon
 
+Refactor:
+- 4 hardcoded class cards replaced with a single for loop over CLASSES
+- All class stats, icons, lore, damage type badges driven from classes.py
+- Gift panel, audio, bestiary link, JS — unchanged
+
 Video load fix:
 - poster attribute added to <video> for instant static background on load
 - preload hint changed from video to image (better browser support)
@@ -36,13 +41,11 @@ Video load fix:
 
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-    <!-- Video load fix: preload the poster image (as=image has broad browser support unlike as=video) -->
     <link rel="preload" as="image" href="{{ url_for('static', filename='images/areas/video_placeholder.jpg') }}">
 </head>
 
 <body class="home-page">
 
-    <!-- Video load fix: poster shows the placeholder instantly while MP4 buffers -->
     <video autoplay muted loop playsinline preload="auto" id="bg-video"
            poster="{{ url_for('static', filename='images/areas/video_placeholder.jpg') }}">
         <source src="{{ url_for('static', filename='videos/landing_video_2.mp4') }}" type="video/mp4">
@@ -61,98 +64,36 @@ Video load fix:
 
             <div class="class-options-wrapper">
 
+                {% for class_name, cls in classes.items() %}
                 <div class="class-option">
                     <label>
-                        <input type="radio" name="class" value="Knight" required>
-                        <img src="{{ url_for('static', filename='images/classes/knight.png') }}" alt="Knight">
-                        <span><i class="fas fa-chess-knight"></i> Knight</span>
+                        <input type="radio" name="class" value="{{ class_name }}" {% if loop.first %}required{% endif %}>
+                        <img src="{{ url_for('static', filename='images/' + cls.image) }}" alt="{{ class_name }}">
+                        <span><i class="fas {{ cls.icon }}"></i> {{ class_name }}</span>
                         <div class="class-stats">
-                            <span><i class="fas fa-crosshairs"></i> Attack: {{ class_stats["Knight"].attack }}</span>
-                            <span><i class="fas fa-shield-alt"></i> Defense: {{ class_stats["Knight"].defense }}</span>
-                            <span><i class="fas fa-heart"></i> HP: {{ class_stats["Knight"].max_hp }}</span>
-                            <span><i class="fas fa-bullseye"></i> Crit: {{ (class_stats["Knight"].crit_chance * 100) | round(0) }}%</span>
-                            <span><i class="fas fa-running"></i> Dodge: {{ (class_stats["Knight"].dodge_chance * 100) | round(0) }}%</span>
-                            <span><i class="fas fa-shield-virus"></i> Block: {{ (100 - class_stats["Knight"].block_multiplier * 100) | round(0) }}% reduced</span>
-                            {# Commit 21: magic defense stat #}
-                            <span><i class="fas fa-hat-wizard"></i> Mag.Def: {{ class_stats["Knight"].magic_defense }}</span>
+                            {% if cls.damage_type == 'magic' %}
+                                <span><i class="fas fa-wand-magic-sparkles"></i> Mag.Atk: {{ cls.magic_attack }}</span>
+                            {% else %}
+                                <span><i class="fas fa-crosshairs"></i> Attack: {{ cls.attack }}</span>
+                            {% endif %}
+                            <span><i class="fas fa-shield-alt"></i> Defense: {{ cls.defense }}</span>
+                            <span><i class="fas fa-heart"></i> HP: {{ cls.max_hp }}</span>
+                            <span><i class="fas fa-bullseye"></i> Crit: {{ (cls.crit_chance * 100) | round(0) | int }}%</span>
+                            <span><i class="fas fa-running"></i> Dodge: {{ (cls.dodge_chance * 100) | round(0) | int }}%</span>
+                            <span><i class="fas fa-shield-virus"></i> Block: {{ (100 - cls.block_multiplier * 100) | round(0) | int }}% reduced</span>
+                            <span><i class="fas fa-hat-wizard"></i> Mag.Def: {{ cls.magic_defense }}</span>
                         </div>
-                        {# Commit 21: damage type badge #}
                         <div class="class-type-row">
-                            <span class="damage-type-badge damage-type-badge--lg badge--physical">⚔ Physical</span>
+                            {% if cls.damage_type == 'magic' %}
+                                <span class="damage-type-badge damage-type-badge--lg badge--magic">✨ Magic</span>
+                            {% else %}
+                                <span class="damage-type-badge damage-type-badge--lg badge--physical">⚔ Physical</span>
+                            {% endif %}
                         </div>
-                        <span class="class-lore">Once a sentinel of the Sunken Citadel, their oath was not broken — only forgotten. Clad in rusted honour, they march through death unbent.</span>
+                        <span class="class-lore">{{ cls.lore }}</span>
                     </label>
                 </div>
-
-                <div class="class-option">
-                    <label>
-                        <input type="radio" name="class" value="Mage">
-                        <img src="{{ url_for('static', filename='images/classes/mage.png') }}" alt="Mage">
-                        <span><i class="fas fa-wand-magic-sparkles"></i> Mage</span>
-                        <div class="class-stats">
-                            {# Commit 21b: Mage shows Mag.Atk label with wand icon #}
-                            <span><i class="fas fa-wand-magic-sparkles"></i> Mag.Atk: {{ class_stats["Mage"].magic_attack }}</span>
-                            <span><i class="fas fa-shield-alt"></i> Defense: {{ class_stats["Mage"].defense }}</span>
-                            <span><i class="fas fa-heart"></i> HP: {{ class_stats["Mage"].max_hp }}</span>
-                            <span><i class="fas fa-bullseye"></i> Crit: {{ (class_stats["Mage"].crit_chance * 100) | round(0) }}%</span>
-                            <span><i class="fas fa-running"></i> Dodge: {{ (class_stats["Mage"].dodge_chance * 100) | round(0) }}%</span>
-                            <span><i class="fas fa-shield-virus"></i> Block: {{ (100 - class_stats["Mage"].block_multiplier * 100) | round(0) }}% reduced</span>
-                            {# Commit 21: magic defense stat #}
-                            <span><i class="fas fa-hat-wizard"></i> Mag.Def: {{ class_stats["Mage"].magic_defense }}</span>
-                        </div>
-                        {# Commit 21: damage type badge #}
-                        <div class="class-type-row">
-                            <span class="damage-type-badge damage-type-badge--lg badge--magic">✨ Magic</span>
-                        </div>
-                        <span class="class-lore">Bearer of forbidden glintfire, the Mage whispers truths carved in starlight. Each spell flung is a shard of a dream long devoured.</span>
-                    </label>
-                </div>
-
-                <div class="class-option">
-                    <label>
-                        <input type="radio" name="class" value="Rogue">
-                        <img src="{{ url_for('static', filename='images/classes/rogue.png') }}" alt="Rogue">
-                        <span><i class="fas fa-skull-crossbones"></i> Rogue</span>
-                        <div class="class-stats">
-                            <span><i class="fas fa-crosshairs"></i> Attack: {{ class_stats["Rogue"].attack }}</span>
-                            <span><i class="fas fa-shield-alt"></i> Defense: {{ class_stats["Rogue"].defense }}</span>
-                            <span><i class="fas fa-heart"></i> HP: {{ class_stats["Rogue"].max_hp }}</span>
-                            <span><i class="fas fa-bullseye"></i> Crit: {{ (class_stats["Rogue"].crit_chance * 100) | round(0) }}%</span>
-                            <span><i class="fas fa-running"></i> Dodge: {{ (class_stats["Rogue"].dodge_chance * 100) | round(0) }}%</span>
-                            <span><i class="fas fa-shield-virus"></i> Block: {{ (100 - class_stats["Rogue"].block_multiplier * 100) | round(0) }}% reduced</span>
-                            {# Commit 21: magic defense stat #}
-                            <span><i class="fas fa-hat-wizard"></i> Mag.Def: {{ class_stats["Rogue"].magic_defense }}</span>
-                        </div>
-                        {# Commit 21: damage type badge #}
-                        <div class="class-type-row">
-                            <span class="damage-type-badge damage-type-badge--lg badge--physical">⚔ Physical</span>
-                        </div>
-                        <span class="class-lore">Born in the shadow of the Ashen Spires, the Rogue strikes like regret — unseen, swift, and final. No name, no past, only the blade.</span>
-                    </label>
-                </div>
-
-                <div class="class-option">
-                    <label>
-                        <input type="radio" name="class" value="Archer">
-                        <img src="{{ url_for('static', filename='images/classes/archer.png') }}" alt="Archer">
-                        <span><i class="fas fa-feather"></i> Archer</span>
-                        <div class="class-stats">
-                            <span><i class="fas fa-crosshairs"></i> Attack: {{ class_stats["Archer"].attack }}</span>
-                            <span><i class="fas fa-shield-alt"></i> Defense: {{ class_stats["Archer"].defense }}</span>
-                            <span><i class="fas fa-heart"></i> HP: {{ class_stats["Archer"].max_hp }}</span>
-                            <span><i class="fas fa-bullseye"></i> Crit: {{ (class_stats["Archer"].crit_chance * 100) | round(0) }}%</span>
-                            <span><i class="fas fa-running"></i> Dodge: {{ (class_stats["Archer"].dodge_chance * 100) | round(0) }}%</span>
-                            <span><i class="fas fa-shield-virus"></i> Block: {{ (100 - class_stats["Archer"].block_multiplier * 100) | round(0) }}% reduced</span>
-                            {# Commit 21: magic defense stat #}
-                            <span><i class="fas fa-hat-wizard"></i> Mag.Def: {{ class_stats["Archer"].magic_defense }}</span>
-                        </div>
-                        {# Commit 21: damage type badge #}
-                        <div class="class-type-row">
-                            <span class="damage-type-badge damage-type-badge--lg badge--physical">⚔ Physical</span>
-                        </div>
-                        <span class="class-lore">From the ruins of Eldergrove they come, eyes hollow with distant wars. Each arrow loosed is a memory exiled into the dark.</span>
-                    </label>
-                </div>
+                {% endfor %}
 
             </div><!-- /.class-options-wrapper -->
 
@@ -240,7 +181,6 @@ Video load fix:
             <button id="pauseMusic">&#128263; Pause</button>
         </div>
 
-        {# ── Commit 12: bestiary link ── #}
         <div class="menu" style="margin-top: 0.5rem;">
             <a href="{{ url_for('main.bestiary') }}" style="color: rgba(201,168,76,0.75); font-size: 0.85rem; letter-spacing: 0.06em;">
                 <i class="fas fa-book-skull"></i> Bestiary &amp; Guide

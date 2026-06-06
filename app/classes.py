@@ -8,8 +8,9 @@ Replaces the scattered class data previously spread across:
                MP_MAX, MAGIC_ATTACK, MAGIC_DEFENSE, DAMAGE_TYPE dicts
 - battle.html / battle_fragment.html — hardcoded special_label dicts
 - combat.py  — hardcoded if class_name == 'Knight' special move logic
+- index.html — 4 hardcoded class cards with stats, lore, icons inline
 
-Adding a new class: add one entry here. Every system picks it up automatically.
+Adding a new class: add one entry here. Everything else updates automatically.
 """
 
 CLASSES = {
@@ -36,6 +37,11 @@ CLASSES = {
         "special_desc":     "Normal damage + stun. Enemy cannot counter.",
         "special_cost":     50,
         "special_cooldown": 4,
+        # ── Flavour ───────────────────────────────────────────────────────────
+        "lore": (
+            "Once a sentinel of the Sunken Citadel, their oath was not broken "
+            "— only forgotten. Clad in rusted honour, they march through death unbent."
+        ),
     },
     "Mage": {
         # ── Core stats ────────────────────────────────────────────────────────
@@ -60,6 +66,11 @@ CLASSES = {
         "special_desc":     "2× magic attack. Bypasses all physical armour.",
         "special_cost":     50,
         "special_cooldown": 4,
+        # ── Flavour ───────────────────────────────────────────────────────────
+        "lore": (
+            "Bearer of forbidden glintfire, the Mage whispers truths carved in starlight. "
+            "Each spell flung is a shard of a dream long devoured."
+        ),
     },
     "Rogue": {
         # ── Core stats ────────────────────────────────────────────────────────
@@ -84,6 +95,11 @@ CLASSES = {
         "special_desc":     "1× attack damage + guaranteed dodge next enemy turn.",
         "special_cost":     50,
         "special_cooldown": 4,
+        # ── Flavour ───────────────────────────────────────────────────────────
+        "lore": (
+            "Born in the shadow of the Ashen Spires, the Rogue strikes like regret "
+            "— unseen, swift, and final. No name, no past, only the blade."
+        ),
     },
     "Archer": {
         # ── Core stats ────────────────────────────────────────────────────────
@@ -108,6 +124,11 @@ CLASSES = {
         "special_desc":     "2× attack. Finds the enemy's weak point.",
         "special_cost":     50,
         "special_cooldown": 4,
+        # ── Flavour ───────────────────────────────────────────────────────────
+        "lore": (
+            "From the ruins of Eldergrove they come, eyes hollow with distant wars. "
+            "Each arrow loosed is a memory exiled into the dark."
+        ),
     },
 }
 
