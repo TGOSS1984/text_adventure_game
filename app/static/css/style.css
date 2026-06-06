@@ -2760,19 +2760,54 @@ details[open] > .enemy-lore-summary .lore-chevron {
 }
 
 
-/* ── Audio controls & bestiary menu — start hidden ──────────────────────── */
-.audio-controls,
-.menu {
+/* ── Title element — JS owns reveal ────────────────────────────────────── */
+.title-animate {
+    animation: none !important;
+    opacity: 0;
+    transform: translateY(18px);
+    will-change: opacity, transform;
+}
+ 
+/* ── Class cards — start hidden, JS stagger-reveals ────────────────────── */
+body.home-page .class-option {
+    opacity: 0;
+    transform: translateY(24px);
+    will-change: opacity, transform;
+}
+ 
+/* ── Audio controls & menu — hidden on HOME PAGE ONLY ──────────────────── */
+body.home-page .audio-controls,
+body.home-page .menu {
     opacity: 0;
     transform: translateY(12px);
     will-change: opacity, transform;
 }
-
-
-/* ── Background video — start invisible ─────────────────────────────────── */
-#bg-video {
+ 
+/* ── Background video — start invisible ────────────────────────────────── */
+body.home-page #bg-video {
     opacity: 0;
     will-change: opacity;
+}
+ 
+/* ── Overlay — start invisible ──────────────────────────────────────────── */
+body.home-page .overlay {
+    opacity: 0;
+    will-change: opacity;
+}
+ 
+/* ── Reduced-motion: snap everything visible immediately ────────────────── */
+@media (prefers-reduced-motion: reduce) {
+    .title-animate,
+    body.home-page .class-option,
+    body.home-page .audio-controls,
+    body.home-page .menu,
+    body.home-page #bg-video,
+    body.home-page .overlay {
+        opacity: 1 !important;
+        transform: none !important;
+        transition: none !important;
+        animation: none !important;
+    }
 }
 
 

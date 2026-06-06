@@ -26,7 +26,7 @@ from flask import Blueprint, render_template, request, redirect, url_for, sessio
 from app.story.story_engine import Story
 from .combat import BattleManager, MP_REGEN_ATTACK, PHASE2_HP_TRIGGER
 from .models import Character
-from .save_load import save_game, load_game, has_save
+from .save_load import save_game, load_game, has_save, delete_save
 from .models import Enemy
 from .enemies import ENEMIES, BOSSES
 import random
@@ -107,6 +107,8 @@ def start():
     if not character:
         flash("Invalid character class.", "error")
         return redirect(url_for("main.index"))
+    
+    delete_save()
 
     session["character"] = {
         "name":            character.name,
@@ -538,6 +540,7 @@ def bestiary():
 
 @main.route("/restart", methods=["POST"])
 def restart():
+    delete_save()          # ← Commit 18: don't let a dead run's save persist
     session.clear()
     session.pop("_flashes", None)
     return redirect(url_for("main.index"))
@@ -551,5 +554,8 @@ def save():
 
 @main.route("/load")
 def load():
-    load_game(session)
+    success = load_game(session)
+    if not success:
+        flash("Save file could not be loaded. Starting fresh.", "error")
+        return redirect(url_for("main.index"))
     return redirect(url_for("main.game"))
