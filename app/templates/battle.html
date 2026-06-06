@@ -234,10 +234,10 @@ Commit 14: Enemy lore wrapped in collapsible <details> to reduce vertical footpr
 <audio id="attack-mage"   src="{{ url_for('static', filename='sounds/sound_effects/attack/mage.mp3') }}"   preload="auto"></audio>
 <audio id="attack-rogue"  src="{{ url_for('static', filename='sounds/sound_effects/attack/rogue.mp3') }}"  preload="auto"></audio>
 <audio id="attack-archer" src="{{ url_for('static', filename='sounds/sound_effects/attack/archer.mp3') }}" preload="auto"></audio>
-<audio id="special-knight" src="" preload="none"></audio>
-<audio id="special-mage"   src="" preload="none"></audio>
-<audio id="special-rogue"  src="" preload="none"></audio>
-<audio id="special-archer" src="" preload="none"></audio>
+<audio id="special-knight" src="{{ url_for('static', filename='sounds/sound_effects/attack/shield_bash.mp3') }}" preload="none"></audio>
+<audio id="special-mage"   src="{{ url_for('static', filename='sounds/sound_effects/attack/magic_blast') }}" preload="none"></audio>
+<audio id="special-rogue"  src="{{ url_for('static', filename='sounds/sound_effects/attack/smoke_bomb.mp3') }}" preload="none"></audio>
+<audio id="special-archer" src="{{ url_for('static', filename='sounds/sound_effects/attack/crit_arrow.mp3') }}" preload="none"></audio>
 <audio id="block"         src="{{ url_for('static', filename='sounds/sound_effects/block_generic.mp3') }}" preload="auto"></audio>
 <audio id="dodge"         src="{{ url_for('static', filename='sounds/sound_effects/dodge_generic.mp3') }}" preload="auto"></audio>
 <audio id="estus"         src="{{ url_for('static', filename='sounds/sound_effects/estus_sip.mp3') }}"     preload="auto"></audio>
