@@ -1308,10 +1308,12 @@ body.home-page .bonfire-bg {
 }
 
 .battle-btn--special:not([disabled]):hover {
-    background-color: var(--clr-gold);
-    color: #111;
-    box-shadow: 0 0 16px rgba(201, 168, 76, 0.60);
-    border-color: var(--clr-gold-bright);
+    background-image: none !important;
+    background-color: var(--clr-gold) !important;
+    color: #111111 !important;
+    border-color: var(--clr-gold-bright) !important;
+    box-shadow: 0 0 18px rgba(201, 168, 76, 0.65) !important;
+    transform: scale(1.05);
 }
 
 /* Disabled special — muted gold */
@@ -2835,5 +2837,99 @@ body.home-page .overlay {
         transform: none !important;
         transition: none !important;
         animation: none !important;
+    }
+}
+
+/* ── Special button hover fix ───────────────────────────────────────────────
+   The global button:hover rule applies background-color: crimson which
+   overrides the gold styling on .battle-btn--special. These rules restore
+   the correct gold hover and ensure disabled state is never accidentally
+   highlighted.
+── */
+
+/* Ready state — gold hover, overrides global crimson */
+.battle-btn--special:not([disabled]):hover {
+    background-color: var(--clr-gold) !important;
+    color: #111 !important;
+    border-color: var(--clr-gold-bright) !important;
+    box-shadow: 0 0 18px rgba(201, 168, 76, 0.65) !important;
+    transform: scale(1.05);
+}
+
+/* Disabled state — never show the crimson hover */
+.battle-btn--special[disabled]:hover {
+    background-color: transparent !important;
+    color: rgba(201, 168, 76, 0.35) !important;
+    border-color: rgba(201, 168, 76, 0.30) !important;
+    box-shadow: none !important;
+    transform: none !important;
+    cursor: not-allowed;
+}
+
+
+/* ── Commit 20: Special move flash overlay ──────────────────────────────────
+   Brief gold/white screen pulse when the player fires their special move.
+   Distinct from: red flurry flash, green estus flash, red phase flash.
+   #special-flash div is added to battle.html in this commit.
+── */
+
+#special-flash {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 9996;   /* below estus (9997) and flurry (9999) */
+}
+
+#special-flash::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-color: rgba(201, 168, 76, 0.45);
+    opacity: 0;
+    will-change: opacity;
+}
+
+#special-flash::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(
+        ellipse at center,
+        rgba(255, 240, 160, 0.55) 0%,
+        rgba(201, 168, 76, 0.25) 45%,
+        transparent 75%
+    );
+    opacity: 0;
+    will-change: opacity;
+}
+
+.special-flash-animate::before {
+    animation: specialFlashWash 0.75s ease-out forwards;
+}
+
+.special-flash-animate::after {
+    animation: specialFlashRadial 0.75s ease-out forwards;
+}
+
+@keyframes specialFlashWash {
+    0%   { opacity: 0; }
+    10%  { opacity: 0.85; }
+    35%  { opacity: 0.30; }
+    60%  { opacity: 0.55; }
+    100% { opacity: 0; }
+}
+
+@keyframes specialFlashRadial {
+    0%   { opacity: 0;    transform: scale(0.8); }
+    15%  { opacity: 1.0;  transform: scale(1.0); }
+    50%  { opacity: 0.60; transform: scale(1.1); }
+    100% { opacity: 0;    transform: scale(1.2); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .special-flash-animate::before,
+    .special-flash-animate::after {
+        animation: none;
+        opacity: 0;
     }
 }

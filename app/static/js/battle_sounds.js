@@ -8,6 +8,15 @@
  * - htmx:afterSwap handler reads data-phase-change="true" on the swapped
  *   fragment root div and calls triggerPhaseTransition() once, then clears
  *   the attribute so it cannot double-fire.
+ *
+ * Commit 20 additions:
+ * - playSpecialSound(cls): plays special-<class> SFX if the audio element
+ *   exists and has a src; falls back to the class attack sound so there is
+ *   always audio feedback even before real special SFX files are added.
+ * - 'special' case added to the action switch in bindBattleButtons() so
+ *   the special button now triggers SFX + a gold screen flash effect.
+ * - triggerSpecialFlash(): brief gold/white screen flash on special use,
+ *   distinct from the red flurry flash and green estus flash.
  */
 
 // ── Music ──────────────────────────────────────────────────────────────────
@@ -23,15 +32,56 @@ function initBattleMusic(isBoss) {
 
 // ── SFX ────────────────────────────────────────────────────────────────────
 
-function playAttackSound(cls) { AudioManager.playSfx('attack-' + cls); }
-function playBlockSound()     { AudioManager.playSfx('block'); }
-function playDodgeSound()     { AudioManager.playSfx('dodge'); }
-function playEstusSound()     { AudioManager.playSfx('estus'); }
+function playAttackSound(cls)  { AudioManager.playSfx('attack-' + cls); }
+function playBlockSound()      { AudioManager.playSfx('block'); }
+function playDodgeSound()      { AudioManager.playSfx('dodge'); }
+function playEstusSound()      { AudioManager.playSfx('estus'); }
+
+/**
+ * Commit 20: playSpecialSound
+ * Attempts to play the class-specific special SFX (special-<cls>).
+ * Falls back to the standard attack sound for that class if the special
+ * audio element is missing or has no src — ensures feedback is always
+ * present even before real special SFX files are supplied.
+ *
+ * Expected audio element IDs (add to battle.html when files are ready):
+ *   #special-knight  →  sounds/sound_effects/special/knight.mp3
+ *   #special-mage    →  sounds/sound_effects/special/mage.mp3
+ *   #special-rogue   →  sounds/sound_effects/special/rogue.mp3
+ *   #special-archer  →  sounds/sound_effects/special/archer.mp3
+ */
+function playSpecialSound(cls) {
+  const specialEl = document.getElementById('special-' + cls);
+  if (specialEl && specialEl.src && specialEl.src !== window.location.href) {
+    AudioManager.playSfx('special-' + cls);
+  } else {
+    // Fallback: use the class attack sound until real files exist
+    AudioManager.playSfx('attack-' + cls);
+  }
+}
 
 function getSfxDelay(id) {
   const el  = document.getElementById(id);
   const dur = el && isFinite(el.duration) ? el.duration : 0;
   return dur ? Math.min(Math.round(dur * 1000) + 150, 3200) : 800;
+}
+
+// ── Commit 20: Special move flash ─────────────────────────────────────────
+//
+// Brief gold/white pulse — distinct from red (flurry) and green (estus).
+// Uses #special-flash, a fixed overlay added in battle.html (Commit 20).
+
+function triggerSpecialFlash() {
+  const flash = document.getElementById('special-flash');
+  if (!flash) return;
+  flash.classList.remove('special-flash-animate');
+  void flash.offsetWidth;   // force reflow to restart animation
+  flash.classList.add('special-flash-animate');
+  flash.addEventListener(
+    'animationend',
+    () => flash.classList.remove('special-flash-animate'),
+    { once: true }
+  );
 }
 
 // ── Estus bubble system ────────────────────────────────────────────────────
@@ -278,14 +328,35 @@ function bindBattleButtons() {
       let sfxId = null;
 
       switch (action) {
-        case 'attack': sfxId = 'attack-' + playerClass; playAttackSound(playerClass); break;
-        case 'block':  sfxId = 'block';  playBlockSound();  break;
-        case 'dodge':  sfxId = 'dodge';  playDodgeSound();  break;
+        case 'attack':
+          sfxId = 'attack-' + playerClass;
+          playAttackSound(playerClass);
+          break;
+        case 'block':
+          sfxId = 'block';
+          playBlockSound();
+          break;
+        case 'dodge':
+          sfxId = 'dodge';
+          playDodgeSound();
+          break;
         case 'estus':
           sfxId = 'estus';
           playEstusSound();
           triggerEstusAnimation();
           break;
+        // ── Commit 20: special move SFX + gold flash ──────────────────────
+        case 'special':
+          playSpecialSound(playerClass);
+          triggerSpecialFlash();
+          // Use the special element duration if it has a real src,
+          // otherwise fall back to the attack sound duration for timing.
+          sfxId = (document.getElementById('special-' + playerClass)?.src &&
+                   document.getElementById('special-' + playerClass).src !== window.location.href)
+                   ? 'special-' + playerClass
+                   : 'attack-' + playerClass;
+          break;
+        // ─────────────────────────────────────────────────────────────────
       }
 
       // Estus: longer delay so bubbles visibly rise before the swap.

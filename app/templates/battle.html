@@ -225,6 +225,7 @@ Commit 14: Enemy lore wrapped in collapsible <details> to reduce vertical footpr
 <div id="healing-flash"></div>
 <div id="bubble-container"></div>
 <div id="phase-flash"></div>
+<div id="special-flash"></div>
 
 <progress value="{{ player_hp }}" max="{{ character.max_hp }}" aria-label="Player HP">{{ player_hp }}/{{ character.max_hp }}</progress>
 <progress value="{{ enemy.hp }}" max="{{ enemy.max_hp }}" aria-label="Enemy HP">{{ enemy.hp }}/{{ enemy.max_hp }}</progress>
@@ -233,6 +234,10 @@ Commit 14: Enemy lore wrapped in collapsible <details> to reduce vertical footpr
 <audio id="attack-mage"   src="{{ url_for('static', filename='sounds/sound_effects/attack/mage.mp3') }}"   preload="auto"></audio>
 <audio id="attack-rogue"  src="{{ url_for('static', filename='sounds/sound_effects/attack/rogue.mp3') }}"  preload="auto"></audio>
 <audio id="attack-archer" src="{{ url_for('static', filename='sounds/sound_effects/attack/archer.mp3') }}" preload="auto"></audio>
+<audio id="special-knight" src="" preload="none"></audio>
+<audio id="special-mage"   src="" preload="none"></audio>
+<audio id="special-rogue"  src="" preload="none"></audio>
+<audio id="special-archer" src="" preload="none"></audio>
 <audio id="block"         src="{{ url_for('static', filename='sounds/sound_effects/block_generic.mp3') }}" preload="auto"></audio>
 <audio id="dodge"         src="{{ url_for('static', filename='sounds/sound_effects/dodge_generic.mp3') }}" preload="auto"></audio>
 <audio id="estus"         src="{{ url_for('static', filename='sounds/sound_effects/estus_sip.mp3') }}"     preload="auto"></audio>
