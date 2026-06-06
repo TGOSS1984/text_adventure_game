@@ -17,6 +17,13 @@ Commit 21 additions:
 - Magic Defense stat row added to each class card stats block
 - Damage type badge added below each class stats block
 - Mage Attack stat now reads magic_attack (not attack which is 0)
+
+Commit 21b addition:
+- Mage attack label updated to Mag.Atk with wand icon
+
+Video load fix:
+- poster attribute added to <video> for instant static background on load
+- preload hint changed from video to image (better browser support)
 -->
 
 <!DOCTYPE html>
@@ -29,12 +36,15 @@ Commit 21 additions:
 
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-    <link rel="preload" as="video" href="{{ url_for('static', filename='videos/landing_video_2.mp4') }}" type="video/mp4">
+    <!-- Video load fix: preload the poster image (as=image has broad browser support unlike as=video) -->
+    <link rel="preload" as="image" href="{{ url_for('static', filename='images/areas/video_placeholder.jpg') }}">
 </head>
 
 <body class="home-page">
 
-    <video autoplay muted loop playsinline preload="auto" id="bg-video">
+    <!-- Video load fix: poster shows the placeholder instantly while MP4 buffers -->
+    <video autoplay muted loop playsinline preload="auto" id="bg-video"
+           poster="{{ url_for('static', filename='images/areas/video_placeholder.jpg') }}">
         <source src="{{ url_for('static', filename='videos/landing_video_2.mp4') }}" type="video/mp4">
     </video>
 
@@ -80,8 +90,8 @@ Commit 21 additions:
                         <img src="{{ url_for('static', filename='images/classes/mage.png') }}" alt="Mage">
                         <span><i class="fas fa-wand-magic-sparkles"></i> Mage</span>
                         <div class="class-stats">
-                            {# Commit 21: Mage uses magic_attack not attack (attack is 0) #}
-                            <span><i class="fas fa-crosshairs"></i> Mag.Atk: {{ class_stats["Mage"].magic_attack }}</span>
+                            {# Commit 21b: Mage shows Mag.Atk label with wand icon #}
+                            <span><i class="fas fa-wand-magic-sparkles"></i> Mag.Atk: {{ class_stats["Mage"].magic_attack }}</span>
                             <span><i class="fas fa-shield-alt"></i> Defense: {{ class_stats["Mage"].defense }}</span>
                             <span><i class="fas fa-heart"></i> HP: {{ class_stats["Mage"].max_hp }}</span>
                             <span><i class="fas fa-bullseye"></i> Crit: {{ (class_stats["Mage"].crit_chance * 100) | round(0) }}%</span>
