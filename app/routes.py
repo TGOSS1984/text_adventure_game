@@ -531,16 +531,18 @@ def bestiary():
     Read-only — no session writes. Safe to visit at any point mid-run.
     Passes ENEMIES list and BOSSES dict directly to the template.
     """
+    mid_run = bool(session.get("character"))
     return render_template(
         "bestiary.html",
         enemies=ENEMIES,
         bosses=BOSSES,
+        mid_run=mid_run,
     )
 
 
 @main.route("/restart", methods=["POST"])
 def restart():
-    delete_save()          # ← Commit 18: don't let a dead run's save persist
+    delete_save()
     session.clear()
     session.pop("_flashes", None)
     return redirect(url_for("main.index"))
@@ -549,6 +551,8 @@ def restart():
 @main.route("/save")
 def save():
     save_game(session)
+    if request.args.get("next") == "index":
+        return redirect(url_for("main.index"))
     return redirect(url_for("main.game"))
 
 

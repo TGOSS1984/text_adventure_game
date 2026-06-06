@@ -14,6 +14,11 @@ Changes in this commit:
 Commit 10 additions:
 - souls variable passed from route, displayed in header alongside HP.
 - "Visit Shop" button shown when is_rest=True (bonfire chapters only).
+
+Commit 19 addition:
+- "Return to Title" button added to the menu bar with an inline
+  confirmation step (warns about unsaved progress before redirecting).
+  No new route needed — confirmation is handled entirely in JS.
 -->
 
 <!DOCTYPE html>
@@ -68,6 +73,129 @@ Commit 10 additions:
             background: var(--clr-primary);
             color: #1a1209;
             box-shadow: 0 0 16px rgba(201,165,89,0.35);
+        }
+
+        /* ── Commit 19: Quit confirmation overlay ── */
+        #quit-confirm-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.75);
+            z-index: 10200;
+            align-items: center;
+            justify-content: center;
+        }
+
+        #quit-confirm-overlay.visible {
+            display: flex;
+        }
+
+        .quit-confirm-box {
+            background: rgba(10,6,2,0.97);
+            border: 1px solid rgba(201,168,76,0.40);
+            border-radius: 10px;
+            padding: 2rem 2.2rem;
+            max-width: 360px;
+            width: 90vw;
+            text-align: center;
+            box-shadow: 0 0 40px rgba(0,0,0,0.80);
+        }
+
+        .quit-confirm-box p {
+            font-size: 0.95rem;
+            color: rgba(230,210,170,0.90);
+            line-height: 1.6;
+            margin: 0 0 1.4rem;
+            text-shadow: 1px 1px 3px #000;
+            text-transform: none;
+            font-weight: normal;
+        }
+
+        .quit-confirm-box strong {
+            color: var(--clr-gold);
+        }
+
+        .quit-confirm-actions {
+            display: flex;
+            gap: 0.7rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        /* Save & quit — gold */
+        .quit-btn--save {
+            padding: 0.55rem 1.2rem;
+            background: transparent;
+            border: 1px solid var(--clr-gold);
+            color: var(--clr-gold);
+            border-radius: 5px;
+            font-family: inherit;
+            font-size: 0.82rem;
+            font-weight: 700;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            transition: background 0.15s, color 0.15s;
+            background-image: none !important;
+        }
+
+        .quit-btn--save:hover {
+            background: var(--clr-gold);
+            color: #111;
+            text-decoration: none;
+        }
+
+        /* Quit without saving — muted red */
+        .quit-btn--nosave {
+            padding: 0.55rem 1.2rem;
+            background: transparent;
+            border: 1px solid rgba(192,57,43,0.60);
+            color: rgba(220,100,80,0.90);
+            border-radius: 5px;
+            font-family: inherit;
+            font-size: 0.82rem;
+            font-weight: 700;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            transition: background 0.15s, color 0.15s;
+            background-image: none !important;
+        }
+
+        .quit-btn--nosave:hover {
+            background: rgba(192,57,43,0.25);
+            color: #ff8070;
+            text-decoration: none;
+        }
+
+        /* Cancel — subtle */
+        .quit-btn--cancel {
+            padding: 0.55rem 1.2rem;
+            background: transparent;
+            border: 1px solid rgba(255,255,255,0.15);
+            color: rgba(210,195,160,0.55);
+            border-radius: 5px;
+            font-family: inherit;
+            font-size: 0.82rem;
+            font-weight: 700;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: border-color 0.15s, color 0.15s;
+            background-image: none !important;
+        }
+
+        .quit-btn--cancel:hover {
+            border-color: rgba(255,255,255,0.35);
+            color: rgba(210,195,160,0.90);
         }
     </style>
 </head>
@@ -129,7 +257,6 @@ Commit 10 additions:
                 ></div>
             </div>
         </div>
-
 
         {# ── Starting gift badge ── #}
         {% set gift_display = {
@@ -215,11 +342,15 @@ Commit 10 additions:
             </div>
         {% endif %}
 
-        <!-- Save / Load / Bestiary links -->
+        <!-- Save / Load / Bestiary / Quit links -->
         <div class="menu">
             <a href="{{ url_for('main.save') }}">Save</a> |
             <a href="{{ url_for('main.load') }}">Load</a> |
-            <a href="{{ url_for('main.bestiary') }}"><i class="fas fa-book-skull"></i> Bestiary</a>
+            <a href="{{ url_for('main.bestiary') }}"><i class="fas fa-book-skull"></i> Bestiary</a> |
+            {# ── Commit 19: quit link triggers confirmation overlay — no hard nav ── #}
+            <a href="#" id="quit-link" aria-haspopup="dialog">
+                <i class="fas fa-door-open"></i> Return to Title
+            </a>
         </div>
 
         <!-- Music controls -->
@@ -233,6 +364,38 @@ Commit 10 additions:
     <!-- Bonfire pulse overlay -->
     <div id="bonfire-pulse" class="bonfire-pulse"></div>
 
+    <!-- ── Commit 19: Quit confirmation dialog ─────────────────────────────
+         Shown when player clicks "Return to Title".
+         Three choices:
+           1. Save & Return  — hits /save (which saves then redirects to /game),
+                               but we override destination to / via a query flag.
+                               Simplest approach: navigate to /save?quit=1 and
+                               handle the redirect in routes.py. For now we do
+                               a two-step: save via fetch then redirect.
+           2. Return without saving — navigate directly to /
+           3. Cancel — dismiss the overlay
+    ── -->
+    <div id="quit-confirm-overlay" role="dialog" aria-modal="true" aria-labelledby="quit-confirm-title">
+        <div class="quit-confirm-box">
+            <p id="quit-confirm-title">
+                <strong>Return to Title?</strong><br>
+                Any unsaved progress will be lost.<br>
+                Save your journey before leaving?
+            </p>
+            <div class="quit-confirm-actions">
+                <a href="{{ url_for('main.save') }}?next=index" id="quit-save-btn" class="quit-btn--save">
+                    <i class="fas fa-floppy-disk"></i> Save &amp; Return
+                </a>
+                <a href="{{ url_for('main.index') }}" class="quit-btn--nosave">
+                    <i class="fas fa-door-open"></i> Return without Saving
+                </a>
+                <button type="button" class="quit-btn--cancel" id="quit-cancel-btn">
+                    <i class="fas fa-times"></i> Cancel
+                </button>
+            </div>
+        </div>
+    </div>
+
     <script src="{{ url_for('static', filename='js/audio_manager.js') }}"></script>
     <script src="{{ url_for('static', filename='js/settings.js') }}"></script>
     <script src="{{ url_for('static', filename='js/sound.js') }}"></script>
@@ -245,6 +408,26 @@ Commit 10 additions:
         if (messages.some(([cat, msg]) => cat === 'info' && msg.includes('bonfire'))) {
             pulse.classList.add('active');
         }
+
+        // ── Commit 19: quit confirmation overlay ──────────────────────────
+        const overlay    = document.getElementById('quit-confirm-overlay');
+        const quitLink   = document.getElementById('quit-link');
+        const cancelBtn  = document.getElementById('quit-cancel-btn');
+
+        quitLink.addEventListener('click', e => {
+            e.preventDefault();
+            overlay.classList.add('visible');
+        });
+
+        cancelBtn.addEventListener('click', () => {
+            overlay.classList.remove('visible');
+        });
+
+        // Clicking the backdrop also dismisses
+        overlay.addEventListener('click', e => {
+            if (e.target === overlay) overlay.classList.remove('visible');
+        });
+        // ─────────────────────────────────────────────────────────────────
     });
     </script>
 

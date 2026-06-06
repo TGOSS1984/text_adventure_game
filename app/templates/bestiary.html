@@ -8,6 +8,10 @@ Two sections:
 
 No session dependency — accessible at any point, no login/run required.
 Uses <details>/<summary> for collapsibles — no JS needed, fully accessible.
+
+Commit 19 addition:
+- mid_run flag passed from route; shows "Continue Story" button alongside
+  "Return to Title" when player is mid-run, so they don't lose progress.
 -->
 
 <!DOCTYPE html>
@@ -378,17 +382,20 @@ Uses <details>/<summary> for collapsibles — no JS needed, fully accessible.
             text-shadow: 1px 1px 3px #000;
         }
 
-        /* ── Back navigation ── */
+        /* ── Back navigation — Commit 19: two-button layout when mid-run ── */
         .bestiary-nav {
             text-align: center;
             margin-top: 2.5rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.9rem;
         }
 
         .bestiary-nav a {
             display: inline-flex;
             align-items: center;
             gap: 0.5rem;
-            color: rgba(210,195,160,0.75);
             font-size: 0.88rem;
             letter-spacing: 0.06em;
             text-decoration: none;
@@ -396,8 +403,35 @@ Uses <details>/<summary> for collapsibles — no JS needed, fully accessible.
             text-shadow: 1px 1px 3px #000;
         }
 
-        .bestiary-nav a:hover {
+        /* Continue Story — prominent gold button */
+        .bestiary-nav .btn-continue {
+            padding: 0.65rem 1.8rem;
+            background: rgba(0,0,0,0.65);
+            border: 2px solid var(--clr-gold);
+            border-radius: 6px;
             color: var(--clr-gold);
+            font-weight: 700;
+            font-family: inherit;
+            font-size: 1rem;
+            text-transform: uppercase;
+            transition: background 0.15s, color 0.15s, box-shadow 0.15s, transform 0.15s;
+        }
+
+        .bestiary-nav .btn-continue:hover {
+            background: var(--clr-gold);
+            color: #111;
+            box-shadow: 0 0 18px rgba(201,168,76,0.50);
+            transform: scale(1.03);
+            text-decoration: none;
+        }
+
+        /* Return to Title — subtle muted link */
+        .bestiary-nav .btn-return {
+            color: rgba(210,195,160,0.65);
+        }
+
+        .bestiary-nav .btn-return:hover {
+            color: rgba(210,195,160,0.90);
             text-decoration: none;
         }
 
@@ -681,11 +715,20 @@ Uses <details>/<summary> for collapsibles — no JS needed, fully accessible.
         </details>
     </div>
 
-    <!-- Back navigation -->
+    <!-- ── Commit 19: Navigation — two buttons when mid-run, one when not ── -->
     <div class="bestiary-nav">
-        <a href="{{ url_for('main.index') }}">
-            <i class="fas fa-arrow-left"></i> Return to Title
-        </a>
+        {% if mid_run %}
+            <a href="{{ url_for('main.game') }}" class="btn-continue">
+                <i class="fas fa-book-open"></i> Continue Story
+            </a>
+            <a href="{{ url_for('main.index') }}" class="btn-return">
+                <i class="fas fa-arrow-left"></i> Return to Title
+            </a>
+        {% else %}
+            <a href="{{ url_for('main.index') }}" class="btn-return">
+                <i class="fas fa-arrow-left"></i> Return to Title
+            </a>
+        {% endif %}
     </div>
 
 </div><!-- /.bestiary-wrapper -->
