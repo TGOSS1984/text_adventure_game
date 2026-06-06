@@ -20,60 +20,24 @@ Commit 11 additions:
 - boss_phase passed to enemy_attack() and predict_enemy_move() so phase 2
   uses heavier move weights and 1.20× damage multiplier
 - Phase transition prepends the boss phase 2 lore message to the battle log
+
+Refactor:
+- NORMAL_BATTLE_BGS, BOSS_BATTLE_BGS, SHOP_ITEMS removed from this file
+  and imported from config.py
 """
 
 from flask import Blueprint, render_template, request, redirect, url_for, session, flash, Response
 from app.story.story_engine import Story
-from .combat import BattleManager, MP_REGEN_ATTACK, PHASE2_HP_TRIGGER
-from .models import Character
+from .combat import BattleManager, MP_REGEN_ATTACK
+from .config import (
+    NORMAL_BATTLE_BGS, BOSS_BATTLE_BGS,
+    SHOP_ITEMS,
+    PHASE2_HP_TRIGGER,
+)
+from .models import Character, Enemy
 from .save_load import save_game, load_game, has_save, delete_save
-from .models import Enemy
 from .enemies import ENEMIES, BOSSES
 import random
-
-NORMAL_BATTLE_BGS = [
-    "images/areas/undead_settlement.jpg",
-    "images/areas/high_walls.jpg",
-    "images/areas/irithyl.jpg",
-    "images/areas/bolateria.jpg",
-]
-BOSS_BATTLE_BGS = [
-    "images/areas/ringed_city.jpg",
-    "images/areas/stormveil.jpg",
-    "images/areas/erdtree.jpg",
-]
-
-# ── Shop catalogue ────────────────────────────────────────────────────────────
-SHOP_ITEMS = {
-    "estus_refill": {
-        "name":        "Estus Refill",
-        "description": "Restore all Estus Flasks to full.",
-        "cost":        150,
-        "icon":        "fas fa-flask",
-        "repeatable":  True,
-    },
-    "attack_shard": {
-        "name":        "Cracked Red Shard",
-        "description": "Sharpen your weapon. Attack +3 (permanent).",
-        "cost":        200,
-        "icon":        "fas fa-fire-flame-curved",
-        "repeatable":  False,
-    },
-    "defense_shard": {
-        "name":        "Cracked Blue Shard",
-        "description": "Harden your resolve. Defense +3 (permanent).",
-        "cost":        175,
-        "icon":        "fas fa-shield-halved",
-        "repeatable":  False,
-    },
-    "hp_vessel": {
-        "name":        "Vessel of Embers",
-        "description": "Kindle your flame. Max HP +20 (permanent).",
-        "cost":        250,
-        "icon":        "fas fa-heart",
-        "repeatable":  False,
-    },
-}
 
 main           = Blueprint("main", __name__)
 story          = Story()
@@ -107,7 +71,7 @@ def start():
     if not character:
         flash("Invalid character class.", "error")
         return redirect(url_for("main.index"))
-    
+
     delete_save()
 
     session["character"] = {
@@ -136,10 +100,8 @@ def start():
     session["souls"]               = 0
     session["estus_max"]           = 5
     session["shop_bought"]         = []
-    # ── Commit 11: boss phase state ───────────────────────────────────────────
-    session["boss_phase"]          = 1     # reset at start of every run
-    session["phase_changed"]       = False # transition animation flag
-    # ─────────────────────────────────────────────────────────────────────────
+    session["boss_phase"]          = 1
+    session["phase_changed"]       = False
 
     gift = (request.form.get("gift") or "fading_soul").strip()
     session["gift"] = gift
@@ -152,13 +114,11 @@ def start():
             session["character"]["crit_chance"] + 0.05, 4
         )
     elif gift == "iron_talisman":
-        #  class-aware — Mage benefits from magic_defense
         if session["character"]["damage_type"] == "magic":
             session["character"]["magic_defense"] += 3
         else:
             session["character"]["defense"] += 3
     elif gift == "witchs_ember":
-        #  class-aware — Mage benefits from magic_attack
         if session["character"]["damage_type"] == "magic":
             session["character"]["magic_attack"] += 3
         else:
@@ -193,13 +153,13 @@ def game():
             enemy     = battle_manager.generate_enemy(boss=is_boss, boss_name=boss_name)
 
             session["enemy"] = {
-                "name":        enemy.name,
-                "hp":          enemy.hp,
-                "max_hp":      enemy.hp,
-                "attack":      enemy.attack,
-                "image":       enemy.image,
-                "lore":        enemy.lore,
-                "soul_reward": enemy.soul_reward,
+                "name":          enemy.name,
+                "hp":            enemy.hp,
+                "max_hp":        enemy.hp,
+                "attack":        enemy.attack,
+                "image":         enemy.image,
+                "lore":          enemy.lore,
+                "soul_reward":   enemy.soul_reward,
                 "magic_attack":  enemy.magic_attack,
                 "magic_defense": enemy.magic_defense,
                 "defense":       enemy.defense,
@@ -207,10 +167,8 @@ def game():
             }
             session["enemy_is_boss"]        = is_boss
             session["chapter_after_battle"] = next_chapter
-            # ── Commit 11: reset phase for every new enemy ────────────────────
-            session["boss_phase"]    = 1
-            session["phase_changed"] = False
-            # ─────────────────────────────────────────────────────────────────
+            session["boss_phase"]           = 1
+            session["phase_changed"]        = False
             return redirect(url_for("main.battle"))
         else:
             session["chapter"] = next_chapter
@@ -271,10 +229,8 @@ def battle():
     mp_max      = character.get("mp_max", 100)
     cooldown    = session.get("special_cooldown", 0)
     souls       = session.get("souls", 0)
-    # ── Commit 11 ─────────────────────────────────────────────────────────────
     boss_phase    = session.get("boss_phase", 1)
     phase_changed = session.get("phase_changed", False)
-    # ─────────────────────────────────────────────────────────────────────────
     message = ""
 
     # ── GET ────────────────────────────────────────────────────────────────────
@@ -301,7 +257,7 @@ def battle():
             estus_max=session.get("estus_max", 5),
             souls=souls,
             boss_phase=boss_phase,
-            phase_changed=False,   # never fire transition on initial load
+            phase_changed=False,
         )
 
     # ── POST ───────────────────────────────────────────────────────────────────
@@ -310,9 +266,7 @@ def battle():
     stunned             = session.get("stunned", False)
     smoke_screen_active = session.get("smoke_screen_active", False)
 
-    # Consume and clear the phase_changed flag — it's only valid for one render
     session["phase_changed"] = False
-
     cooldown = max(0, cooldown - 1)
 
     # ── Player action ──────────────────────────────────────────────────────────
@@ -325,8 +279,8 @@ def battle():
         msg, enemy.hp, mp, cooldown, stun_enemy, smoke = battle_manager.use_special(
             character, enemy, mp, cooldown
         )
-        message      = msg
-        stunned      = stun_enemy
+        message             = msg
+        stunned             = stun_enemy
         smoke_screen_active = smoke
 
     elif action in ["dodge", "block"]:
@@ -346,8 +300,7 @@ def battle():
         )
         message = "⏰ You hesitated! " + warn_msg + " " + result
 
-    # ── Check boss phase transition BEFORE enemy counter ──────────────────────
-    # Only triggers once: boss_phase==1, enemy is a boss, and hp just crossed 50%
+    # ── Check boss phase transition ────────────────────────────────────────────
     phase_changed = False
     if (
         session.get("enemy_is_boss", False)
@@ -355,11 +308,10 @@ def battle():
         and enemy.hp > 0
         and enemy.hp <= enemy.max_hp * PHASE2_HP_TRIGGER
     ):
-        boss_phase             = 2
-        session["boss_phase"]  = 2
-        phase_changed          = True
-        phase_lore             = battle_manager.get_phase2_lore(enemy.name)
-        # Prepend phase lore to whatever battle message already exists
+        boss_phase            = 2
+        session["boss_phase"] = 2
+        phase_changed         = True
+        phase_lore            = battle_manager.get_phase2_lore(enemy.name)
         message = phase_lore + (" — " + message if message else "")
 
     # ── Enemy counter-attack ───────────────────────────────────────────────────
@@ -419,7 +371,7 @@ def battle():
     session["estus"]            = estus_count
     session["mp"]               = mp
     session["special_cooldown"] = cooldown
-    session["phase_changed"]    = phase_changed   # consumed on next render
+    session["phase_changed"]    = phase_changed
 
     next_move, next_msg, _ = battle_manager.predict_enemy_move(
         character, boss_phase=boss_phase
@@ -520,7 +472,6 @@ def buy():
         flash(f"🔥 Estus Flasks refilled. ({item['cost']} souls spent)", "info")
 
     elif item_key == "attack_shard":
-        # Cclass-aware — Mage boosts magic_attack
         if session["character"].get("damage_type") == "magic":
             session["character"]["magic_attack"] += 3
             flash(f"✨ Magic Attack increased by 3. ({item['cost']} souls spent)", "info")
@@ -530,7 +481,6 @@ def buy():
         session["shop_bought"] = bought + [item_key]
 
     elif item_key == "defense_shard":
-        # class-aware — Mage boosts magic_defense
         if session["character"].get("damage_type") == "magic":
             session["character"]["magic_defense"] += 3
             flash(f"🔮 Magic Defense increased by 3. ({item['cost']} souls spent)", "info")
@@ -553,13 +503,9 @@ def buy():
 def death():
     return render_template("death.html")
 
+
 @main.route("/bestiary")
 def bestiary():
-    """
-    Bestiary / game instructions page.
-    Read-only — no session writes. Safe to visit at any point mid-run.
-    Passes ENEMIES list and BOSSES dict directly to the template.
-    """
     mid_run = bool(session.get("character"))
     return render_template(
         "bestiary.html",
