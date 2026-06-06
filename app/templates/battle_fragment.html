@@ -2,216 +2,27 @@
 battle_fragment.html
 Partial template — returned ONLY for HTMX POST requests.
 Swapped into <div id="battle-state"> by HTMX.
-
-Commit 10: souls counter in player HUD.
-Commit 11: boss phase 2 indicator on enemy HP bar label.
-           data-phase-change="true" on root div when transition fires this swap.
-Commit 14: Enemy lore wrapped in <details> — collapsed by default to save
-           vertical space. Player can expand if they want to read lore.
-           No JS needed — pure HTML <details>/<summary>.
+To change the battle UI, edit _battle_hud.html — not this file.
 -->
 
-{# ── HP percentages & colour classes ── #}
-{% set player_pct = ((player_hp / character.max_hp) * 100) | round(1) %}
-{% set mp_pct     = ((mp / mp_max) * 100) | round(1) if mp_max > 0 else 0 %}
-{% set special_ready = (mp >= 50 and cooldown == 0) %}
-{% set special_label = {
-    'Knight': '🛡 Shield Bash',
-    'Mage':   '✨ Arcane Burst',
-    'Rogue':  '💨 Smoke Screen',
-    'Archer': '🎯 Mark Target',
-} %}
-{% set s_label = special_label.get(character.class_name, '⚡ Special') %}
-{% set s_hint  = ('(' ~ cooldown ~ ' turn cooldown)') if cooldown > 0 else ('(costs 50 MP — ' ~ mp ~ '/' ~ mp_max ~ ')') %}
-{% set enemy_pct  = ((enemy.hp / enemy.max_hp) * 100) | round(1) %}
-
-{% if player_pct > 50 %}
-    {% set player_hp_cls = '' %}
-{% elif player_pct > 25 %}
-    {% set player_hp_cls = 'hp-mid' %}
-{% else %}
-    {% set player_hp_cls = 'hp-low' %}
-{% endif %}
-
-{% set enemy_hp_cls = 'hp-low' if enemy_pct <= 30 else '' %}
-
-{% set class_icons = {
-    'Knight': 'fa-chess-knight',
-    'Mage':   'fa-wand-magic-sparkles',
-    'Rogue':  'fa-skull-crossbones',
-    'Archer': 'fa-feather'
-} %}
-{% set class_icon = class_icons.get(character.class_name, 'fa-shield-halved') %}
+{% from "_battle_hud.html" import render_hud %}
 
 <div data-phase-change="{{ 'true' if phase_changed else 'false' }}">
-
-<!-- Player HUD -->
-<div class="player-hud">
-    <img
-        src="{{ url_for('static', filename='images/' + character['image']) }}"
-        alt="{{ character['class_name'] }}"
-        class="battle-player-portrait"
-    >
-    {% set gift_display = {
-        'estus_plus':    ('fas fa-flask',             'Estus +1'),
-        'hunters_charm': ('fas fa-bullseye',          "Hunter's Charm"),
-        'iron_talisman': ('fas fa-shield-halved',     'Iron Talisman'),
-        'witchs_ember':  ('fas fa-fire-flame-curved', "Witch's Ember"),
-        'old_coin':      ('fas fa-coins',             'Old Coin'),
-        'fading_soul':   ('fas fa-ghost',             'Fading Soul'),
-    } %}
-    {% if gift and gift != 'fading_soul' %}
-    {% set g = gift_display.get(gift, ('fas fa-gift', gift)) %}
-    <div class="gift-badge" title="Starting gift: {{ g[1] }}">
-        <i class="fas {{ g[0] }}"></i>
-        <span>{{ g[1] }}</span>
-    </div>
-    {% endif %}
-    <div class="player-hud-bars">
-        <div class="stat-bar-group">
-            <div class="stat-bar-label">
-                <span><i class="fas {{ class_icon }}"></i> {{ character['class_name'] }}</span>
-                <span>{{ player_hp }}/{{ character.max_hp }}</span>
-            </div>
-            <div class="stat-bar-track" role="img" aria-label="Player HP {{ player_hp }} of {{ character.max_hp }}">
-                <div
-                    class="stat-bar-fill stat-bar-fill--player {{ player_hp_cls }}"
-                    style="width: {{ player_pct }}%;"
-                ></div>
-            </div>
-        </div>
-        <div class="stat-bar-group mp-bar-group">
-            <div class="stat-bar-label">
-             <span>
-                 <i class="fas {{ class_icon }}"></i> {{ character['class_name'] }}
-                 {# Commit 21: player damage type badge #}
-                 {% if character.get('damage_type') == 'magic' %}
-                     <span class="damage-type-badge badge--magic">✨ Magic</span>
-                 {% else %}
-                     <span class="damage-type-badge badge--physical">⚔ Physical</span>
-                 {% endif %}
-             </span>
-             <span>{{ player_hp }}/{{ character.max_hp }}</span>
-            </div>
-            <div class="stat-bar-track mp-track" role="img" aria-label="MP {{ mp }} of {{ mp_max }}">
-                <div class="stat-bar-fill stat-bar-fill--mp" style="width: {{ mp_pct }}%;"></div>
-            </div>
-        </div>
-        <div class="estus-icons" aria-label="Estus Flasks remaining: {{ session['estus'] }}">
-            {% for i in range(estus_max) %}
-                <img
-                    src="{{ url_for('static', filename='images/icons/estus.png') }}"
-                    alt="Estus Flask"
-                    class="estus-icon {% if i >= session['estus'] %}used{% endif %}"
-                >
-            {% endfor %}
-        </div>
-        <div class="battle-souls-counter" title="Souls collected this run" aria-label="Souls: {{ souls }}">
-            <i class="fas fa-coins"></i>
-            <span>{{ souls }}</span>
-        </div>
-    </div>
+    {{ render_hud(
+        player_hp=player_hp,
+        character=character,
+        mp=mp,
+        mp_max=mp_max,
+        cooldown=cooldown,
+        enemy=enemy,
+        boss_phase=boss_phase,
+        phase_changed=phase_changed,
+        move_hint=move_hint,
+        message=message,
+        gift=gift,
+        estus_max=estus_max,
+        souls=souls,
+        classes=classes,
+        is_fragment=True
+    ) }}
 </div>
-
-<!-- Enemy display -->
-<div class="enemy-display">
-    <img
-        class="enemy-img {% if phase_changed %}phase-change{% endif %}"
-        src="{{ url_for('static', filename='images/enemies/' + enemy.image) }}"
-        alt="{{ enemy.name }}"
-    >
-    {#
-      Commit 14: lore wrapped in <details> — collapsed by default.
-      Saves ~80px of vertical space. No JS needed.
-      The HTMX swap replaces the whole enemy-display div each turn,
-      so the details element resets to closed on each action — intentional,
-      as the enemy may have changed (boss phase) and lore is secondary info.
-    #}
-    <details class="enemy-lore-details" open>
-        <summary class="enemy-lore-summary">
-            <i class="fas fa-book-open" style="font-size:0.65rem;"></i>
-            Lore
-            <i class="fas fa-chevron-down lore-chevron"></i>
-        </summary>
-        <p class="enemy-lore">{{ enemy.lore }}</p>
-    </details>
-</div>
-
-<!-- Enemy HP bar -->
-<div class="stat-bar-group">
-    <div class="stat-bar-label">
-             <span>
-                 <i class="fas fa-skull-crossbones"></i>
-                 {{ enemy.name }}
-                 {% if boss_phase == 2 %}
-                     <span class="phase2-badge">⚠ PHASE II</span>
-                 {% endif %}
-                 {# Commit 21: enemy damage type badge #}
-                 {% if enemy.damage_type == 'magic' %}
-                     <span class="damage-type-badge badge--magic">✨ Magic</span>
-                 {% elif enemy.damage_type == 'mixed' %}
-                     <span class="damage-type-badge badge--mixed">⚔✨ Mixed</span>
-                 {% else %}
-                     <span class="damage-type-badge badge--physical">⚔ Physical</span>
-                 {% endif %}
-             </span>
-             <span>{{ enemy.hp }}/{{ enemy.max_hp }}</span>
-         </div>
-    <div class="stat-bar-track {% if boss_phase == 2 %}phase2-track{% endif %}"
-         role="img" aria-label="{{ enemy.name }} HP {{ enemy.hp }} of {{ enemy.max_hp }}">
-        <div
-            class="stat-bar-fill stat-bar-fill--enemy {% if boss_phase == 2 %}stat-bar-fill--phase2{% endif %} {{ enemy_hp_cls }}"
-            style="width: {{ enemy_pct }}%;"
-        ></div>
-    </div>
-</div>
-
-<!-- Move hint -->
-{% if move_hint %}
-    <div class="lore-box move-hint-box {% if boss_phase == 2 %}move-hint-box--phase2{% endif %}">
-        <p id="move-hint"><strong>Enemy Stance:</strong> {{ move_hint }}</p>
-    </div>
-{% endif %}
-
-<!-- Battle log -->
-{% if message %}
-    <div class="lore-box battle-log-box {% if phase_changed %}battle-log-box--phase2{% endif %}">
-        <p>{{ message }}</p>
-    </div>
-{% endif %}
-
-<!-- Action buttons -->
-<form id="battleForm" class="battle-actions">
-    <button type="button" data-action="attack" class="battle-btn">
-        <i class="fas fa-hand-fist"></i> Attack
-    </button>
-    <button type="button" data-action="dodge" class="battle-btn">
-        <i class="fas fa-person-running"></i> Dodge
-    </button>
-    <button type="button" data-action="block" class="battle-btn">
-        <i class="fas fa-shield-halved"></i> Block
-    </button>
-    <button type="button" data-action="estus" class="battle-btn"
-        {% if session['estus'] == 0 %}disabled style="opacity:0.45;cursor:not-allowed;"{% endif %}>
-        <i class="fas fa-flask"></i> Estus Flask
-    </button>
-    <button type="button" data-action="special" class="battle-btn battle-btn--special"
-        {% if not special_ready %}disabled style="opacity:0.45;cursor:not-allowed;"{% endif %}
-        title="{{ s_hint }}">
-        {{ s_label }}{% if cooldown > 0 %} ({{ cooldown }}){% endif %}
-    </button>
-</form>
-
-<!-- ATB Timer bar -->
-<div id="timer-bar" class="timer-bar" aria-label="Turn timer">
-    <div id="timer-bar-fill" class="timer-bar-fill timer-phase--normal" style="width:100%;"></div>
-</div>
-
-</div><!-- /data-phase-change wrapper -->
-
-<script>
-// Collapse lore on mobile — open by default on desktop (set via 'open' attr above)
-if (window.innerWidth <= 768) {
-  document.querySelectorAll('.enemy-lore-details').forEach(d => d.removeAttribute('open'));
-}
-</script>

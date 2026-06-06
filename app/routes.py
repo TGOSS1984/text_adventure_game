@@ -258,6 +258,7 @@ def battle():
             souls=souls,
             boss_phase=boss_phase,
             phase_changed=False,
+            classes=CLASSES,
         )
 
     # ── POST ───────────────────────────────────────────────────────────────────
@@ -397,6 +398,7 @@ def battle():
         souls=souls,
         boss_phase=boss_phase,
         phase_changed=phase_changed,
+        classes=CLASSES,
     )
 
     if _is_htmx():
