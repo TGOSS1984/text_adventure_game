@@ -2736,3 +2736,69 @@ details[open] > .enemy-lore-summary .lore-chevron {
         max-width: 150px !important;
     }
 }
+
+
+/* ── Title element baseline ─────────────────────────────────────────────── */
+/*
+   title_intro.js controls opacity/transform directly via inline style.
+   The existing .title-animate keyframe animation must be DISABLED so the
+   JS sequence owns the reveal. Add this override:
+*/
+.title-animate {
+    animation: none !important;   /* JS owns this reveal now */
+    opacity: 0;                   /* start hidden; JS sets to 1 */
+    transform: translateY(18px);  /* start offset; JS resets */
+    will-change: opacity, transform;
+}
+
+
+/* ── Class cards — start hidden (JS stagger-reveals them) ───────────────── */
+.class-option {
+    opacity: 0;
+    transform: translateY(24px);
+    will-change: opacity, transform;
+}
+
+
+/* ── Audio controls & bestiary menu — start hidden ──────────────────────── */
+.audio-controls,
+.menu {
+    opacity: 0;
+    transform: translateY(12px);
+    will-change: opacity, transform;
+}
+
+
+/* ── Background video — start invisible ─────────────────────────────────── */
+#bg-video {
+    opacity: 0;
+    will-change: opacity;
+}
+
+
+/* ── Overlay — start invisible ───────────────────────────────────────────── */
+.overlay {
+    opacity: 0;
+    will-change: opacity;
+}
+
+
+/* ── Reduced-motion overrides ────────────────────────────────────────────── */
+/*
+   Users who prefer reduced motion should see everything immediately.
+   title_intro.js already bails out early if prefers-reduced-motion is set,
+   but these CSS rules ensure nothing stays hidden if JS doesn't run.
+*/
+@media (prefers-reduced-motion: reduce) {
+    .title-animate,
+    .class-option,
+    .audio-controls,
+    .menu,
+    #bg-video,
+    .overlay {
+        opacity: 1 !important;
+        transform: none !important;
+        transition: none !important;
+        animation: none !important;
+    }
+}
