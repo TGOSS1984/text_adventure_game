@@ -11,6 +11,12 @@ Replaces the scattered class data previously spread across:
 - index.html — 4 hardcoded class cards with stats, lore, icons inline
 
 Adding a new class: add one entry here. Everything else updates automatically.
+
+Special move fields:
+    special_multiplier — damage multiplier applied to the relevant attack stat
+    special_effect     — 'stun', 'smoke', or None
+    special_variance   — max random int subtracted from damage (0 = no variance)
+    special_min_dmg    — damage floor after all reductions
 """
 
 CLASSES = {
@@ -37,6 +43,10 @@ CLASSES = {
         "special_desc":     "Normal damage + stun. Enemy cannot counter.",
         "special_cost":     50,
         "special_cooldown": 4,
+        "special_multiplier": 1.0,
+        "special_effect":     "stun",
+        "special_variance":   4,      # randint(0, 4) subtracted from damage
+        "special_min_dmg":    5,
         # ── Flavour ───────────────────────────────────────────────────────────
         "lore": (
             "Once a sentinel of the Sunken Citadel, their oath was not broken "
@@ -66,6 +76,10 @@ CLASSES = {
         "special_desc":     "2× magic attack. Bypasses all physical armour.",
         "special_cost":     50,
         "special_cooldown": 4,
+        "special_multiplier": 2.0,
+        "special_effect":     None,
+        "special_variance":   0,
+        "special_min_dmg":    10,
         # ── Flavour ───────────────────────────────────────────────────────────
         "lore": (
             "Bearer of forbidden glintfire, the Mage whispers truths carved in starlight. "
@@ -95,6 +109,10 @@ CLASSES = {
         "special_desc":     "1× attack damage + guaranteed dodge next enemy turn.",
         "special_cost":     50,
         "special_cooldown": 4,
+        "special_multiplier": 1.0,
+        "special_effect":     "smoke",
+        "special_variance":   0,
+        "special_min_dmg":    5,
         # ── Flavour ───────────────────────────────────────────────────────────
         "lore": (
             "Born in the shadow of the Ashen Spires, the Rogue strikes like regret "
@@ -124,6 +142,10 @@ CLASSES = {
         "special_desc":     "2× attack. Finds the enemy's weak point.",
         "special_cost":     50,
         "special_cooldown": 4,
+        "special_multiplier": 2.0,
+        "special_effect":     None,
+        "special_variance":   0,
+        "special_min_dmg":    5,
         # ── Flavour ───────────────────────────────────────────────────────────
         "lore": (
             "From the ruins of Eldergrove they come, eyes hollow with distant wars. "

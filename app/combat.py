@@ -13,7 +13,7 @@ Commit 10 fix:
 
 Commit 11 additions:
 - enemy_attack() accepts boss_phase param; phase 2 uses heavier move weights
-  and applies a 1.20× damage multiplier across all move types
+  and applies a 1.20x damage multiplier across all move types
 - predict_enemy_move() also accepts boss_phase so the hint reflects real weights
 
 Commit 21 additions:
@@ -22,18 +22,22 @@ Commit 21 additions:
 - use_special() uses the class damage type
 - enemy_attack() uses enemy damage_type to select correct player defense stat
 
-Refactor:
-- All constants (MP_COST, MP_REGEN_ATTACK, COOLDOWN_TURNS, PHYS_PEN,
-  PHASE2_DMG_MULT, PHASE2_HP_TRIGGER, PHASE1_WEIGHTS, PHASE2_WEIGHTS)
-  moved to config.py — imported from there
-- BOSS_PHASE2_LORE and PHASE2_LORE_DEFAULT removed — phase2_lore now lives
-  as a field on each boss dict in enemies.py
-- get_phase2_lore() reads from the boss dict via BOSSES lookup
+Refactor (constants):
+- All constants moved to config.py, imported from there
+- BOSS_PHASE2_LORE removed, phase2_lore lives in enemies.py boss dicts
+
+Refactor (data-driven specials):
+- use_special() no longer has per-class if/elif blocks
+- All special move behaviour (multiplier, effect, variance, min_dmg) defined
+  in classes.py and read here — adding a new class needs zero changes to combat.py
+- resolve_player_action() reads dodge_chance and block_multiplier from the live
+  player session dict so shop upgrades (e.g. Dodge Pendant) take effect in combat
 """
 
 import numpy as np
 from .models import Enemy, Character
 from .enemies import ENEMIES, BOSSES, BOSS_PHASE2_LORE_DEFAULT
+from .classes import CLASSES
 from .config import (
     MP_COST, MP_REGEN_ATTACK, COOLDOWN_TURNS,
     PHYS_PEN,
@@ -89,7 +93,7 @@ class BattleManager:
         Routes damage through physical or magic channel depending on the
         player's damage_type.
 
-        Physical classes use player['attack'] vs enemy.defense × PHYS_PEN.
+        Physical classes use player['attack'] vs enemy.defense x PHYS_PEN.
         Mage uses player['magic_attack'] vs enemy.magic_defense (no pen).
         """
         crit_chance     = float(player.get('crit_chance', 0.0))
@@ -130,9 +134,17 @@ class BattleManager:
 
     def use_special(self, player, enemy, current_mp, cooldown):
         """
-        Special moves respect class damage type.
-        Mage's Arcane Burst is magic damage (vs enemy magic_defense).
-        Knight, Rogue, Archer specials are physical (vs enemy defense × PHYS_PEN).
+        Data-driven special moves — all behaviour defined in classes.py.
+
+        Reads from CLASSES[class_name]:
+            special_multiplier — applied to the relevant attack stat
+            special_effect     — 'stun', 'smoke', or None
+            special_variance   — max random int subtracted from raw damage
+            special_min_dmg    — damage floor after all reductions
+            damage_type        — determines which attack/defense stats to use
+
+        Adding a new class with a special move: define these fields in
+        classes.py. Zero changes needed here.
         """
         class_name = player.get('class_name', 'Knight')
 
@@ -147,53 +159,70 @@ class BattleManager:
                 enemy.hp, current_mp, cooldown, False, False
             )
 
+        cls = CLASSES.get(class_name)
+        if not cls:
+            return (
+                "No special move available for this class.",
+                enemy.hp, current_mp, cooldown, False, False
+            )
+
         new_mp       = current_mp - MP_COST
         new_cooldown = COOLDOWN_TURNS
-        stun_enemy   = False
-        smoke_screen = False
 
-        if class_name == 'Knight':
-            eff_def = int(enemy.defense * PHYS_PEN)
-            dmg = player['attack'] - np.random.randint(0, 4) - eff_def
-            dmg = max(5, int(round(dmg)))
-            enemy.hp -= dmg
-            stun_enemy = True
-            msg = (
-                f"🛡️ Shield Bash! You crash your shield into the {enemy.name} "
-                f"for {dmg} physical damage and stun them — they cannot counter this turn!"
-            )
+        # ── Read special move definition from classes.py ───────────────────────
+        multiplier  = cls.get('special_multiplier', 1.0)
+        effect      = cls.get('special_effect', None)      # 'stun', 'smoke', None
+        variance    = cls.get('special_variance', 0)       # random damage reduction
+        min_dmg     = cls.get('special_min_dmg', 5)
+        damage_type = cls.get('damage_type', 'physical')
+        special_name = cls.get('special_name', 'Special')
 
-        elif class_name == 'Mage':
-            dmg = int(round(player.get('magic_attack', 0) * 2.0)) - enemy.magic_defense
-            dmg = max(10, dmg)
-            enemy.hp -= dmg
-            msg = (
-                f"✨ Arcane Burst! A torrent of magic tears through the "
-                f"{enemy.name} for {dmg} magic damage — armour is useless against pure arcane force!"
-            )
-
-        elif class_name == 'Rogue':
-            eff_def = int(enemy.defense * PHYS_PEN)
-            dmg = max(5, int(round(player['attack'] * 1.0)) - eff_def)
-            enemy.hp -= dmg
-            smoke_screen = True
-            msg = (
-                f"💨 Smoke Screen! You hurl a blade from the shadows, dealing {dmg} physical damage, "
-                "then vanish — the enemy's next attack will find nothing but smoke."
-            )
-
-        elif class_name == 'Archer':
-            eff_def = int(enemy.defense * PHYS_PEN)
-            dmg = int(round(player['attack'] * 2.0)) - eff_def
-            dmg = max(5, dmg)
-            enemy.hp -= dmg
-            msg = (
-                f"🎯 Mark Target! A perfectly placed arrow finds the "
-                f"{enemy.name}'s weak point for {dmg} physical damage!"
-            )
-
+        # ── Resolve damage ─────────────────────────────────────────────────────
+        if damage_type == 'magic':
+            base_atk = player.get('magic_attack', 0)
+            eff_def  = enemy.magic_defense
+            dmg_label = "magic"
         else:
-            msg = "No special move available for this class."
+            base_atk = player.get('attack', 0)
+            eff_def  = int(enemy.defense * PHYS_PEN)
+            dmg_label = "physical"
+
+        raw = int(round(base_atk * multiplier))
+        if variance > 0:
+            raw -= np.random.randint(0, variance)
+        dmg = max(min_dmg, raw - eff_def)
+        enemy.hp -= dmg
+
+        # ── Resolve effect flags ───────────────────────────────────────────────
+        stun_enemy   = (effect == 'stun')
+        smoke_screen = (effect == 'smoke')
+
+        # ── Build battle log message ───────────────────────────────────────────
+        special_label = cls.get('special_label', '⚡ Special')
+
+        if effect == 'stun':
+            msg = (
+                f"{special_label}! You crash your shield into the {enemy.name} "
+                f"for {dmg} {dmg_label} damage and stun them "
+                f"— they cannot counter this turn!"
+            )
+        elif effect == 'smoke':
+            msg = (
+                f"{special_label}! You hurl a blade from the shadows, "
+                f"dealing {dmg} {dmg_label} damage, then vanish "
+                f"— the enemy's next attack will find nothing but smoke."
+            )
+        elif damage_type == 'magic':
+            msg = (
+                f"{special_label}! A torrent of magic tears through the "
+                f"{enemy.name} for {dmg} {dmg_label} damage "
+                f"— armour is useless against pure arcane force!"
+            )
+        else:
+            msg = (
+                f"{special_label}! A devastating strike finds the "
+                f"{enemy.name}'s weak point for {dmg} {dmg_label} damage!"
+            )
 
         return msg, enemy.hp, new_mp, new_cooldown, stun_enemy, smoke_screen
 
@@ -203,9 +232,9 @@ class BattleManager:
         """
         Selects the correct player defense stat based on the enemy's damage_type.
 
-        physical → player['defense'] × PHYS_PEN
-        magic    → player['magic_defense']
-        mixed    → attack/flurry use physical; big_hit uses magic
+        physical -> player['defense'] x PHYS_PEN
+        magic    -> player['magic_defense']
+        mixed    -> attack/flurry use physical; big_hit uses magic
         """
         weights = PHASE2_WEIGHTS if boss_phase == 2 else PHASE1_WEIGHTS
 
@@ -259,7 +288,9 @@ class BattleManager:
     def resolve_player_action(self, move_type, player_action, dmg, current_hp, player,
                                smoke_screen_active=False):
         """
-        smoke_screen_active guarantees a dodge regardless of dodge_chance.
+        Reads dodge_chance and block_multiplier from the live player session dict
+        so any shop upgrades (e.g. Dodge Pendant) take effect immediately.
+        Falls back to classes.py values if not present in session.
         """
         class_name = player.get('class_name', 'Knight')
 
@@ -267,7 +298,10 @@ class BattleManager:
             return current_hp, "💨 The smoke screen works — the attack passes harmlessly through shadow!"
 
         if player_action == 'dodge':
-            success_chance = Character.get_dodge(class_name)
+            # Read from session first — picks up any shop-purchased upgrades
+            success_chance = player.get(
+                'dodge_chance', Character.get_dodge(class_name)
+            )
             if np.random.rand() < success_chance:
                 return current_hp, "You dodged the attack completely!"
             else:
@@ -275,7 +309,10 @@ class BattleManager:
                 return new_hp, f"You failed to dodge and took {dmg} damage."
 
         elif player_action == 'block':
-            reduction_ratio = Character.get_block_mult(class_name)
+            # Read from session first — picks up any shop-purchased upgrades
+            reduction_ratio = player.get(
+                'block_multiplier', Character.get_block_mult(class_name)
+            )
             blocked = int(dmg * reduction_ratio)
             new_hp  = current_hp - blocked
             return new_hp, f"You blocked the hit and took {blocked} damage."
