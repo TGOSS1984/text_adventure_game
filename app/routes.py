@@ -16,14 +16,15 @@ Commit 10 additions:
 Commit 11 additions:
 - session["boss_phase"]: 1 or 2, initialised in /start and when enemy is set
 - session["phase_changed"]: single-use flag set when boss crosses 50% HP threshold
-  for the first time — consumed by the template on the next fragment render
-- boss_phase passed to enemy_attack() and predict_enemy_move() so phase 2
-  uses heavier move weights and 1.20× damage multiplier
-- Phase transition prepends the boss phase 2 lore message to the battle log
+- boss_phase passed to enemy_attack() and predict_enemy_move()
 
 Refactor:
-- NORMAL_BATTLE_BGS, BOSS_BATTLE_BGS, SHOP_ITEMS removed from this file
-  and imported from config.py
+- NORMAL_BATTLE_BGS, BOSS_BATTLE_BGS, SHOP_ITEMS imported from config.py
+- GIFTS imported from config.py — /start gift logic is now a generic loop,
+  no hardcoded if/elif per gift
+- dodge_chance and block_multiplier added to session character dict so
+  shop upgrades to these stats (e.g. Dodge Pendant) work correctly in combat
+- BOSS_SOUL_BONUS, DEFAULT_ESTUS, ESTUS_HEAL_PCT imported from config.py
 """
 
 from flask import Blueprint, render_template, request, redirect, url_for, session, flash, Response
@@ -31,8 +32,9 @@ from app.story.story_engine import Story
 from .combat import BattleManager, MP_REGEN_ATTACK
 from .config import (
     NORMAL_BATTLE_BGS, BOSS_BATTLE_BGS,
-    SHOP_ITEMS,
+    SHOP_ITEMS, GIFTS,
     PHASE2_HP_TRIGGER,
+    BOSS_SOUL_BONUS, DEFAULT_ESTUS,
 )
 from .models import Character, Enemy
 from .classes import CLASSES
@@ -81,24 +83,27 @@ def start():
         "max_hp":          character.max_hp,
         "class_name":      character.class_name,
         "image":           character.image,
-        "crit_chance":     getattr(character, "crit_chance", 0.0),
-        "crit_multiplier": getattr(character, "crit_multiplier", 1.0),
+        "crit_chance":     character.crit_chance,
+        "crit_multiplier": character.crit_multiplier,
         "char_class":      char_class,
         "mp_max":          character.mp_max,
         "magic_attack":    character.magic_attack,
         "magic_defense":   character.magic_defense,
         "damage_type":     character.damage_type,
+        # Stored so shop upgrades to these stats take effect in combat
+        "dodge_chance":    character.dodge_chance,
+        "block_multiplier": character.block_multiplier,
     }
     session["chapter"]             = 0
     session["hp"]                  = character.max_hp
     session["enemy"]               = {}
-    session["estus"]               = 5
+    session["estus"]               = DEFAULT_ESTUS
     session["mp"]                  = 0
     session["special_cooldown"]    = 0
     session["stunned"]             = False
     session["smoke_screen_active"] = False
     session["souls"]               = 0
-    session["estus_max"]           = 5
+    session["estus_max"]           = DEFAULT_ESTUS
     session["shop_bought"]         = []
     session["boss_phase"]          = 1
     session["phase_changed"]       = False
@@ -106,25 +111,28 @@ def start():
     gift = (request.form.get("gift") or "fading_soul").strip()
     session["gift"] = gift
 
-    if gift == "estus_plus":
-        session["estus"]     = 6
-        session["estus_max"] = 6
-    elif gift == "hunters_charm":
-        session["character"]["crit_chance"] = round(
-            session["character"]["crit_chance"] + 0.05, 4
-        )
-    elif gift == "iron_talisman":
-        if session["character"]["damage_type"] == "magic":
-            session["character"]["magic_defense"] += 3
+    # ── Apply gift effect — driven entirely by GIFTS in config.py ─────────────
+    gift_def = GIFTS.get(gift)
+    if gift_def and gift_def.get("stat"):
+        stat   = gift_def["stat"]
+        amount = gift_def["amount"]
+        mode   = gift_def.get("mode", "add")
+        # Use magic_stat for magic damage_type classes if defined
+        if session["character"].get("damage_type") == "magic":
+            stat = gift_def.get("magic_stat", stat)
+
+        if stat == "estus":
+            # Sets both estus and estus_max
+            session["estus"]     = amount
+            session["estus_max"] = amount
+        elif stat == "souls":
+            session["souls"] = amount
+        elif mode == "set":
+            session["character"][stat] = amount
         else:
-            session["character"]["defense"] += 3
-    elif gift == "witchs_ember":
-        if session["character"]["damage_type"] == "magic":
-            session["character"]["magic_attack"] += 3
-        else:
-            session["character"]["attack"] += 3
-    elif gift == "old_coin":
-        session["souls"] = 200
+            # mode == "add"
+            current = session["character"].get(stat, 0)
+            session["character"][stat] = round(current + amount, 4)
 
     session.pop("_flashes", None)
     return redirect(url_for("main.game"))
@@ -179,7 +187,7 @@ def game():
 
     if data.get("rest") and not session.get("rested_here"):
         session["hp"]    = session["character"]["max_hp"]
-        session["estus"] = session.get("estus_max", 5)
+        session["estus"] = session.get("estus_max", DEFAULT_ESTUS)
         session["mp"]    = 0
         flash("🔥 You rest at the bonfire. HP, Estus Flasks and MP restored.", "info")
         session["rested_here"] = True
@@ -254,7 +262,7 @@ def battle():
             mp_max=mp_max,
             cooldown=cooldown,
             gift=session.get("gift", "fading_soul"),
-            estus_max=session.get("estus_max", 5),
+            estus_max=session.get("estus_max", DEFAULT_ESTUS),
             souls=souls,
             boss_phase=boss_phase,
             phase_changed=False,
@@ -347,7 +355,7 @@ def battle():
     if enemy.hp <= 0:
         reward = enemy.soul_reward
         if session.get("enemy_is_boss", False):
-            bonus  = round(reward * 0.5 / 5) * 5
+            bonus  = round(reward * BOSS_SOUL_BONUS / 5) * 5
             reward = reward + bonus
             flash(f"⚔️ Boss slain! You gain {reward} souls ({bonus} bonus).", "info")
         else:
@@ -394,7 +402,7 @@ def battle():
         mp_max=mp_max,
         cooldown=cooldown,
         gift=session.get("gift", "fading_soul"),
-        estus_max=session.get("estus_max", 5),
+        estus_max=session.get("estus_max", DEFAULT_ESTUS),
         souls=souls,
         boss_phase=boss_phase,
         phase_changed=phase_changed,
@@ -414,7 +422,7 @@ def shop():
     bought    = session.get("shop_bought", [])
     character = session.get("character", {})
     estus     = session.get("estus", 0)
-    estus_max = session.get("estus_max", 5)
+    estus_max = session.get("estus_max", DEFAULT_ESTUS)
 
     items = []
     for key, item in SHOP_ITEMS.items():
@@ -453,7 +461,7 @@ def buy():
     souls     = session.get("souls", 0)
     bought    = session.get("shop_bought", [])
     estus     = session.get("estus", 0)
-    estus_max = session.get("estus_max", 5)
+    estus_max = session.get("estus_max", DEFAULT_ESTUS)
 
     if not item["repeatable"] and item_key in bought:
         flash(f"You have already purchased {item['name']}.", "error")
