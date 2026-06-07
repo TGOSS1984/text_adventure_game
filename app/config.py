@@ -66,6 +66,13 @@ BOSS_BATTLE_BGS = [
     "images/areas/erdtree.jpg",
 ]
 
+# ── Per-boss background overrides ─────────────────────────────────────────────
+# If a boss name appears here, this background is used instead of a random
+# selection from BOSS_BATTLE_BGS. Add any boss name from enemies.py.
+BOSS_BG_OVERRIDES = {
+    "Cindergloom": "images/areas/fiery_end.jpg",
+}
+
 # ── Shop catalogue ────────────────────────────────────────────────────────────
 # Adding a new item: add one entry here + one elif in routes.py /buy.
 # The shop display, cost checks, and already-bought logic are all automatic.

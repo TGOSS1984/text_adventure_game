@@ -15,7 +15,7 @@ General game flow routes:
 from flask import render_template, request, redirect, url_for, session, flash
 from ..combat import BattleManager
 from ..config import (
-    NORMAL_BATTLE_BGS, BOSS_BATTLE_BGS,
+    NORMAL_BATTLE_BGS, BOSS_BATTLE_BGS, BOSS_BG_OVERRIDES,
     GIFTS, DEFAULT_ESTUS,
 )
 from ..models import Character
@@ -120,9 +120,12 @@ def register(blueprint):
 
             if next_data.get("battle"):
                 is_boss   = next_data.get("boss", False)
-                bg_pool   = BOSS_BATTLE_BGS if is_boss else NORMAL_BATTLE_BGS
-                session["battle_bg"] = random.choice(bg_pool)
                 boss_name = next_data.get("boss_name") if is_boss else None
+                if is_boss and boss_name in BOSS_BG_OVERRIDES:
+                    session["battle_bg"] = BOSS_BG_OVERRIDES[boss_name]
+                else:
+                    bg_pool = BOSS_BATTLE_BGS if is_boss else NORMAL_BATTLE_BGS
+                    session["battle_bg"] = random.choice(bg_pool)
                 enemy     = battle_manager.generate_enemy(boss=is_boss, boss_name=boss_name)
 
                 session["enemy"] = {

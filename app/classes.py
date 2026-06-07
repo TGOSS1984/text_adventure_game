@@ -88,7 +88,7 @@ CLASSES = {
     },
     "Rogue": {
         # ── Core stats ────────────────────────────────────────────────────────
-        "attack":           20,
+        "attack":           22,
         "magic_attack":     0,
         "defense":          8,
         "magic_defense":    6,
@@ -121,7 +121,7 @@ CLASSES = {
     },
     "Archer": {
         # ── Core stats ────────────────────────────────────────────────────────
-        "attack":           18,
+        "attack":           20,
         "magic_attack":     0,
         "defense":          10,
         "magic_defense":    8,
