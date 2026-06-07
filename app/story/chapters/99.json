@@ -9,5 +9,6 @@
   "lore": "Cindergloom was once known as Aegor the Quiet Flame — the only bearer who refused both rekindling and forgetting. He lingered. He *watched*. And over centuries, he *became* fire’s sorrow. His defeat will unbind the last will of the First Flame.",
   "battle": true,
   "boss": true,
+  "boss_name": "Cindergloom",
   "rest": false
 }

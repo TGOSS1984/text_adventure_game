@@ -75,6 +75,7 @@ def register(blueprint):
             session["predicted_move"] = predicted_move
             session["predicted_msg"]  = predicted_msg
             battle_bg = session.get("battle_bg", "images/areas/undead_settlement.jpg")
+            print(f"[DEBUG] battle_bg = {battle_bg}")  # ← add this line
             return render_template(
                 "battle.html",
                 enemy=enemy,
