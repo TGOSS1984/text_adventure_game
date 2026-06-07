@@ -10,6 +10,7 @@ General game flow routes:
     /save       — persist session to disk
     /load       — restore session from disk
     /bestiary   — enemy/boss reference page
+    /status     — player stats overview screen
 """
 
 from flask import render_template, request, redirect, url_for, session, flash
@@ -186,6 +187,35 @@ def register(blueprint):
             enemies=ENEMIES,
             bosses=BOSSES,
             mid_run=mid_run,
+        )
+
+    @blueprint.route("/status")
+    def status():
+        """
+        Player status screen — reads live session values so all
+        shop upgrades, gift bonuses, and current HP/MP are reflected.
+        Adding a new stat: pass it here and display it in status.html.
+        """
+        character = session.get("character", {})
+        class_name = character.get("class_name", "")
+
+        # Pull class lore and icon from CLASSES — single source of truth
+        cls_def    = CLASSES.get(class_name, {})
+        class_lore = cls_def.get("lore", "")
+        class_icon = cls_def.get("icon", "fa-shield-halved")
+
+        return render_template(
+            "status.html",
+            character=character,
+            class_icon=class_icon,
+            class_lore=class_lore,
+            hp=session.get("hp", character.get("max_hp", 100)),
+            mp=session.get("mp", 0),
+            mp_max=character.get("mp_max", 100),
+            estus=session.get("estus", 0),
+            estus_max=session.get("estus_max", 5),
+            souls=session.get("souls", 0),
+            gift=session.get("gift", "fading_soul"),
         )
 
     @blueprint.route("/restart", methods=["POST"])

@@ -1,0 +1,222 @@
+<!--
+status.html
+Player status / overview screen.
+
+Accessible from any story or rest chapter via the Status button in game.html.
+Reads entirely from session — no extra data passed from route beyond what
+the session already holds.
+
+Styles live in style.css under the PLAYER STATUS SCREEN section.
+To add a new stat: add it to the session in routes/game_routes.py and
+display it here. No other files need changing.
+-->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Elden Souls — Player Status">
+    <title>Elden Souls — Status</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+
+{# ── Computed values ── #}
+{% set hp_pct = ((hp / character.max_hp) * 100) | round(1) %}
+{% set mp_pct = ((mp / mp_max) * 100) | round(1) if mp_max > 0 else 0 %}
+
+{% if hp_pct > 50 %}
+    {% set hp_cls = '' %}
+{% elif hp_pct > 25 %}
+    {% set hp_cls = 'hp-mid' %}
+{% else %}
+    {% set hp_cls = 'hp-low' %}
+{% endif %}
+
+{% set gift_display = {
+    'estus_plus':    ('fas fa-flask',             'Estus +1'),
+    'hunters_charm': ('fas fa-bullseye',          "Hunter's Charm"),
+    'iron_talisman': ('fas fa-shield-halved',     'Iron Talisman'),
+    'witchs_ember':  ('fas fa-fire-flame-curved', "Witch's Ember"),
+    'old_coin':      ('fas fa-coins',             'Old Coin'),
+    'fading_soul':   ('fas fa-ghost',             'Fading Soul'),
+} %}
+
+<body class="status-page">
+
+<div class="bonfire-bg">
+<div class="status-wrapper status-panel">
+
+    <!-- Header -->
+    <div class="status-header">
+        <h1><i class="fas fa-scroll"></i> Bearer's Status</h1>
+    </div>
+
+    <!-- Portrait + class name + lore -->
+    <div class="status-portrait-block">
+        <img
+            src="{{ url_for('static', filename='images/' + character['image']) }}"
+            alt="{{ character['class_name'] }}"
+            class="status-portrait"
+        >
+        <span class="status-class-name">
+            <i class="fas {{ class_icon }}"></i>
+            {{ character['class_name'] }}
+        </span>
+        {% if class_lore %}
+        <p class="status-class-lore">{{ class_lore }}</p>
+        {% endif %}
+    </div>
+
+    <!-- Starting gift badge -->
+    <div class="status-gift-row">
+        {% if gift and gift != 'fading_soul' %}
+            {% set g = gift_display.get(gift, ('fas fa-gift', gift)) %}
+            <div class="gift-badge" title="Starting gift: {{ g[1] }}">
+                <i class="fas {{ g[0] }}"></i>
+                <span>{{ g[1] }}</span>
+            </div>
+        {% else %}
+            <div class="gift-badge" style="opacity:0.45;">
+                <i class="fas fa-ghost"></i>
+                <span>Fading Soul</span>
+            </div>
+        {% endif %}
+    </div>
+
+    <!-- Souls -->
+    <div style="text-align:center;">
+        <div class="status-souls">
+            <i class="fas fa-coins"></i>
+            {{ souls }} Souls
+        </div>
+    </div>
+
+    <hr class="status-divider">
+
+    <!-- HP & MP bars -->
+    <p class="status-section-title" style="text-align:center;">Vitals</p>
+    <div class="status-bars" style="display:flex;flex-direction:column;align-items:center;gap:0.5rem;">
+        <div class="stat-bar-group">
+            <div class="stat-bar-label" style="max-width:480px;width:min(480px,88vw);">
+                <span><i class="fas fa-heart" style="color:var(--clr-hp-low);"></i> HP</span>
+                <span>{{ hp }}/{{ character.max_hp }}</span>
+            </div>
+            <div class="stat-bar-track" style="width:min(480px,88vw);"
+                 role="img" aria-label="HP {{ hp }} of {{ character.max_hp }}">
+                <div class="stat-bar-fill stat-bar-fill--player {{ hp_cls }}"
+                     style="width:{{ hp_pct }}%;"></div>
+            </div>
+        </div>
+        <div class="stat-bar-group">
+            <div class="stat-bar-label" style="max-width:480px;width:min(480px,88vw);">
+                <span>✨ MP</span>
+                <span>{{ mp }}/{{ mp_max }}</span>
+            </div>
+            <div class="stat-bar-track mp-track" style="width:min(480px,88vw);"
+                 role="img" aria-label="MP {{ mp }} of {{ mp_max }}">
+                <div class="stat-bar-fill stat-bar-fill--mp"
+                     style="width:{{ mp_pct }}%;"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Estus flasks -->
+    <div class="status-estus-row">
+        <span class="status-estus-label">
+            <i class="fas fa-flask"></i> Estus Flasks — {{ estus }}/{{ estus_max }}
+        </span>
+        <div class="estus-icons" aria-label="Estus Flasks: {{ estus }} of {{ estus_max }}">
+            {% for i in range(estus_max) %}
+                <img
+                    src="{{ url_for('static', filename='images/icons/estus.png') }}"
+                    alt="Estus Flask"
+                    class="estus-icon {% if i >= estus %}used{% endif %}"
+                >
+            {% endfor %}
+        </div>
+    </div>
+
+    <hr class="status-divider">
+
+    <!-- Combat stats grid -->
+    <p class="status-section-title" style="text-align:center;">Combat Stats</p>
+    <div class="status-stats-grid">
+
+        {% if character.get('damage_type') == 'magic' %}
+        <div class="stat-row">
+            <span class="stat-row-label"><i class="fas fa-wand-magic-sparkles"></i> Mag.Atk</span>
+            <span class="stat-row-value">{{ character.get('magic_attack', 0) }}</span>
+        </div>
+        {% else %}
+        <div class="stat-row">
+            <span class="stat-row-label"><i class="fas fa-crosshairs"></i> Attack</span>
+            <span class="stat-row-value">{{ character.get('attack', 0) }}</span>
+        </div>
+        {% endif %}
+
+        <div class="stat-row">
+            <span class="stat-row-label"><i class="fas fa-shield-alt"></i> Defense</span>
+            <span class="stat-row-value">{{ character.get('defense', 0) }}</span>
+        </div>
+
+        <div class="stat-row">
+            <span class="stat-row-label"><i class="fas fa-hat-wizard"></i> Mag.Def</span>
+            <span class="stat-row-value">{{ character.get('magic_defense', 0) }}</span>
+        </div>
+
+        <div class="stat-row">
+            <span class="stat-row-label"><i class="fas fa-bullseye"></i> Crit%</span>
+            <span class="stat-row-value">{{ (character.get('crit_chance', 0) * 100) | round(0) | int }}%</span>
+        </div>
+
+        <div class="stat-row">
+            <span class="stat-row-label"><i class="fas fa-burst"></i> Crit ×</span>
+            <span class="stat-row-value">{{ character.get('crit_multiplier', 1.5) }}×</span>
+        </div>
+
+        <div class="stat-row">
+            <span class="stat-row-label"><i class="fas fa-person-running"></i> Dodge</span>
+            <span class="stat-row-value">{{ (character.get('dodge_chance', 0) * 100) | round(0) | int }}%</span>
+        </div>
+
+        <div class="stat-row">
+            <span class="stat-row-label"><i class="fas fa-shield-virus"></i> Block</span>
+            <span class="stat-row-value">{{ (100 - character.get('block_multiplier', 0.5) * 100) | round(0) | int }}% red.</span>
+        </div>
+
+        <div class="stat-row">
+            <span class="stat-row-label"><i class="fas fa-waveform"></i> Dmg Type</span>
+            <span class="stat-row-value">
+                {% if character.get('damage_type') == 'magic' %}
+                    <span class="damage-type-badge badge--magic">✨ Magic</span>
+                {% else %}
+                    <span class="damage-type-badge badge--physical">⚔ Physical</span>
+                {% endif %}
+            </span>
+        </div>
+
+    </div>
+
+    <!-- Actions -->
+    <div class="status-actions">
+        <a href="{{ url_for('main.game') }}" class="status-btn status-btn--return">
+            <i class="fas fa-fire-flame-curved"></i> Return to Game
+        </a>
+        <a href="{{ url_for('main.index') }}" class="status-btn status-btn--quit"
+           onclick="return confirm('Return to title? Unsaved progress will be lost.');">
+            <i class="fas fa-door-open"></i> Quit to Title
+        </a>
+    </div>
+
+</div>
+</div>
+
+<script src="{{ url_for('static', filename='js/audio_manager.js') }}"></script>
+<script src="{{ url_for('static', filename='js/settings.js') }}"></script>
+<script src="{{ url_for('static', filename='js/sound.js') }}"></script>
+
+</body>
+</html>
