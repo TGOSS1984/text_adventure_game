@@ -98,6 +98,41 @@ SHOP_ITEMS = {
         "icon":        "fas fa-heart",
         "repeatable":  False,
     },
+    "hp_vessel_greater": {
+        "name":        "Greater Vessel of Embers",
+        "description": "Kindle your flame brighter. Max HP +30 (permanent).",
+        "cost":        350,
+        "icon":        "fas fa-heart-pulse",
+        "repeatable":  False,
+    },
+    "dodge_pendant": {
+        "name":        "Wraith-Step Pendant",
+        "description": "Move like shadow. Dodge chance +10% (permanent).",
+        "cost":        225,
+        "icon":        "fas fa-person-running",
+        "repeatable":  False,
+    },
+    "block_talisman": {
+        "name":        "Ironwall Talisman",
+        "description": "Brace against the storm. Blocked damage reduced by a further 10% (permanent).",
+        "cost":        200,
+        "icon":        "fas fa-shield",
+        "repeatable":  False,
+    },
+    "crit_stone": {
+        "name":        "Sharpened Crit Stone",
+        "description": "Find the gap between breath and bone. Crit chance +10% (permanent).",
+        "cost":        225,
+        "icon":        "fas fa-crosshairs",
+        "repeatable":  False,
+    },
+    "crit_lens": {
+        "name":        "Executioner's Lens",
+        "description": "Strike where it hurts most. Crit damage multiplier +0.25× (permanent).",
+        "cost":        275,
+        "icon":        "fas fa-eye",
+        "repeatable":  False,
+    },
 }
 
 # ── Starting gifts ────────────────────────────────────────────────────────────

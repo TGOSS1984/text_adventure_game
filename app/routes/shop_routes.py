@@ -101,5 +101,35 @@ def register(blueprint):
             session["shop_bought"] = bought + [item_key]
             flash(f"❤️ Max HP increased by 20. ({item['cost']} souls spent)", "info")
 
+        elif item_key == "hp_vessel_greater":
+            session["character"]["max_hp"] += 30
+            session["hp"] = min(session.get("hp", 0) + 30, session["character"]["max_hp"])
+            session["shop_bought"] = bought + [item_key]
+            flash(f"❤️ Max HP increased by 30. ({item['cost']} souls spent)", "info")
+
+        elif item_key == "dodge_pendant":
+            current = session["character"].get("dodge_chance", 0)
+            session["character"]["dodge_chance"] = round(min(current + 0.10, 0.95), 4)
+            session["shop_bought"] = bought + [item_key]
+            flash(f"💨 Dodge chance increased by 10%. ({item['cost']} souls spent)", "info")
+
+        elif item_key == "block_talisman":
+            current = session["character"].get("block_multiplier", 0.5)
+            session["character"]["block_multiplier"] = round(max(current - 0.10, 0.05), 4)
+            session["shop_bought"] = bought + [item_key]
+            flash(f"🛡️ Block damage reduction improved by 10%. ({item['cost']} souls spent)", "info")
+
+        elif item_key == "crit_stone":
+            current = session["character"].get("crit_chance", 0)
+            session["character"]["crit_chance"] = round(min(current + 0.10, 0.95), 4)
+            session["shop_bought"] = bought + [item_key]
+            flash(f"🎯 Crit chance increased by 10%. ({item['cost']} souls spent)", "info")
+
+        elif item_key == "crit_lens":
+            current = session["character"].get("crit_multiplier", 1.5)
+            session["character"]["crit_multiplier"] = round(min(current + 0.25, 3.0), 4)
+            session["shop_bought"] = bought + [item_key]
+            flash(f"💥 Crit damage multiplier increased by 0.25×. ({item['cost']} souls spent)", "info")
+
         session.modified = True
         return redirect(url_for("main.shop"))
