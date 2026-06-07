@@ -88,7 +88,7 @@ CLASSES = {
     },
     "Rogue": {
         # ── Core stats ────────────────────────────────────────────────────────
-        "attack":           22,
+        "attack":           40,
         "magic_attack":     0,
         "defense":          8,
         "magic_defense":    6,

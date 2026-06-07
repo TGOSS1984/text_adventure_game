@@ -70,7 +70,7 @@ BOSS_BATTLE_BGS = [
 # If a boss name appears here, this background is used instead of a random
 # selection from BOSS_BATTLE_BGS. Add any boss name from enemies.py.
 BOSS_BG_OVERRIDES = {
-    "Cindergloom": "images/areas/fiery_end.jpg",
+    "Cindergloom": "images/areas/fiery_end.jpeg",
 }
 
 # ── Shop catalogue ────────────────────────────────────────────────────────────

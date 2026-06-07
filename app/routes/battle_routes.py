@@ -9,7 +9,7 @@ Battle route:
 from flask import render_template, request, redirect, url_for, session, flash, Response
 from ..combat import BattleManager, MP_REGEN_ATTACK
 from ..config import (
-    NORMAL_BATTLE_BGS, BOSS_BATTLE_BGS,
+    NORMAL_BATTLE_BGS, BOSS_BATTLE_BGS, BOSS_BG_OVERRIDES,
     PHASE2_HP_TRIGGER,
     BOSS_SOUL_BONUS, DEFAULT_ESTUS,
 )
@@ -34,7 +34,7 @@ def register(blueprint):
     def battle():
         preload_list = [
             url_for("static", filename=bg)
-            for bg in NORMAL_BATTLE_BGS + BOSS_BATTLE_BGS
+            for bg in NORMAL_BATTLE_BGS + BOSS_BATTLE_BGS + list(BOSS_BG_OVERRIDES.values())
         ]
 
         enemy_data  = session.get("enemy", {})
