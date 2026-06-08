@@ -1,0 +1,610 @@
+/* ============================================================
+   ELDEN SOULS — base.css
+   Loads first. Everything else inherits from here.
+
+   1. Fonts
+   2. Design tokens  ← single source of truth for all values
+   3. Base / reset
+   4. Typography
+   5. Layout primitives (.bonfire-bg, .lore-box, etc.)
+   6. Buttons & links
+   7. Stat bars (HP / MP / Timer — shared by battle + status)
+   8. Flash messages
+   9. Audio controls
+  10. Base media queries
+   ============================================================ */
+
+
+/* ── 1. Fonts ─────────────────────────────────────────────── */
+
+@import url('https://fonts.googleapis.com/css2?family=Bitter:ital,wght@0,100..900;1,100..900&family=Cinzel:wght@400..900&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Noto+Sans:ital,wght@0,100..900;1,100..900&display=swap');
+
+@font-face {
+    font-family: 'Mantinia';
+    src: url('../fonts/Mantinia.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+}
+
+
+/* ── 2. Design tokens ─────────────────────────────────────── */
+/*
+  This is the ONLY place colours, fonts, spacing, and sizing live.
+  Change a token here and the whole game updates automatically.
+  Never re-open :root elsewhere — override tokens in a scoped selector
+  (e.g. body.battle-mode) or a media query if a specific context needs it.
+*/
+
+:root {
+    /* ── Core palette ── */
+    --clr-primary:           crimson;                  /* accent / hover / danger */
+    --clr-primary-glow:      rgba(220, 20, 60, 0.6);
+    --clr-gold:              #c9a84c;
+    --clr-gold-bright:       gold;
+    --clr-bg-body:           #111;
+    --clr-bg-panel:          rgba(0, 0, 0, 0.80);
+    --clr-bg-panel-alt:      rgba(0, 0, 0, 0.60);
+    --clr-bg-boss-hint:      rgba(80, 0, 0, 0.60);
+    --clr-text:              #eee;
+    --clr-text-dim:          whitesmoke;
+    --clr-text-muted:        rgba(210, 195, 160, 0.70); /* labels, captions */
+    --clr-border:            #444;
+
+    /* ── HP bar colours (high → mid → low) ── */
+    --clr-hp-high:           #2ecc71;
+    --clr-hp-mid:            #f39c12;
+    --clr-hp-low:            #e74c3c;
+
+    /* ── Enemy HP bar ── */
+    --clr-hp-enemy:          #c0392b;
+    --clr-hp-enemy-low:      #7b241c;
+
+    /* ── MP bar ── */
+    --clr-mp:                #2980b9;
+    --clr-mp-low:            #6c3483;
+
+    /* ── Estus / healing ── */
+    --clr-estus:             rgba(0, 255, 120, 0.65);
+    --clr-estus-glow:        rgba(0, 255, 120, 0.50);
+    --clr-estus-orb:         rgba(0, 200, 100, 0.80);
+    --clr-heal-flash:        rgba(0, 255, 120, 0.20);
+
+    /* ── Souls pill (consistent gold tint) ── */
+    --clr-souls-bg:          rgba(201, 168, 76, 0.08);
+    --clr-souls-border:      rgba(201, 168, 76, 0.25);
+
+    /* ── Fonts ── */
+    --font-title:            'Mantinia', 'Cinzel', serif;
+    --font-body:             'Cinzel', serif;
+
+    /* ── Spacing scale ── */
+    --space-xs:              4px;
+    --space-sm:              8px;
+    --space-md:              16px;
+    --space-lg:              32px;
+
+    /* ── Border radii ── */
+    --radius-sm:             4px;
+    --radius-md:             8px;
+    --radius-lg:             12px;
+
+    /* ── Transitions ── */
+    --transition-fast:       0.2s ease;
+    --transition-med:        0.5s ease;
+    --transition-slow:       0.8s ease;
+
+    /* ── Stat bar geometry ── */
+    --hp-bar-height:         20px;   /* final desktop value — no further :root overrides */
+    --hp-bar-width:          min(480px, 90vw);
+    --hp-bar-radius:         var(--radius-md);
+
+    /* ── Carousel card counts (overridden in media queries) ── */
+    --cards-visible:         4;
+    --cards-visible-gift:    3;
+}
+
+
+/* ── 3. Base / reset ──────────────────────────────────────── */
+
+html, body {
+    min-height: 100%;
+    height: auto;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: var(--font-body);
+    background-color: var(--clr-bg-body);
+    color: var(--clr-text);
+    background-image: url('../images/areas/bonfire.jpg');
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-attachment: fixed;
+}
+
+/* Battle / boss — background set via Jinja inline style */
+body.battle-mode,
+body.boss-mode {
+    background-image: var(--battle-bg, none);
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-attachment: fixed;
+}
+
+/* Bonfire rest area */
+body.rest-bg {
+    background-image: url('../images/areas/firelink.jpg');
+}
+
+/* Title / class-select — video background */
+body.home-page {
+    background: none;
+    overflow: auto;
+}
+
+body.home-page #bg-video {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100vw;
+    height: 100vh;
+    object-fit: cover;
+    z-index: -1;
+    pointer-events: none;
+}
+
+body.home-page .content {
+    position: relative;
+    z-index: 1;
+}
+
+/* Prevent body scroll when settings panel is open */
+body.settings-open {
+    overflow: hidden;
+}
+
+
+/* ── 4. Typography ────────────────────────────────────────── */
+
+h1, h2 {
+    text-shadow: 2px 2px 4px #000;
+}
+
+h1 {
+    font-family: var(--font-title);
+    font-size: 5rem;
+}
+
+h2 {
+    font-size: 2rem;
+}
+
+span {
+    text-transform: uppercase;
+    font-weight: bold;
+}
+
+
+/* ── 5. Layout primitives ─────────────────────────────────── */
+
+.bonfire-bg {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: var(--space-md);
+}
+
+.lore-box {
+    background-color: var(--clr-bg-panel);
+    padding: 10px;
+    margin: 10px 0;
+    border: 2px solid var(--clr-border);
+    border-radius: var(--radius-lg);
+    width: 50%;
+}
+
+.battle-info {
+    text-shadow: 0 0 6px #000, 2px 2px 10px #000;
+    color: #f8f8f8;
+    font-weight: bold;
+    font-size: 1.2rem;
+    margin: 0.2rem;
+}
+
+.icon-shadow {
+    width: 100px;
+    height: 100px;
+    vertical-align: middle;
+    margin-right: 1px;
+    filter: drop-shadow(4px 4px 10px grey);
+    transition: transform var(--transition-fast);
+}
+
+.icon-shadow:hover {
+    transform: scale(1.1);
+}
+
+.center-links,
+.menu {
+    text-align: center;
+    margin-top: 20px;
+}
+
+/* Class portrait shown in game.html */
+.class-image {
+    width: 160px;
+    height: auto;
+    filter: drop-shadow(2px 2px 6px whitesmoke);
+}
+
+/* Gift badge pill — shown on game + battle screens */
+.gift-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-xs);
+    padding: 3px 10px;
+    background-color: rgba(0, 0, 0, 0.60);
+    border: 1px solid var(--clr-gold);
+    border-radius: 20px;
+    color: var(--clr-gold);
+    font-size: 0.72rem;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin: var(--space-xs) auto;
+    pointer-events: none;
+}
+
+.gift-badge i {
+    font-size: 0.75rem;
+    opacity: 0.90;
+}
+
+/* Damage type badges — used in battle HUD, bestiary, class cards */
+.damage-type-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    padding: 2px 8px;
+    border-radius: 999px;
+    font-size: 0.68rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    vertical-align: middle;
+    white-space: nowrap;
+    pointer-events: none;
+}
+
+.badge--physical {
+    background: rgba(100, 130, 160, 0.18);
+    border: 1px solid rgba(100, 140, 180, 0.45);
+    color: #9bbcd4;
+}
+
+.badge--magic {
+    background: rgba(160, 100, 220, 0.18);
+    border: 1px solid rgba(180, 120, 240, 0.45);
+    color: #c89fe8;
+}
+
+.badge--mixed {
+    background: rgba(201, 168, 76, 0.15);
+    border: 1px solid rgba(201, 168, 76, 0.40);
+    color: var(--clr-gold);
+}
+
+.damage-type-badge--lg {
+    font-size: 0.75rem;
+    padding: 3px 10px;
+}
+
+
+/* ── 6. Buttons & links ───────────────────────────────────── */
+
+a {
+    color: white;
+    text-decoration: none;
+    text-transform: uppercase;
+    font-weight: bold;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+button {
+    margin: 5px;
+    padding: 10px;
+    font-weight: bold;
+    text-transform: uppercase;
+    background-color: #333;
+    color: white;
+    border: none;
+    border-radius: var(--radius-sm);
+    background-image: url(../images/icons/menu.PNG);
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+    cursor: pointer;
+    transition: background-color var(--transition-fast),
+                transform var(--transition-fast),
+                box-shadow var(--transition-fast);
+}
+
+button:hover {
+    background-color: var(--clr-primary);
+    color: white;
+    transform: scale(1.05);
+    box-shadow: 0 0 12px var(--clr-primary-glow);
+}
+
+/*
+  Gold outline button — used for Resume Journey, Save & Return, status actions, etc.
+  Apply .btn-gold to any <a> or <button> that needs this treatment.
+*/
+.btn-gold {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.6rem 1.4rem;
+    font-family: var(--font-body);
+    font-size: 0.9rem;
+    font-weight: 700;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    text-decoration: none;
+    background: transparent;
+    border: 1px solid var(--clr-gold);
+    color: var(--clr-gold);
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    background-image: none !important;
+    transition: background var(--transition-fast),
+                color var(--transition-fast),
+                box-shadow var(--transition-fast),
+                transform var(--transition-fast);
+}
+
+.btn-gold:hover {
+    background: var(--clr-gold);
+    color: #111;
+    box-shadow: 0 0 16px rgba(201, 168, 76, 0.50);
+    transform: scale(1.03);
+    text-decoration: none;
+}
+
+/* Danger / quit variant */
+.btn-danger {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.6rem 1.4rem;
+    font-family: var(--font-body);
+    font-size: 0.9rem;
+    font-weight: 700;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    text-decoration: none;
+    background: transparent;
+    border: 1px solid rgba(192, 57, 43, 0.60);
+    color: rgba(220, 100, 80, 0.90);
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    background-image: none !important;
+    transition: background var(--transition-fast), color var(--transition-fast);
+}
+
+.btn-danger:hover {
+    background: rgba(192, 57, 43, 0.20);
+    color: #ff8070;
+    text-decoration: none;
+}
+
+
+/* ── 7. Stat bars ─────────────────────────────────────────── */
+
+/* Visually hidden native <progress> — kept for screen reader accessibility */
+progress {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+}
+
+.stat-bar-group {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-xs);
+    margin: var(--space-sm) 0;
+    width: 100%;
+}
+
+.stat-bar-label {
+    font-size: 0.85rem;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--clr-text);
+    text-shadow: 1px 1px 4px #000;
+    display: flex;
+    justify-content: space-between;
+    width: var(--hp-bar-width);
+}
+
+/* Track (background) */
+.stat-bar-track {
+    width: var(--hp-bar-width);
+    height: var(--hp-bar-height);
+    background: rgba(0, 0, 0, 0.55);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: var(--hp-bar-radius);
+    overflow: hidden;
+    position: relative;
+    box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.6);
+}
+
+/* Segmented tick marks */
+.stat-bar-track::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: repeating-linear-gradient(
+        90deg,
+        transparent,
+        transparent calc(10% - 1px),
+        rgba(0, 0, 0, 0.25) calc(10% - 1px),
+        rgba(0, 0, 0, 0.25) 10%
+    );
+    pointer-events: none;
+    border-radius: var(--hp-bar-radius);
+}
+
+/* Fill — width set inline by template */
+.stat-bar-fill {
+    height: 100%;
+    border-radius: var(--hp-bar-radius);
+    transition: width var(--transition-med), background-color var(--transition-med);
+    position: relative;
+    background-image: linear-gradient(
+        90deg,
+        transparent 0%,
+        rgba(255, 255, 255, 0.10) 50%,
+        transparent 100%
+    );
+    background-size: 200% 100%;
+    animation: barShimmer 2.4s linear infinite;
+}
+
+@keyframes barShimmer {
+    0%   { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+}
+
+/* Player HP colour states */
+.stat-bar-fill--player          { background-color: var(--clr-hp-high); }
+.stat-bar-fill--player.hp-mid   { background-color: var(--clr-hp-mid); }
+.stat-bar-fill--player.hp-low   { background-color: var(--clr-hp-low); }
+
+/* Enemy HP */
+.stat-bar-fill--enemy           { background-color: var(--clr-hp-enemy); }
+.stat-bar-fill--enemy.hp-low    { background-color: var(--clr-hp-enemy-low); }
+
+/* MP bar */
+.stat-bar-fill--mp              { background-color: var(--clr-mp); box-shadow: 0 0 6px rgba(41, 128, 185, 0.60); }
+.stat-bar-fill--mp.mp-low       { background-color: var(--clr-mp-low); }
+
+/* MP track is slimmer than HP track */
+.mp-track { height: 13px; }
+
+/* Estus icons */
+.estus-icons {
+    display: flex;
+    gap: var(--space-sm);
+    justify-content: center;
+    margin: var(--space-sm) 0;
+}
+
+.estus-icon {
+    width: 26px;
+    height: 26px;
+    object-fit: contain;
+    filter: drop-shadow(0 0 4px var(--clr-estus-glow));
+    transition: filter var(--transition-fast), opacity var(--transition-fast);
+}
+
+.estus-icon.used {
+    filter: grayscale(1) brightness(0.4);
+    opacity: 0.45;
+}
+
+
+/* ── 8. Flash messages ────────────────────────────────────── */
+
+.flash-container {
+    position: relative;
+    margin: 20px auto;
+    max-width: 800px;
+    text-align: center;
+}
+
+.flash-message {
+    padding: 15px 20px;
+    border-radius: var(--radius-md);
+    font-weight: bold;
+    margin-bottom: 10px;
+    animation: fadeOut 5s forwards;
+}
+
+.flash-message.info {
+    background-color: #222;
+    color: #ffc107;
+    border: 1px solid #555;
+    box-shadow: 0 0 8px #ffa50088;
+}
+
+@keyframes fadeOut {
+    0%   { opacity: 1; }
+    90%  { opacity: 1; }
+    100% { opacity: 0; }
+}
+
+
+/* ── 9. Audio controls ────────────────────────────────────── */
+
+.audio-controls {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: var(--space-sm);
+    margin-top: var(--space-sm);
+}
+
+
+/* ── 10. Base media queries ───────────────────────────────── */
+
+@media (max-width: 768px) {
+
+    /* Shrink stat bars on mobile */
+    :root {
+        --hp-bar-width:  88vw;
+        --hp-bar-height: 16px;
+    }
+
+    .mp-track { height: 9px; }
+
+    /* Mobile Safari doesn't support fixed background-attachment */
+    body.battle-mode,
+    body.boss-mode,
+    body {
+        background-attachment: scroll;
+    }
+
+    body.home-page {
+        background: url('../images/areas/video_placeholder.jpg') center / cover no-repeat;
+        background-attachment: scroll;
+        min-height: 100dvh;
+        height: auto;
+    }
+
+    #bg-video { display: none; }
+
+    h1 { font-size: 4rem; }
+
+    .lore-box {
+        padding: 0;
+        margin: 5px 0;
+        width: 88vw;
+    }
+
+    .battle-info { font-size: 1rem; }
+
+    .class-image { width: 80px; }
+}

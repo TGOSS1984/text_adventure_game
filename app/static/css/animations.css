@@ -1,0 +1,554 @@
+/* ============================================================
+   ELDEN SOULS — animations.css
+   All @keyframes and overlay flash elements.
+   Loads after base.css.
+
+   1.  Estus / healing flash
+   2.  Flurry attack flash
+   3.  Bonfire pulse overlay
+   4.  Boss phase transition flash
+   5.  Special move flash
+   6.  Title screen entrance
+   7.  Typewriter & choices
+   8.  ATB Turn Timer pulse
+   9.  Home page intro (JS-driven reveal states)
+  10.  Reduced-motion overrides (consolidated)
+   ============================================================ */
+
+
+/* ── 1. Estus / healing flash ─────────────────────────────── */
+
+#healing-flash {
+    position: fixed;
+    inset: 0;
+    background-color: var(--clr-heal-flash);
+    pointer-events: none;
+    opacity: 0;
+    z-index: 9998;
+}
+
+#healing-flash.active {
+    animation: estusPulse 1.75s ease-out forwards;
+}
+
+@keyframes estusPulse {
+    0%   { opacity: 0; }
+    4%   { opacity: 0.85; }
+    12%  { opacity: 0.30; }
+    22%  { opacity: 0.65; }
+    32%  { opacity: 0.20; }
+    44%  { opacity: 0.55; }
+    56%  { opacity: 0.18; }
+    68%  { opacity: 0.40; }
+    80%  { opacity: 0.12; }
+    90%  { opacity: 0.22; }
+    100% { opacity: 0; }
+}
+
+/* Canvas bubble renderer — injected by EstusBubbles in battle_sounds.js */
+#bubble-container {
+    display: none; /* canvas renderer replaces DOM bubbles */
+}
+
+#estus-bubble-canvas {
+    position: fixed;
+    inset: 0;
+    width: 100vw;
+    height: 100vh;
+    pointer-events: none;
+    z-index: 9997;
+}
+
+
+/* ── 2. Flurry attack flash ───────────────────────────────── */
+
+#flurry-flash {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 9999;
+    will-change: opacity;
+}
+
+#flurry-flash::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-color: rgba(200, 0, 0, 0.50);
+    opacity: 0;
+    will-change: opacity;
+}
+
+#flurry-flash::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: url('../images/icons/flurry.png');
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: min(600px, 85vw) auto;
+    opacity: 0;
+    transform: scale(0.55) rotate(-4deg);
+    will-change: transform, opacity;
+}
+
+#flurry-flash .flurry-vignette {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse at center, transparent 40%, rgba(160, 0, 0, 0.70) 100%);
+    opacity: 0;
+    will-change: opacity;
+}
+
+.flurry-animate::before    { animation: flurryOverlay  1.2s ease-in-out forwards; }
+.flurry-animate::after     { animation: flurrySigil    1.2s ease-out    forwards; }
+.flurry-animate .flurry-vignette { animation: flurryVignette 1.2s ease-in-out forwards; }
+
+@keyframes flurryOverlay {
+    0%   { opacity: 0; }
+    15%  { opacity: 0.70; }
+    38%  { opacity: 0.20; }
+    55%  { opacity: 0.65; }
+    75%  { opacity: 0.15; }
+    100% { opacity: 0; }
+}
+
+@keyframes flurrySigil {
+    0%   { opacity: 0;    transform: scale(0.55) rotate(-4deg); }
+    18%  { opacity: 0.95; transform: scale(1.00) rotate(0deg); }
+    55%  { opacity: 0.85; transform: scale(1.12) rotate(2deg); }
+    80%  { opacity: 0.50; transform: scale(1.20) rotate(3deg); }
+    100% { opacity: 0;    transform: scale(1.30) rotate(4deg); }
+}
+
+@keyframes flurryVignette {
+    0%   { opacity: 0; }
+    20%  { opacity: 0.90; }
+    45%  { opacity: 0.30; }
+    65%  { opacity: 0.75; }
+    100% { opacity: 0; }
+}
+
+
+/* ── 3. Bonfire pulse overlay ─────────────────────────────── */
+
+.bonfire-pulse {
+    position: fixed;
+    inset: 0;
+    background: radial-gradient(
+        circle at center,
+        rgba(255, 180, 50, 0.30),
+        rgba(255, 90, 0, 0.15),
+        transparent
+    );
+    pointer-events: none;
+    opacity: 0;
+    z-index: 9999;
+}
+
+.bonfire-pulse.active {
+    animation: fireFlicker 2.2s ease-out forwards;
+}
+
+@keyframes fireFlicker {
+    0%   { opacity: 0.70; transform: scale(1.00); filter: brightness(1.4) blur(2px); }
+    15%  { opacity: 0.50; transform: scale(1.02); filter: brightness(1.6) blur(3px); }
+    30%  { opacity: 0.65; transform: scale(1.01); filter: brightness(1.3) blur(1px); }
+    45%  { opacity: 0.40; transform: scale(1.03); filter: brightness(1.7) blur(4px); }
+    60%  { opacity: 0.60; transform: scale(1.015); filter: brightness(1.5) blur(2px); }
+    75%  { opacity: 0.30; transform: scale(1.025); filter: brightness(1.2) blur(3px); }
+    90%  { opacity: 0.45; transform: scale(1.01);  filter: brightness(1.4) blur(1.5px); }
+    100% { opacity: 0;    transform: scale(1.05);  filter: brightness(1) blur(0); }
+}
+
+.bonfire-pulse::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: url('../images/icons/flame.png') no-repeat center / contain;
+    pointer-events: none;
+    opacity: 0;
+    transform: scale(0.9);
+    filter: drop-shadow(0 0 12px rgba(255, 140, 0, 0.35));
+}
+
+.bonfire-pulse.active::after {
+    animation: sigilPulse 4s ease-out forwards;
+}
+
+@keyframes sigilPulse {
+    0%   { opacity: 0.6; transform: scale(1.00); }
+    25%  { opacity: 0.4; transform: scale(1.03); }
+    50%  { opacity: 0.2; transform: scale(1.06); }
+    75%  { opacity: 0.1; transform: scale(1.08); }
+    100% { opacity: 0;   transform: scale(1.10); }
+}
+
+
+/* ── 4. Boss phase transition flash ──────────────────────────*/
+
+#phase-flash {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 10000; /* above flurry-flash */
+}
+
+#phase-flash::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-color: rgba(160, 0, 0, 0.55);
+    opacity: 0;
+    will-change: opacity;
+}
+
+#phase-flash::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse at center, transparent 30%, rgba(140, 0, 0, 0.75) 100%);
+    opacity: 0;
+    will-change: opacity;
+}
+
+.phase-flash-animate::before { animation: phaseFlashWash     1.8s ease-out forwards; }
+.phase-flash-animate::after  { animation: phaseFlashVignette 2.2s ease-out forwards; }
+
+@keyframes phaseFlashWash {
+    0%   { opacity: 0; }
+    8%   { opacity: 0.90; }
+    22%  { opacity: 0.20; }
+    38%  { opacity: 0.65; }
+    55%  { opacity: 0.15; }
+    72%  { opacity: 0.40; }
+    100% { opacity: 0; }
+}
+
+@keyframes phaseFlashVignette {
+    0%   { opacity: 0; }
+    12%  { opacity: 1.0; }
+    40%  { opacity: 0.60; }
+    70%  { opacity: 0.35; }
+    100% { opacity: 0; }
+}
+
+
+/* ── 5. Special move flash ────────────────────────────────── */
+
+#special-flash {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 9996; /* below estus (9997) and flurry (9999) */
+}
+
+#special-flash::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-color: rgba(201, 168, 76, 0.45);
+    opacity: 0;
+    will-change: opacity;
+}
+
+#special-flash::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(
+        ellipse at center,
+        rgba(255, 240, 160, 0.55) 0%,
+        rgba(201, 168, 76, 0.25) 45%,
+        transparent 75%
+    );
+    opacity: 0;
+    will-change: opacity;
+}
+
+.special-flash-animate::before { animation: specialFlashWash   0.75s ease-out forwards; }
+.special-flash-animate::after  { animation: specialFlashRadial 0.75s ease-out forwards; }
+
+@keyframes specialFlashWash {
+    0%   { opacity: 0; }
+    10%  { opacity: 0.85; }
+    35%  { opacity: 0.30; }
+    60%  { opacity: 0.55; }
+    100% { opacity: 0; }
+}
+
+@keyframes specialFlashRadial {
+    0%   { opacity: 0;    transform: scale(0.8); }
+    15%  { opacity: 1.0;  transform: scale(1.0); }
+    50%  { opacity: 0.60; transform: scale(1.1); }
+    100% { opacity: 0;    transform: scale(1.2); }
+}
+
+
+/* ── 6. Title screen entrance ─────────────────────────────── */
+
+/* Dark gradient overlay on the video background */
+.overlay {
+    position: fixed;
+    inset: 0;
+    background: linear-gradient(
+        to bottom,
+        rgba(0, 0, 0, 0.55) 0%,
+        rgba(0, 0, 0, 0.35) 40%,
+        rgba(0, 0, 0, 0.60) 100%
+    );
+    pointer-events: none;
+    z-index: 0;
+    /* JS (title_intro.js) owns the reveal — start invisible */
+    opacity: 0;
+    will-change: opacity;
+}
+
+#ember-canvas {
+    z-index: 0;
+    pointer-events: none;
+}
+
+body.home-page .bonfire-bg {
+    position: relative;
+    z-index: 1;
+}
+
+/*
+  title_intro.js controls opacity + transform directly.
+  The old CSS keyframe animation is disabled so JS owns the sequence.
+  Start states below; JS sets final values.
+*/
+.title-animate {
+    animation: none !important;
+    opacity: 0;
+    transform: translateY(18px);
+    will-change: opacity, transform;
+}
+
+/* Gold glow — applied by JS after entrance settles */
+@keyframes titleGlow {
+    0%, 100% {
+        text-shadow:
+            2px 2px 4px #000,
+            0 0 22px rgba(201, 168, 76, 0.50),
+            0 0 50px rgba(201, 168, 76, 0.20);
+    }
+    50% {
+        text-shadow:
+            2px 2px 4px #000,
+            0 0 30px rgba(201, 168, 76, 0.75),
+            0 0 70px rgba(201, 168, 76, 0.35);
+    }
+}
+
+/* Resume Journey button */
+.btn-resume {
+    display: inline-block;
+    margin: 8px 5px 5px;
+    padding: 10px 20px;
+    font-family: var(--font-body);
+    font-size: 1rem;
+    font-weight: bold;
+    text-transform: uppercase;
+    color: var(--clr-gold);
+    background-color: rgba(0, 0, 0, 0.65);
+    border: 2px solid var(--clr-gold);
+    border-radius: var(--radius-md);
+    text-decoration: none;
+    letter-spacing: 0.05em;
+    transition: background-color var(--transition-fast),
+                color var(--transition-fast),
+                box-shadow var(--transition-fast),
+                transform var(--transition-fast);
+}
+
+.btn-resume:hover {
+    background-color: var(--clr-gold);
+    color: #111;
+    box-shadow: 0 0 16px rgba(201, 168, 76, 0.55);
+    transform: scale(1.04);
+    text-decoration: none;
+}
+
+/* Home page — elements start hidden; JS stagger-reveals them */
+body.home-page .class-option,
+body.home-page .audio-controls,
+body.home-page .menu {
+    opacity: 0;
+    transform: translateY(12px);
+    will-change: opacity, transform;
+}
+
+body.home-page .class-option {
+    transform: translateY(24px);
+}
+
+body.home-page #bg-video {
+    opacity: 0;
+    will-change: opacity;
+}
+
+
+/* ── 7. Typewriter & choices ──────────────────────────────── */
+
+.typewriter-cursor {
+    display: inline-block;
+    font-weight: 300;
+    color: var(--clr-gold);
+    margin-left: 1px;
+    animation: cursorBlink 1.06s step-end infinite;
+}
+
+@keyframes cursorBlink {
+    0%, 100% { opacity: 1; }
+    50%       { opacity: 0; }
+}
+
+.choices-hidden {
+    visibility: hidden;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.choices-reveal {
+    visibility: visible;
+    animation: choicesFadeIn 0.55s ease forwards;
+}
+
+@keyframes choicesFadeIn {
+    from { opacity: 0; transform: translateY(6px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+/* Pulse lore box border while typewriter is active */
+.lore-box[style*="cursor: pointer"] {
+    animation: loreBoxHint 2s ease-in-out infinite;
+}
+
+@keyframes loreBoxHint {
+    0%, 100% { border-color: var(--clr-border); }
+    50%       { border-color: rgba(201, 168, 76, 0.55); }
+}
+
+
+/* ── 8. ATB Turn Timer pulse ──────────────────────────────── */
+
+@keyframes timerShimmer {
+    0%   { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+}
+
+@keyframes timerPulse {
+    0%, 100% { opacity: 1.0; }
+    50%       { opacity: 0.6; }
+}
+
+@keyframes timerVignettePulse {
+    0%, 100% { opacity: 0.70; }
+    50%       { opacity: 0.35; }
+}
+
+
+/* ── 9. Enemy phase shake ─────────────────────────────────── */
+
+@keyframes enemyPhaseShake {
+    0%, 100% { transform: translateX(0);   filter: brightness(1); }
+    20%      { transform: translateX(-6px); filter: brightness(1.6) saturate(2); }
+    40%      { transform: translateX(6px);  filter: brightness(1.8) saturate(2); }
+    60%      { transform: translateX(-4px); filter: brightness(1.5); }
+    80%      { transform: translateX(4px);  filter: brightness(1.2); }
+}
+
+/* ── Boss phase 2 bar pulse ── */
+@keyframes phase2BarPulse {
+    0%, 100% { background-color: #8b0000; }
+    50%       { background-color: #c0392b; }
+}
+
+@keyframes phase2BadgePulse {
+    0%, 100% { box-shadow: 0 0 4px rgba(200, 0, 0, 0.40); }
+    50%       { box-shadow: 0 0 12px rgba(200, 0, 0, 0.80); }
+}
+
+@keyframes phase2LogEntrance {
+    from { opacity: 0; transform: scale(0.97); box-shadow: 0 0 40px rgba(200, 0, 0, 0.80); }
+    to   { opacity: 1; transform: scale(1);    box-shadow: 0 0 20px rgba(180, 0, 0, 0.50); }
+}
+
+/* ── Special move ready pulse ── */
+@keyframes specialReady {
+    0%, 100% { box-shadow: 0 0 4px rgba(201, 168, 76, 0.25); }
+    50%       { box-shadow: 0 0 14px rgba(201, 168, 76, 0.60); }
+}
+
+
+/* ── 10. Reduced-motion overrides (consolidated) ──────────── */
+/*
+  All animation disables in one place.
+  Anything toggled by JS that starts hidden is also snapped visible here
+  so content is accessible if JS doesn't run or motion is reduced.
+*/
+
+@media (prefers-reduced-motion: reduce) {
+
+    /* Flash overlays */
+    #healing-flash.active,
+    #estus-bubble-canvas                   { animation: none; opacity: 0; }
+    #estus-bubble-canvas                   { display: none !important; }
+    .flurry-animate::before,
+    .flurry-animate::after,
+    .flurry-animate .flurry-vignette       { animation: none; opacity: 0; }
+    .phase-flash-animate::before,
+    .phase-flash-animate::after            { animation: none; opacity: 0; }
+    .special-flash-animate::before,
+    .special-flash-animate::after          { animation: none; opacity: 0; }
+
+    /* Stat bars */
+    .stat-bar-fill,
+    .timer-bar-fill                        { animation: none; }
+    .timer-phase--warning,
+    .timer-phase--danger                   { animation: none; }
+    .timer-vignette--active                { animation: none; opacity: 0.60; }
+    .phase2-badge                          { animation: none; }
+    .stat-bar-fill--phase2                 { animation: barShimmer 2.4s linear infinite; }
+    .battle-log-box--phase2                { animation: none; }
+    .battle-btn--special:not([disabled])   { animation: none; }
+
+    /* Typewriter */
+    .typewriter-cursor                     { animation: none; }
+    .choices-hidden  { visibility: visible; opacity: 1; pointer-events: auto; }
+    .choices-reveal                        { animation: none; }
+
+    /* Home page — snap everything visible immediately */
+    .title-animate,
+    body.home-page .class-option,
+    body.home-page .audio-controls,
+    body.home-page .menu,
+    body.home-page #bg-video,
+    body.home-page .overlay,
+    .overlay {
+        opacity: 1 !important;
+        transform: none !important;
+        transition: none !important;
+        animation: none !important;
+    }
+
+    /* Settings panel */
+    #settings-panel,
+    #settings-backdrop,
+    #settings-toggle { transition: none; }
+
+    /* Lightbox */
+    #lightbox,
+    #lightbox-img { transition: none; }
+    [data-lightbox]:hover { transform: none; }
+
+    /* Carousel */
+    .carousel-track { scroll-behavior: auto; }
+    .carousel-arrow,
+    .carousel-dot   { transition: none !important; }
+
+    /* Gift panel */
+    .gift-panel { transition: none; }
+}

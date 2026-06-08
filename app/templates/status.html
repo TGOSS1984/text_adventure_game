@@ -23,7 +23,11 @@ Lightbox addition:
     <meta name="description" content="Elden Souls — Player Status">
     <title>Elden Souls — Status</title>
 
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/animations.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/components.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/battle.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/pages.css') }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 </head>
 
@@ -247,49 +251,7 @@ Lightbox addition:
 <script src="{{ url_for('static', filename='js/settings.js') }}"></script>
 <script src="{{ url_for('static', filename='js/sound.js') }}"></script>
 
-<script>
-(function () {
-    const box   = document.getElementById('lightbox');
-    const img   = document.getElementById('lightbox-img');
-    const cap   = document.getElementById('lightbox-caption');
-    const close = document.getElementById('lightbox-close');
-
-    function openLightbox(src, alt) {
-        img.src = src;
-        img.alt = alt;
-        cap.textContent = alt;
-        box.classList.add('lightbox--open');
-        document.body.style.overflow = 'hidden';
-        close.focus();
-    }
-
-    function closeLightbox() {
-        box.classList.remove('lightbox--open');
-        document.body.style.overflow = '';
-        img.src = '';
-    }
-
-    box.addEventListener('click', e => { if (e.target === box) closeLightbox(); });
-    close.addEventListener('click', closeLightbox);
-    document.addEventListener('keydown', e => {
-        if (e.key === 'Escape' && box.classList.contains('lightbox--open')) closeLightbox();
-    });
-
-    document.querySelectorAll('[data-lightbox]').forEach(el => {
-        el.style.cursor = 'zoom-in';
-        el.setAttribute('tabindex', '0');
-        el.setAttribute('role', 'button');
-        el.setAttribute('aria-label', 'View full size: ' + (el.alt || ''));
-        el.addEventListener('click', () => openLightbox(el.src, el.alt || ''));
-        el.addEventListener('keydown', e => {
-            if (e.key === 'Enter' || e.key === ' ') {
-                e.preventDefault();
-                openLightbox(el.src, el.alt || '');
-            }
-        });
-    });
-}());
-</script>
+<script src="{{ url_for('static', filename='js/lightbox.js') }}"></script>
 
 </body>
 </html>

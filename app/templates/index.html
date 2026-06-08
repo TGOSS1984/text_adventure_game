@@ -42,7 +42,11 @@ Carousel upgrade:
     <meta name="description" content="Elden Souls is a Flask-based, text-driven adventure game inspired by Dark Souls and Elden Ring.">
     <title>Elden Souls — Choose Your Class</title>
 
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/animations.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/components.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/battle.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/pages.css') }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link rel="preload" as="image" href="{{ url_for('static', filename='images/areas/video_placeholder.jpg') }}">
 </head>
@@ -265,126 +269,38 @@ Carousel upgrade:
     <script src="{{ url_for('static', filename='js/ember_particles.js') }}"></script>
     <script src="{{ url_for('static', filename='js/title_intro.js') }}"></script>
 
+    <script src="{{ url_for('static', filename='js/carousel.js') }}"></script>
     <script>
-    // ── Gift panel reveal (unchanged) ─────────────────────────────────────
-    document.querySelectorAll('input[name="class"]').forEach(radio => {
-        radio.addEventListener('change', () => {
-            const panel = document.getElementById('gift-panel');
-            if (panel.classList.contains('gift-panel--visible')) return;
-            panel.classList.add('gift-panel--visible');
-            panel.setAttribute('aria-hidden', 'false');
-            setTimeout(() => {
-                panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                // Re-initialise gift carousel now panel is visible and has real dimensions
-                const giftCtrl = initCarousel(giftTrack, giftDotsEl, giftArrowLeft, giftArrowRight, 3);
-                carouselMap.set(giftTrack, giftCtrl);
-            }, 400);
+    // Initialise carousels after title_intro.js stagger animation settles
+    document.addEventListener('DOMContentLoaded', () => {
+        const classTrack      = document.getElementById('class-track');
+        const classDotsEl     = document.getElementById('class-dots');
+        const classArrowLeft  = document.getElementById('class-arrow-left');
+        const classArrowRight = document.getElementById('class-arrow-right');
+
+        const giftTrack       = document.getElementById('gift-track');
+        const giftDotsEl      = document.getElementById('gift-dots');
+        const giftArrowLeft   = document.getElementById('gift-arrow-left');
+        const giftArrowRight  = document.getElementById('gift-arrow-right');
+
+        // Wait for title_intro stagger (1800ms) before measuring card widths
+        setTimeout(() => {
+            Carousel.init(classTrack, classDotsEl, classArrowLeft, classArrowRight);
+        }, 1800);
+
+        // Gift panel: init carousel when panel becomes visible
+        document.querySelectorAll('input[name="class"]').forEach(radio => {
+            radio.addEventListener('change', () => {
+                const panel = document.getElementById('gift-panel');
+                if (panel.classList.contains('gift-panel--visible')) return;
+                panel.classList.add('gift-panel--visible');
+                panel.setAttribute('aria-hidden', 'false');
+                setTimeout(() => {
+                    panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    Carousel.init(giftTrack, giftDotsEl, giftArrowLeft, giftArrowRight);
+                }, 400);
+            });
         });
-    });
-
-    // ── Carousel factory ─────────────────────────────────────────────────
-    function initCarousel(trackEl, dotsEl, arrowLeft, arrowRight, visibleCount) {
-
-        function getCardWidth() {
-            const first = trackEl.querySelector('.carousel-item, .carousel-item--gift');
-            if (!first) return 0;
-            const style = getComputedStyle(trackEl);
-            const gap = parseFloat(style.columnGap || style.gap || 0);
-            return first.getBoundingClientRect().width + gap;
-        }
-
-        function currentIndex() {
-            const cardW = getCardWidth();
-            return cardW > 0 ? Math.round(trackEl.scrollLeft / cardW) : 0;
-        }
-
-        function totalCards() {
-            return trackEl.querySelectorAll('.carousel-item, .carousel-item--gift').length;
-        }
-
-        function updateArrows() {
-            const idx  = currentIndex();
-            const total = totalCards();
-            const vCount = getVisibleCount();
-            arrowLeft.classList.toggle('carousel-arrow--hidden', idx <= 0);
-            arrowRight.classList.toggle('carousel-arrow--hidden', idx >= total - vCount);
-        }
-
-        function updateDots() {
-            if (!dotsEl) return;
-            const idx = currentIndex();
-            dotsEl.querySelectorAll('.carousel-dot').forEach((dot, i) => {
-                dot.classList.toggle('carousel-dot--active', i === idx);
-            });
-        }
-
-        function getVisibleCount() {
-            const vw = window.innerWidth;
-            if (vw >= 1100) return Math.min(4, totalCards());
-            if (vw >= 700)  return Math.min(2, totalCards());
-            return 1;
-        }
-
-        function scrollToIndex(idx) {
-            const cardW = getCardWidth();
-            trackEl.scrollTo({ left: idx * cardW, behavior: 'smooth' });
-        }
-
-        arrowLeft.addEventListener('click', () => scrollToIndex(Math.max(0, currentIndex() - 1)));
-        arrowRight.addEventListener('click', () => scrollToIndex(Math.min(totalCards() - 1, currentIndex() + 1)));
-
-        if (dotsEl) {
-            dotsEl.querySelectorAll('.carousel-dot').forEach(dot => {
-                dot.addEventListener('click', () => scrollToIndex(parseInt(dot.dataset.index)));
-            });
-        }
-
-        let scrollTimer;
-        trackEl.addEventListener('scroll', () => {
-            clearTimeout(scrollTimer);
-            scrollTimer = setTimeout(() => {
-                updateArrows();
-                updateDots();
-            }, 80);
-        }, { passive: true });
-
-        // Initial state
-        updateArrows();
-        updateDots();
-
-        return { updateArrows, updateDots };
-    }
-
-    // Shared update fn for external callers
-    function updateCarousel(track, dots, left, right) {
-        const ctrl = carouselMap.get(track);
-        if (ctrl) { ctrl.updateArrows(); ctrl.updateDots(); }
-    }
-
-    const carouselMap = new Map();
-
-    // Initialise class carousel after intro animation settles
-    const classTrack     = document.getElementById('class-track');
-    const classDotsEl    = document.getElementById('class-dots');
-    const classArrowLeft  = document.getElementById('class-arrow-left');
-    const classArrowRight = document.getElementById('class-arrow-right');
-
-    const giftTrack      = document.getElementById('gift-track');
-    const giftDotsEl     = document.getElementById('gift-dots');
-    const giftArrowLeft  = document.getElementById('gift-arrow-left');
-    const giftArrowRight = document.getElementById('gift-arrow-right');
-
-    // Wait for title_intro.js stagger to finish before measuring card widths
-    setTimeout(() => {
-        const classCtrl = initCarousel(classTrack, classDotsEl, classArrowLeft, classArrowRight, 4);
-        carouselMap.set(classTrack, classCtrl);
-        const giftCtrl  = initCarousel(giftTrack,  giftDotsEl,  giftArrowLeft,  giftArrowRight,  3);
-        carouselMap.set(giftTrack, giftCtrl);
-    }, 1800); // after stagger completes
-
-    // Re-measure on resize
-    window.addEventListener('resize', () => {
-        carouselMap.forEach(ctrl => { ctrl.updateArrows(); ctrl.updateDots(); });
     });
     </script>
 

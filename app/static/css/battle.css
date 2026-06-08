@@ -1,0 +1,447 @@
+/* ============================================================
+   ELDEN SOULS — battle.css
+   Everything specific to battle and boss screens.
+   Loads after components.css.
+
+   1.  Battle page backgrounds & typography overrides
+   2.  Player HUD
+   3.  Enemy display
+   4.  ATB Turn Timer bar
+   5.  MP bar & special move button
+   6.  Move hint / battle log boxes
+   7.  Battle action buttons
+   8.  Boss phase 2 indicators
+   9.  Souls counter (battle HUD)
+  10.  Battle responsive (≤ 768px, ≤ 400px)
+   ============================================================ */
+
+
+/* ── 1. Battle page backgrounds & typography ──────────────── */
+
+/* h2 — tighter than global 2rem on content-heavy battle screen */
+body.battle-mode h2,
+body.boss-mode h2 {
+    font-size: 1.6rem;
+    margin: 0.4rem 0 0.3rem;
+}
+
+/* Lore box full-width on battle screens */
+body.battle-mode .lore-box,
+body.boss-mode .lore-box {
+    width: var(--hp-bar-width);
+}
+
+
+/* ── 2. Player HUD ────────────────────────────────────────── */
+
+.player-hud {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-xs);
+    width: var(--hp-bar-width);
+    margin: var(--space-xs) auto var(--space-sm);
+}
+
+.battle-player-portrait {
+    width: 80px;
+    height: auto;
+    filter: drop-shadow(0 0 6px rgba(255, 255, 255, 0.30));
+    border-radius: var(--radius-sm);
+}
+
+.player-hud-bars {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+}
+
+.player-hud-bars .stat-bar-group { width: 100%; margin: 2px 0; }
+
+.player-hud-bars .stat-bar-track,
+.player-hud-bars .stat-bar-label { width: 100%; }
+
+/* Souls counter pill — below estus icons */
+.battle-souls-counter {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    margin-top: 2px;
+    padding: 1px 6px;
+    background: var(--clr-souls-bg);
+    border: 1px solid var(--clr-souls-border);
+    border-radius: 999px;
+    font-size: 0.75rem;
+    color: var(--clr-gold);
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    line-height: 1;
+}
+
+.battle-souls-counter i { font-size: 0.75rem; }
+
+/* Damage type row — sits below class/enemy name in HUD label */
+.hud-type-row {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    margin-top: 2px;
+}
+
+
+/* ── 3. Enemy display ─────────────────────────────────────── */
+
+.enemy-display {
+    text-align: center;
+    margin: var(--space-sm) 0 var(--space-xs);
+}
+
+.enemy-img {
+    max-width: 320px;
+    width: 100%;
+    height: auto;
+    border: 2px solid var(--clr-border);
+    border-radius: var(--radius-lg);
+    box-shadow: 0 0 18px rgba(0, 0, 0, 0.7);
+    margin-bottom: 0.5rem;
+    transition: filter var(--transition-med);
+}
+
+.enemy-img.phase-change {
+    animation: enemyPhaseShake 0.6s ease-in-out;
+}
+
+/* Collapsible lore — <details>/<summary> wrapper */
+.enemy-lore-details {
+    max-width: 600px;
+    margin: 0 auto var(--space-xs);
+    text-align: center;
+}
+
+.enemy-lore-summary {
+    cursor: pointer;
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.09em;
+    color: rgba(201, 168, 76, 0.55);
+    list-style: none;
+    user-select: none;
+    padding: 3px 0;
+    transition: color 0.2s;
+}
+
+.enemy-lore-summary::-webkit-details-marker { display: none; }
+.enemy-lore-summary:hover { color: rgba(201, 168, 76, 0.85); }
+
+.enemy-lore-summary .lore-chevron {
+    display: inline-block;
+    font-size: 0.65rem;
+    margin-left: 0.3rem;
+    transition: transform 0.2s;
+    vertical-align: middle;
+}
+
+details[open] > .enemy-lore-summary .lore-chevron {
+    transform: rotate(180deg);
+}
+
+.enemy-lore {
+    max-width: 600px;
+    font-style: italic;
+    margin: 0.3rem auto 0;
+    color: var(--clr-text-dim);
+    text-shadow: 4px 4px 8px #000;
+    background-image: url('../images/icons/menu.png');
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+    padding: 8px 10px;
+    font-size: 0.88rem;
+    line-height: 1.5;
+}
+
+
+/* ── 4. ATB Turn Timer ────────────────────────────────────── */
+
+.timer-bar {
+    width: var(--hp-bar-width);
+    height: 6px;
+    background: rgba(0, 0, 0, 0.50);
+    border: 1px solid rgba(255, 255, 255, 0.10);
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+    margin: var(--space-xs) auto 2px;
+    position: relative;
+}
+
+.timer-bar::after {
+    content: 'TURN TIMER';
+    position: absolute;
+    right: 0;
+    top: calc(100% + 3px);
+    font-size: 0.60rem;
+    letter-spacing: 0.08em;
+    color: rgba(255, 255, 255, 0.30);
+    font-family: var(--font-body);
+}
+
+.timer-bar-fill {
+    height: 100%;
+    width: 100%;
+    border-radius: var(--radius-sm);
+    transition: background-color 0.4s ease;
+    background-image: linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.15) 50%, transparent 100%);
+    background-size: 200% 100%;
+    animation: timerShimmer 1.8s linear infinite;
+}
+
+.timer-phase--normal {
+    background-color: var(--clr-gold);
+    box-shadow: 0 0 6px rgba(201, 168, 76, 0.55);
+}
+
+.timer-phase--warning {
+    background-color: #e07b20;
+    box-shadow: 0 0 8px rgba(224, 123, 32, 0.65);
+    animation: timerShimmer 1.8s linear infinite, timerPulse 0.9s ease-in-out infinite;
+}
+
+.timer-phase--danger {
+    background-color: #c0392b;
+    box-shadow: 0 0 12px rgba(192, 57, 43, 0.80);
+    animation: timerShimmer 1.8s linear infinite, timerPulse 0.45s ease-in-out infinite;
+}
+
+/* Danger vignette — screen edges glow red in last 15% */
+.timer-vignette {
+    position: fixed;
+    inset: 0;
+    background: radial-gradient(ellipse at center, transparent 45%, rgba(180, 0, 0, 0.55) 100%);
+    pointer-events: none;
+    opacity: 0;
+    z-index: 100;
+    transition: opacity 0.3s ease;
+}
+
+.timer-vignette--active {
+    opacity: 1;
+    animation: timerVignettePulse 0.5s ease-in-out infinite;
+}
+
+
+/* ── 5. MP bar & special move button ──────────────────────── */
+
+.mp-bar-group { margin: var(--space-xs) 0 var(--space-sm); }
+
+/* Special move button — gold border distinguishes from standard actions */
+.battle-btn--special {
+    border: 2px solid var(--clr-gold);
+    color: var(--clr-gold);
+    min-width: 155px;
+    position: relative;
+    background-image: url(../images/icons/menu.PNG);
+}
+
+.battle-btn--special:not([disabled]) {
+    animation: specialReady 2s ease-in-out infinite;
+}
+
+/* Gold hover — overrides global crimson button:hover */
+.battle-btn--special:not([disabled]):hover {
+    background-image: none !important;
+    background-color: var(--clr-gold) !important;
+    color: #111 !important;
+    border-color: var(--clr-gold-bright) !important;
+    box-shadow: 0 0 18px rgba(201, 168, 76, 0.65) !important;
+    transform: scale(1.05);
+}
+
+/* Disabled — muted gold, never crimson on hover */
+.battle-btn--special[disabled] {
+    border-color: rgba(201, 168, 76, 0.30);
+    color: rgba(201, 168, 76, 0.35);
+}
+
+.battle-btn--special[disabled]:hover {
+    background-color: transparent !important;
+    color: rgba(201, 168, 76, 0.35) !important;
+    border-color: rgba(201, 168, 76, 0.30) !important;
+    box-shadow: none !important;
+    transform: none !important;
+    cursor: not-allowed;
+}
+
+
+/* ── 6. Move hint / battle log ────────────────────────────── */
+
+.move-hint-box,
+.battle-log-box {
+    margin: var(--space-xs) auto;
+    width: var(--hp-bar-width);
+    text-align: center;
+    padding: 8px 14px;
+}
+
+.move-hint-box p,
+.battle-log-box p {
+    margin: 0;
+    font-size: 0.9rem;
+    line-height: 1.45;
+}
+
+.move-hint-box {
+    background-color: var(--clr-bg-boss-hint);
+    border-left: 4px solid var(--clr-primary);
+    border-radius: 0 var(--radius-md) var(--radius-md) 0;
+}
+
+
+/* ── 7. Battle action buttons ─────────────────────────────── */
+
+.battle-actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 6px;
+    margin: var(--space-xs) 0;
+}
+
+.battle-btn {
+    min-width: 125px;
+    padding: 10px 16px;
+    font-size: 0.88rem;
+}
+
+
+/* ── 8. Boss phase 2 indicators ───────────────────────────── */
+
+.phase2-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.2rem;
+    margin-left: 0.5rem;
+    padding: 1px 7px;
+    background: rgba(180, 0, 0, 0.75);
+    border: 1px solid #c0392b;
+    border-radius: 4px;
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    color: #ffcccc;
+    text-shadow: 0 0 6px rgba(255, 0, 0, 0.60);
+    vertical-align: middle;
+    animation: phase2BadgePulse 2s ease-in-out infinite;
+}
+
+.phase2-track {
+    border-color: rgba(192, 57, 43, 0.60) !important;
+    box-shadow: 0 0 10px rgba(192, 57, 43, 0.45), inset 0 2px 6px rgba(0, 0, 0, 0.6);
+}
+
+.stat-bar-fill--phase2 {
+    background-color: #8b0000 !important;
+    box-shadow: 0 0 8px rgba(139, 0, 0, 0.80);
+    animation: barShimmer 2.4s linear infinite, phase2BarPulse 1.4s ease-in-out infinite;
+}
+
+.move-hint-box--phase2 {
+    background-color: rgba(120, 0, 0, 0.75) !important;
+    border-left-color: #ff4444 !important;
+    box-shadow: 0 0 12px rgba(180, 0, 0, 0.40);
+}
+
+.battle-log-box--phase2 {
+    border: 1px solid rgba(200, 0, 0, 0.60);
+    background: rgba(80, 0, 0, 0.75) !important;
+    box-shadow: 0 0 20px rgba(180, 0, 0, 0.50);
+    animation: phase2LogEntrance 0.5s ease-out forwards;
+}
+
+
+/* ── 9. Souls badge in game.html header ───────────────────── */
+
+.souls-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    background: rgba(0, 0, 0, 0.65);
+    border: 1px solid var(--clr-gold);
+    border-radius: 999px;
+    padding: 0.2rem 0.75rem;
+    font-size: 0.9rem;
+    color: var(--clr-gold);
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    margin-left: 0.6rem;
+    vertical-align: middle;
+    text-shadow: 1px 1px 3px #000;
+    box-shadow: 0 0 8px rgba(201, 168, 76, 0.25);
+}
+
+
+/* ── 10. Battle responsive ────────────────────────────────── */
+
+@media (max-width: 768px) {
+
+    body.battle-mode h2,
+    body.boss-mode h2 {
+        font-size: 1.1rem;
+        margin: 0.2rem 0;
+    }
+
+    body.battle-mode .lore-box,
+    body.boss-mode .lore-box {
+        width: 92vw !important;
+        padding: 6px 8px !important;
+    }
+
+    .enemy-img              { max-width: 180px !important; }
+    .battle-player-portrait { width: 60px !important; }
+
+    .enemy-lore-details { max-width: 92vw; }
+
+    /* 2-column action grid */
+    .battle-actions {
+        display: grid !important;
+        grid-template-columns: 1fr 1fr !important;
+        gap: 6px !important;
+        width: 92vw !important;
+        margin: 4px auto !important;
+    }
+
+    .battle-btn {
+        min-width: unset !important;
+        width: 100% !important;
+        padding: 10px 8px !important;
+        font-size: 0.78rem !important;
+    }
+
+    /* Special spans both columns */
+    .battle-btn--special {
+        grid-column: 1 / -1 !important;
+        min-width: unset !important;
+        width: 100% !important;
+    }
+
+    .timer-bar          { width: 92vw !important; }
+    .move-hint-box,
+    .battle-log-box     { width: 92vw !important; }
+    .stat-bar-track,
+    .stat-bar-label     { width: 92vw !important; }
+    .player-hud         { width: 92vw !important; }
+}
+
+@media (max-width: 400px) {
+
+    body.battle-mode h2,
+    body.boss-mode h2 { font-size: 0.95rem; }
+
+    .battle-btn {
+        font-size: 0.72rem !important;
+        padding: 9px 5px !important;
+    }
+
+    .enemy-img { max-width: 150px !important; }
+}

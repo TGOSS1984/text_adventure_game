@@ -1,24 +1,7 @@
 <!--
-game.html
-Story / adventure screen for Elden Souls.
-
-Changes in this commit:
-- Story <p> gets data-typewriter="true" so typewriter.js targets it.
-- Choice buttons wrapped in <div id="choices-form"> so typewriter.js
-  can hide them until typing completes then fade them in.
-- typewriter.js loaded at the bottom.
-- Lore paragraph (chapter.lore) excluded from typewriter — it appears
-  immediately as atmospheric flavour text, letting the main story
-  animate while lore is readable alongside it.
-
-Commit 10 additions:
-- souls variable passed from route, displayed in header alongside HP.
-- "Visit Shop" button shown when is_rest=True (bonfire chapters only).
-
-Commit 19 addition:
-- "Return to Title" button added to the menu bar with an inline
-  confirmation step (warns about unsaved progress before redirecting).
-  No new route needed — confirmation is handled entirely in JS.
+game.html — Story / adventure screen for Elden Souls.
+Inline <style> removed — all styles live in pages.css.
+Inline quit-confirm JS kept small here (page-specific DOM wiring only).
 -->
 
 <!DOCTYPE html>
@@ -29,175 +12,12 @@ Commit 19 addition:
     <meta name="description" content="Elden Souls — a Flask text adventure inspired by Dark Souls and Elden Ring.">
     <title>Elden Souls — Adventure</title>
 
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/animations.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/components.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/battle.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/pages.css') }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-
-    <style>
-        /* ── Souls badge — scoped to game.html ── */
-        .souls-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.35rem;
-            background: rgba(201,165,89,0.1);
-            border: 1px solid rgba(201,165,89,0.35);
-            border-radius: 999px;
-            padding: 0.2rem 0.75rem;
-            font-size: 0.9rem;
-            color: var(--clr-primary);
-            font-weight: 600;
-            letter-spacing: 0.04em;
-            margin-left: 0.6rem;
-            vertical-align: middle;
-        }
-
-        /* ── Visit Shop button — distinct from story choice buttons ── */
-        .shop-link-btn {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-            margin-top: 1rem;
-            padding: 0.6rem 1.4rem;
-            background: transparent;
-            border: 1px solid var(--clr-primary);
-            color: var(--clr-primary);
-            border-radius: 6px;
-            font-family: inherit;
-            font-size: 0.95rem;
-            letter-spacing: 0.07em;
-            text-decoration: none;
-            cursor: pointer;
-            transition: background 0.15s, color 0.15s, box-shadow 0.15s;
-        }
-
-        .shop-link-btn:hover {
-            background: var(--clr-primary);
-            color: #1a1209;
-            box-shadow: 0 0 16px rgba(201,165,89,0.35);
-        }
-
-        /* ── Commit 19: Quit confirmation overlay ── */
-        #quit-confirm-overlay {
-            display: none;
-            position: fixed;
-            inset: 0;
-            background: rgba(0,0,0,0.75);
-            z-index: 10200;
-            align-items: center;
-            justify-content: center;
-        }
-
-        #quit-confirm-overlay.visible {
-            display: flex;
-        }
-
-        .quit-confirm-box {
-            background: rgba(10,6,2,0.97);
-            border: 1px solid rgba(201,168,76,0.40);
-            border-radius: 10px;
-            padding: 2rem 2.2rem;
-            max-width: 360px;
-            width: 90vw;
-            text-align: center;
-            box-shadow: 0 0 40px rgba(0,0,0,0.80);
-        }
-
-        .quit-confirm-box p {
-            font-size: 0.95rem;
-            color: rgba(230,210,170,0.90);
-            line-height: 1.6;
-            margin: 0 0 1.4rem;
-            text-shadow: 1px 1px 3px #000;
-            text-transform: none;
-            font-weight: normal;
-        }
-
-        .quit-confirm-box strong {
-            color: var(--clr-gold);
-        }
-
-        .quit-confirm-actions {
-            display: flex;
-            gap: 0.7rem;
-            justify-content: center;
-            flex-wrap: wrap;
-        }
-
-        /* Save & quit — gold */
-        .quit-btn--save {
-            padding: 0.55rem 1.2rem;
-            background: transparent;
-            border: 1px solid var(--clr-gold);
-            color: var(--clr-gold);
-            border-radius: 5px;
-            font-family: inherit;
-            font-size: 0.82rem;
-            font-weight: 700;
-            letter-spacing: 0.06em;
-            text-transform: uppercase;
-            cursor: pointer;
-            text-decoration: none;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.4rem;
-            transition: background 0.15s, color 0.15s;
-            background-image: none !important;
-        }
-
-        .quit-btn--save:hover {
-            background: var(--clr-gold);
-            color: #111;
-            text-decoration: none;
-        }
-
-        /* Quit without saving — muted red */
-        .quit-btn--nosave {
-            padding: 0.55rem 1.2rem;
-            background: transparent;
-            border: 1px solid rgba(192,57,43,0.60);
-            color: rgba(220,100,80,0.90);
-            border-radius: 5px;
-            font-family: inherit;
-            font-size: 0.82rem;
-            font-weight: 700;
-            letter-spacing: 0.06em;
-            text-transform: uppercase;
-            cursor: pointer;
-            text-decoration: none;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.4rem;
-            transition: background 0.15s, color 0.15s;
-            background-image: none !important;
-        }
-
-        .quit-btn--nosave:hover {
-            background: rgba(192,57,43,0.25);
-            color: #ff8070;
-            text-decoration: none;
-        }
-
-        /* Cancel — subtle */
-        .quit-btn--cancel {
-            padding: 0.55rem 1.2rem;
-            background: transparent;
-            border: 1px solid rgba(255,255,255,0.15);
-            color: rgba(210,195,160,0.55);
-            border-radius: 5px;
-            font-family: inherit;
-            font-size: 0.82rem;
-            font-weight: 700;
-            letter-spacing: 0.06em;
-            text-transform: uppercase;
-            cursor: pointer;
-            transition: border-color 0.15s, color 0.15s;
-            background-image: none !important;
-        }
-
-        .quit-btn--cancel:hover {
-            border-color: rgba(255,255,255,0.35);
-            color: rgba(210,195,160,0.90);
-        }
-    </style>
 </head>
 
 {# ── Per-class icon map ── #}
@@ -230,7 +50,6 @@ Commit 19 addition:
             &nbsp;|&nbsp;
             <i class="fas fa-heart" style="color: var(--clr-primary);"></i>
             {{ hp }}/{{ character.max_hp }}
-            {# ── Commit 10: souls counter ── #}
             <span class="souls-badge" title="Souls collected">
                 <i class="fas fa-coins"></i>
                 {{ souls }}
@@ -244,7 +63,7 @@ Commit 19 addition:
             class="class-image"
         >
 
-        <!-- Custom HP bar -->
+        <!-- HP bar -->
         <div class="stat-bar-group">
             <div class="stat-bar-label">
                 <span>HP</span>
@@ -274,11 +93,12 @@ Commit 19 addition:
             <span>{{ g[1] }}</span>
         </div>
         {% endif %}
+
         <!-- Hidden native progress for screen-reader fallback -->
         <progress value="{{ hp }}" max="{{ character.max_hp }}"
             aria-label="Player HP">{{ hp }}/{{ character.max_hp }}</progress>
 
-        <!-- Bonfire rest flash message -->
+        <!-- Flash messages -->
         {% with messages = get_flashed_messages(with_categories=true) %}
         {% if messages %}
         <div class="flash-container">
@@ -300,25 +120,13 @@ Commit 19 addition:
                 alt="Tome"
                 class="icon-shadow"
             >
-            <!--
-              data-typewriter="true" tells typewriter.js to animate this element.
-              The text content is the raw story text — no HTML tags inside so the
-              typewriter can safely set .textContent without XSS concerns.
-            -->
             <p data-typewriter="true"><strong>Story:</strong> {{ chapter.text }}</p>
 
             {% if chapter.lore %}
-            <!-- Lore appears immediately — it's atmospheric flavour, not the main narrative -->
             <p class="lore"><em>{{ chapter.lore }}</em></p>
             {% endif %}
         </div>
 
-        <!--
-          id="choices-form" — typewriter.js hides this until typing completes,
-          then adds .choices-reveal for the fade-in animation.
-          The wrapping div is used instead of the <form> directly so the
-          CSS hide/show doesn't interfere with form semantics.
-        -->
         {% if chapter.choices %}
             <div id="choices-form">
                 <form method="POST">
@@ -329,7 +137,6 @@ Commit 19 addition:
                     {% endfor %}
                 </form>
 
-                {# ── Commit 10: shop link on bonfire chapters ── #}
                 {% if is_rest %}
                 <a href="{{ url_for('main.shop') }}" class="shop-link-btn">
                     <i class="fas fa-store"></i> Visit Merchant
@@ -342,7 +149,7 @@ Commit 19 addition:
             </div>
         {% endif %}
 
-        <!-- Save / Load / Bestiary / Quit links -->
+        <!-- Menu links -->
         <div class="menu">
             <a href="{{ url_for('main.save') }}">Save</a> |
             <a href="{{ url_for('main.load') }}">Load</a> |
@@ -365,17 +172,7 @@ Commit 19 addition:
     <!-- Bonfire pulse overlay -->
     <div id="bonfire-pulse" class="bonfire-pulse"></div>
 
-    <!-- ── Commit 19: Quit confirmation dialog ─────────────────────────────
-         Shown when player clicks "Return to Title".
-         Three choices:
-           1. Save & Return  — hits /save (which saves then redirects to /game),
-                               but we override destination to / via a query flag.
-                               Simplest approach: navigate to /save?quit=1 and
-                               handle the redirect in routes.py. For now we do
-                               a two-step: save via fetch then redirect.
-           2. Return without saving — navigate directly to /
-           3. Cancel — dismiss the overlay
-    ── -->
+    <!-- Quit confirmation dialog -->
     <div id="quit-confirm-overlay" role="dialog" aria-modal="true" aria-labelledby="quit-confirm-title">
         <div class="quit-confirm-box">
             <p id="quit-confirm-title">
@@ -404,31 +201,21 @@ Commit 19 addition:
 
     <script>
     window.addEventListener('DOMContentLoaded', () => {
+        // Bonfire pulse on rest chapters
         const messages = {{ get_flashed_messages(with_categories=true) | tojson }};
         const pulse = document.getElementById('bonfire-pulse');
         if (messages.some(([cat, msg]) => cat === 'info' && msg.includes('bonfire'))) {
             pulse.classList.add('active');
         }
 
-        // ── Commit 19: quit confirmation overlay ──────────────────────────
-        const overlay    = document.getElementById('quit-confirm-overlay');
-        const quitLink   = document.getElementById('quit-link');
-        const cancelBtn  = document.getElementById('quit-cancel-btn');
+        // Quit confirmation overlay
+        const overlay   = document.getElementById('quit-confirm-overlay');
+        const quitLink  = document.getElementById('quit-link');
+        const cancelBtn = document.getElementById('quit-cancel-btn');
 
-        quitLink.addEventListener('click', e => {
-            e.preventDefault();
-            overlay.classList.add('visible');
-        });
-
-        cancelBtn.addEventListener('click', () => {
-            overlay.classList.remove('visible');
-        });
-
-        // Clicking the backdrop also dismisses
-        overlay.addEventListener('click', e => {
-            if (e.target === overlay) overlay.classList.remove('visible');
-        });
-        // ─────────────────────────────────────────────────────────────────
+        quitLink.addEventListener('click', e => { e.preventDefault(); overlay.classList.add('visible'); });
+        cancelBtn.addEventListener('click', () => overlay.classList.remove('visible'));
+        overlay.addEventListener('click', e => { if (e.target === overlay) overlay.classList.remove('visible'); });
     });
     </script>
 
