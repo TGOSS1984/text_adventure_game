@@ -206,7 +206,7 @@ CLASSES = {
         "magic_attack":     22,
         "defense":          9,
         "magic_defense":    22,
-        "max_hp":           90,
+        "max_hp":           100,
         "mp_max":           130,
         # ── Combat modifiers ──────────────────────────────────────────────────
         # Low crit — necromancers are methodical, not lucky.
