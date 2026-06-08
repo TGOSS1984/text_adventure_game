@@ -31,7 +31,7 @@ MP_REGEN_ATTACK = 25    # MP gained per standard attack
 COOLDOWN_TURNS  = 4     # turns before special move can be used again
 
 # ── Estus heal amount ─────────────────────────────────────────────────────────
-ESTUS_HEAL_PCT  = 0.70  # fraction of max_hp restored per flask
+ESTUS_HEAL_PCT  = 0.80  # fraction of max_hp restored per flask
 
 # ── Physical penetration ───────────────────────────────────────────────────────
 # Physical attacks apply only PHYS_PEN x enemy/player physical defense.
@@ -48,7 +48,7 @@ PHASE2_HP_TRIGGER = 0.50   # phase 2 begins when boss HP <= 50%
 # ── Enemy move probability weights ────────────────────────────────────────────
 # Order: [attack, big_hit, flurry]
 PHASE1_WEIGHTS = [0.60, 0.25, 0.15]   # attack high, big_hit mid, flurry rare
-PHASE2_WEIGHTS = [0.30, 0.38, 0.32]   # attack low, big_hit high, flurry high
+PHASE2_WEIGHTS = [0.40, 0.40, 0.20]   # more likely to trigger bigger hits
 
 # ── Starting estus count ──────────────────────────────────────────────────────
 DEFAULT_ESTUS = 5

@@ -26,7 +26,7 @@ CLASSES = {
         "magic_attack":     0,
         "defense":          15,
         "magic_defense":    10,
-        "max_hp":           135,
+        "max_hp":           160,
         "mp_max":           80,
         # ── Combat modifiers ──────────────────────────────────────────────────
         "crit_chance":      0.20,
@@ -59,7 +59,7 @@ CLASSES = {
         "magic_attack":     28,
         "defense":          6,
         "magic_defense":    18,
-        "max_hp":           95,
+        "max_hp":           110,
         "mp_max":           120,
         # ── Combat modifiers ──────────────────────────────────────────────────
         "crit_chance":      0.30,
@@ -92,7 +92,7 @@ CLASSES = {
         "magic_attack":     0,
         "defense":          8,
         "magic_defense":    6,
-        "max_hp":           118,
+        "max_hp":           130,
         "mp_max":           100,
         # ── Combat modifiers ──────────────────────────────────────────────────
         "crit_chance":      0.40,
@@ -125,7 +125,7 @@ CLASSES = {
         "magic_attack":     0,
         "defense":          10,
         "magic_defense":    8,
-        "max_hp":           110,
+        "max_hp":           140,
         "mp_max":           100,
         # ── Combat modifiers ──────────────────────────────────────────────────
         "crit_chance":      0.50,

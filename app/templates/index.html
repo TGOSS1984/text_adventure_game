@@ -24,11 +24,14 @@ Commit 21b addition:
 Refactor:
 - 4 hardcoded class cards replaced with a single for loop over CLASSES
 - All class stats, icons, lore, damage type badges driven from classes.py
-- Gift panel, audio, bestiary link, JS — unchanged
+- Gift panel, audio, bestiary link, JS unchanged
 
-Video load fix:
-- poster attribute added to <video> for instant static background on load
-- preload hint changed from video to image (better browser support)
+Carousel upgrade:
+- Class cards and gift cards now in horizontal scroll-snap carousels
+- Arrow buttons + dot indicators for premium navigation
+- Desktop: 4 cards visible; tablet: 2-3; mobile: 1 with peek of next
+- CSS scroll-snap for buttery native scrolling, minimal JS for arrows/dots
+- Fully compatible with title_intro.js stagger reveal
 -->
 
 <!DOCTYPE html>
@@ -36,7 +39,7 @@ Video load fix:
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Elden Souls is a Flask-based, text-driven adventure game inspired by Dark Souls and Elden Ring. Choose your class, battle lore-rich enemies, explore branching story paths, and make impactful decisions that shape the fate of a fallen world. Built in Python with deep narrative, RPG mechanics, and session-based progression.">
+    <meta name="description" content="Elden Souls is a Flask-based, text-driven adventure game inspired by Dark Souls and Elden Ring.">
     <title>Elden Souls — Choose Your Class</title>
 
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
@@ -62,40 +65,64 @@ Video load fix:
             <!-- ── Step 1: Class selection ── -->
             <p class="battle-info">Select your class:</p>
 
-            <div class="class-options-wrapper">
+            <!-- Carousel outer — holds arrows + scroll track -->
+            <div class="carousel-outer" id="class-carousel-outer">
 
+                <!-- Left arrow -->
+                <button type="button" class="carousel-arrow carousel-arrow--left" id="class-arrow-left" aria-label="Previous class">
+                    <i class="fas fa-chevron-left"></i>
+                </button>
+
+                <!-- Scroll track -->
+                <div class="class-options-wrapper carousel-track" id="class-track">
+                    {% for class_name, cls in classes.items() %}
+                    <div class="class-option carousel-item">
+                        <label>
+                            <input type="radio" name="class" value="{{ class_name }}" {% if loop.first %}required{% endif %}>
+                            <img src="{{ url_for('static', filename='images/' + cls.image) }}" alt="{{ class_name }}">
+                            <span><i class="fas {{ cls.icon }}"></i> {{ class_name }}</span>
+                            <div class="class-stats">
+                                {% if cls.damage_type == 'magic' %}
+                                    <span><i class="fas fa-wand-magic-sparkles"></i> Mag.Atk: {{ cls.magic_attack }}</span>
+                                {% else %}
+                                    <span><i class="fas fa-crosshairs"></i> Attack: {{ cls.attack }}</span>
+                                {% endif %}
+                                <span><i class="fas fa-shield-alt"></i> Defense: {{ cls.defense }}</span>
+                                <span><i class="fas fa-heart"></i> HP: {{ cls.max_hp }}</span>
+                                <span><i class="fas fa-bullseye"></i> Crit: {{ (cls.crit_chance * 100) | round(0) | int }}%</span>
+                                <span><i class="fas fa-running"></i> Dodge: {{ (cls.dodge_chance * 100) | round(0) | int }}%</span>
+                                <span><i class="fas fa-shield-virus"></i> Block: {{ (100 - cls.block_multiplier * 100) | round(0) | int }}% reduced</span>
+                                <span><i class="fas fa-hat-wizard"></i> Mag.Def: {{ cls.magic_defense }}</span>
+                            </div>
+                            <div class="class-type-row">
+                                {% if cls.damage_type == 'magic' %}
+                                    <span class="damage-type-badge damage-type-badge--lg badge--magic">✨ Magic</span>
+                                {% else %}
+                                    <span class="damage-type-badge damage-type-badge--lg badge--physical">⚔ Physical</span>
+                                {% endif %}
+                            </div>
+                            <span class="class-lore">{{ cls.lore }}</span>
+                        </label>
+                    </div>
+                    {% endfor %}
+                </div><!-- /.carousel-track -->
+
+                <!-- Right arrow -->
+                <button type="button" class="carousel-arrow carousel-arrow--right" id="class-arrow-right" aria-label="Next class">
+                    <i class="fas fa-chevron-right"></i>
+                </button>
+
+            </div><!-- /.carousel-outer -->
+
+            <!-- Dot indicators for class carousel -->
+            <div class="carousel-dots" id="class-dots" role="tablist" aria-label="Class selection">
                 {% for class_name, cls in classes.items() %}
-                <div class="class-option">
-                    <label>
-                        <input type="radio" name="class" value="{{ class_name }}" {% if loop.first %}required{% endif %}>
-                        <img src="{{ url_for('static', filename='images/' + cls.image) }}" alt="{{ class_name }}">
-                        <span><i class="fas {{ cls.icon }}"></i> {{ class_name }}</span>
-                        <div class="class-stats">
-                            {% if cls.damage_type == 'magic' %}
-                                <span><i class="fas fa-wand-magic-sparkles"></i> Mag.Atk: {{ cls.magic_attack }}</span>
-                            {% else %}
-                                <span><i class="fas fa-crosshairs"></i> Attack: {{ cls.attack }}</span>
-                            {% endif %}
-                            <span><i class="fas fa-shield-alt"></i> Defense: {{ cls.defense }}</span>
-                            <span><i class="fas fa-heart"></i> HP: {{ cls.max_hp }}</span>
-                            <span><i class="fas fa-bullseye"></i> Crit: {{ (cls.crit_chance * 100) | round(0) | int }}%</span>
-                            <span><i class="fas fa-running"></i> Dodge: {{ (cls.dodge_chance * 100) | round(0) | int }}%</span>
-                            <span><i class="fas fa-shield-virus"></i> Block: {{ (100 - cls.block_multiplier * 100) | round(0) | int }}% reduced</span>
-                            <span><i class="fas fa-hat-wizard"></i> Mag.Def: {{ cls.magic_defense }}</span>
-                        </div>
-                        <div class="class-type-row">
-                            {% if cls.damage_type == 'magic' %}
-                                <span class="damage-type-badge damage-type-badge--lg badge--magic">✨ Magic</span>
-                            {% else %}
-                                <span class="damage-type-badge damage-type-badge--lg badge--physical">⚔ Physical</span>
-                            {% endif %}
-                        </div>
-                        <span class="class-lore">{{ cls.lore }}</span>
-                    </label>
-                </div>
+                <button type="button" class="carousel-dot {% if loop.first %}carousel-dot--active{% endif %}"
+                        data-index="{{ loop.index0 }}"
+                        aria-label="Go to {{ class_name }}"
+                        role="tab"></button>
                 {% endfor %}
-
-            </div><!-- /.class-options-wrapper -->
+            </div>
 
             <!-- ── Step 2: Gift selection — hidden until class is chosen ── -->
             <div id="gift-panel" class="gift-panel" aria-hidden="true">
@@ -104,63 +131,86 @@ Video load fix:
                     <i class="fas fa-gift"></i> Choose your starting gift:
                 </p>
 
-                <div class="gift-options-wrapper">
+                <!-- Gift carousel outer -->
+                <div class="carousel-outer carousel-outer--gift" id="gift-carousel-outer">
 
-                    <div class="gift-option">
-                        <label>
-                            <input type="radio" name="gift" value="estus_plus" required>
-                            <span class="gift-icon"><i class="fas fa-flask"></i></span>
-                            <span class="gift-name">Estus +1</span>
-                            <span class="gift-desc">Begin with 6 Estus Flasks instead of 5. One extra chance to survive.</span>
-                        </label>
-                    </div>
+                    <button type="button" class="carousel-arrow carousel-arrow--left" id="gift-arrow-left" aria-label="Previous gift">
+                        <i class="fas fa-chevron-left"></i>
+                    </button>
 
-                    <div class="gift-option">
-                        <label>
-                            <input type="radio" name="gift" value="hunters_charm">
-                            <span class="gift-icon"><i class="fas fa-bullseye"></i></span>
-                            <span class="gift-name">Hunter's Charm</span>
-                            <span class="gift-desc">+5% critical hit chance. The blade finds the gap between breath and bone.</span>
-                        </label>
-                    </div>
+                    <div class="gift-options-wrapper carousel-track" id="gift-track">
 
-                    <div class="gift-option">
-                        <label>
-                            <input type="radio" name="gift" value="iron_talisman">
-                            <span class="gift-icon"><i class="fas fa-shield-halved"></i></span>
-                            <span class="gift-name">Iron Talisman</span>
-                            <span class="gift-desc">+3 defence. A ward carved from iron, soaked in the prayers of the fallen.</span>
-                        </label>
-                    </div>
+                        <div class="gift-option carousel-item--gift">
+                            <label>
+                                <input type="radio" name="gift" value="estus_plus" required>
+                                <span class="gift-icon"><i class="fas fa-flask"></i></span>
+                                <span class="gift-name">Estus +1</span>
+                                <span class="gift-desc">Begin with 6 Estus Flasks instead of 5. One extra chance to survive.</span>
+                            </label>
+                        </div>
 
-                    <div class="gift-option">
-                        <label>
-                            <input type="radio" name="gift" value="witchs_ember">
-                            <span class="gift-icon"><i class="fas fa-fire-flame-curved"></i></span>
-                            <span class="gift-name">Witch's Ember</span>
-                            <span class="gift-desc">+3 attack. A shard of captured flame, still hungry.</span>
-                        </label>
-                    </div>
+                        <div class="gift-option carousel-item--gift">
+                            <label>
+                                <input type="radio" name="gift" value="hunters_charm">
+                                <span class="gift-icon"><i class="fas fa-bullseye"></i></span>
+                                <span class="gift-name">Hunter's Charm</span>
+                                <span class="gift-desc">+5% critical hit chance. The blade finds the gap between breath and bone.</span>
+                            </label>
+                        </div>
 
-                    <div class="gift-option">
-                        <label>
-                            <input type="radio" name="gift" value="old_coin">
-                            <span class="gift-icon"><i class="fas fa-coins"></i></span>
-                            <span class="gift-name">Old Coin</span>
-                            <span class="gift-desc">Begin with 200 souls. Minted in a kingdom that no longer remembers its name.</span>
-                        </label>
-                    </div>
+                        <div class="gift-option carousel-item--gift">
+                            <label>
+                                <input type="radio" name="gift" value="iron_talisman">
+                                <span class="gift-icon"><i class="fas fa-shield-halved"></i></span>
+                                <span class="gift-name">Iron Talisman</span>
+                                <span class="gift-desc">+3 defence. A ward carved from iron, soaked in the prayers of the fallen.</span>
+                            </label>
+                        </div>
 
-                    <div class="gift-option">
-                        <label>
-                            <input type="radio" name="gift" value="fading_soul">
-                            <span class="gift-icon"><i class="fas fa-ghost"></i></span>
-                            <span class="gift-name">Fading Soul</span>
-                            <span class="gift-desc">Nothing. For those who need no comfort at the end of all things.</span>
-                        </label>
-                    </div>
+                        <div class="gift-option carousel-item--gift">
+                            <label>
+                                <input type="radio" name="gift" value="witchs_ember">
+                                <span class="gift-icon"><i class="fas fa-fire-flame-curved"></i></span>
+                                <span class="gift-name">Witch's Ember</span>
+                                <span class="gift-desc">+3 attack. A shard of captured flame, still hungry.</span>
+                            </label>
+                        </div>
 
-                </div><!-- /.gift-options-wrapper -->
+                        <div class="gift-option carousel-item--gift">
+                            <label>
+                                <input type="radio" name="gift" value="old_coin">
+                                <span class="gift-icon"><i class="fas fa-coins"></i></span>
+                                <span class="gift-name">Old Coin</span>
+                                <span class="gift-desc">Begin with 200 souls. Minted in a kingdom that no longer remembers its name.</span>
+                            </label>
+                        </div>
+
+                        <div class="gift-option carousel-item--gift">
+                            <label>
+                                <input type="radio" name="gift" value="fading_soul">
+                                <span class="gift-icon"><i class="fas fa-ghost"></i></span>
+                                <span class="gift-name">Fading Soul</span>
+                                <span class="gift-desc">Nothing. For those who need no comfort at the end of all things.</span>
+                            </label>
+                        </div>
+
+                    </div><!-- /.gift-track -->
+
+                    <button type="button" class="carousel-arrow carousel-arrow--right" id="gift-arrow-right" aria-label="Next gift">
+                        <i class="fas fa-chevron-right"></i>
+                    </button>
+
+                </div><!-- /.carousel-outer--gift -->
+
+                <!-- Dot indicators for gift carousel -->
+                <div class="carousel-dots" id="gift-dots" role="tablist" aria-label="Gift selection">
+                    <button type="button" class="carousel-dot carousel-dot--active" data-index="0" role="tab" aria-label="Estus +1"></button>
+                    <button type="button" class="carousel-dot" data-index="1" role="tab" aria-label="Hunter's Charm"></button>
+                    <button type="button" class="carousel-dot" data-index="2" role="tab" aria-label="Iron Talisman"></button>
+                    <button type="button" class="carousel-dot" data-index="3" role="tab" aria-label="Witch's Ember"></button>
+                    <button type="button" class="carousel-dot" data-index="4" role="tab" aria-label="Old Coin"></button>
+                    <button type="button" class="carousel-dot" data-index="5" role="tab" aria-label="Fading Soul"></button>
+                </div>
 
                 <button type="submit" class="begin-journey" id="begin-btn">
                     <i class="fas fa-fire"></i> Begin Journey
@@ -196,6 +246,7 @@ Video load fix:
     <script src="{{ url_for('static', filename='js/title_intro.js') }}"></script>
 
     <script>
+    // ── Gift panel reveal (unchanged) ─────────────────────────────────────
     document.querySelectorAll('input[name="class"]').forEach(radio => {
         radio.addEventListener('change', () => {
             const panel = document.getElementById('gift-panel');
@@ -204,8 +255,115 @@ Video load fix:
             panel.setAttribute('aria-hidden', 'false');
             setTimeout(() => {
                 panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                // Initialise gift carousel arrows now that panel is visible
+                updateCarousel(giftTrack, giftDotsEl, giftArrowLeft, giftArrowRight);
             }, 350);
         });
+    });
+
+    // ── Carousel factory ─────────────────────────────────────────────────
+    function initCarousel(trackEl, dotsEl, arrowLeft, arrowRight, visibleCount) {
+
+        function getCardWidth() {
+            const first = trackEl.querySelector('.carousel-item, .carousel-item--gift');
+            if (!first) return 0;
+            const style = getComputedStyle(trackEl);
+            const gap = parseFloat(style.columnGap || style.gap || 0);
+            return first.getBoundingClientRect().width + gap;
+        }
+
+        function currentIndex() {
+            const cardW = getCardWidth();
+            return cardW > 0 ? Math.round(trackEl.scrollLeft / cardW) : 0;
+        }
+
+        function totalCards() {
+            return trackEl.querySelectorAll('.carousel-item, .carousel-item--gift').length;
+        }
+
+        function updateArrows() {
+            const idx  = currentIndex();
+            const total = totalCards();
+            const vCount = getVisibleCount();
+            arrowLeft.classList.toggle('carousel-arrow--hidden', idx <= 0);
+            arrowRight.classList.toggle('carousel-arrow--hidden', idx >= total - vCount);
+        }
+
+        function updateDots() {
+            if (!dotsEl) return;
+            const idx = currentIndex();
+            dotsEl.querySelectorAll('.carousel-dot').forEach((dot, i) => {
+                dot.classList.toggle('carousel-dot--active', i === idx);
+            });
+        }
+
+        function getVisibleCount() {
+            const vw = window.innerWidth;
+            if (vw >= 1100) return Math.min(4, totalCards());
+            if (vw >= 700)  return Math.min(2, totalCards());
+            return 1;
+        }
+
+        function scrollToIndex(idx) {
+            const cardW = getCardWidth();
+            trackEl.scrollTo({ left: idx * cardW, behavior: 'smooth' });
+        }
+
+        arrowLeft.addEventListener('click', () => scrollToIndex(Math.max(0, currentIndex() - 1)));
+        arrowRight.addEventListener('click', () => scrollToIndex(Math.min(totalCards() - 1, currentIndex() + 1)));
+
+        if (dotsEl) {
+            dotsEl.querySelectorAll('.carousel-dot').forEach(dot => {
+                dot.addEventListener('click', () => scrollToIndex(parseInt(dot.dataset.index)));
+            });
+        }
+
+        let scrollTimer;
+        trackEl.addEventListener('scroll', () => {
+            clearTimeout(scrollTimer);
+            scrollTimer = setTimeout(() => {
+                updateArrows();
+                updateDots();
+            }, 80);
+        }, { passive: true });
+
+        // Initial state
+        updateArrows();
+        updateDots();
+
+        return { updateArrows, updateDots };
+    }
+
+    // Shared update fn for external callers
+    function updateCarousel(track, dots, left, right) {
+        const ctrl = carouselMap.get(track);
+        if (ctrl) { ctrl.updateArrows(); ctrl.updateDots(); }
+    }
+
+    const carouselMap = new Map();
+
+    // Initialise class carousel after intro animation settles
+    const classTrack     = document.getElementById('class-track');
+    const classDotsEl    = document.getElementById('class-dots');
+    const classArrowLeft  = document.getElementById('class-arrow-left');
+    const classArrowRight = document.getElementById('class-arrow-right');
+
+    const giftTrack      = document.getElementById('gift-track');
+    const giftDotsEl     = document.getElementById('gift-dots');
+    const giftArrowLeft  = document.getElementById('gift-arrow-left');
+    const giftArrowRight = document.getElementById('gift-arrow-right');
+
+    // Wait for title_intro.js stagger to finish before measuring card widths
+    setTimeout(() => {
+        const classCtrl = initCarousel(classTrack, classDotsEl, classArrowLeft, classArrowRight, 4);
+        carouselMap.set(classTrack, classCtrl);
+        const giftCtrl  = initCarousel(giftTrack,  giftDotsEl,  giftArrowLeft,  giftArrowRight,  3);
+        carouselMap.set(giftTrack, giftCtrl);
+    }, 1800); // after stagger completes
+
+    // Re-measure on resize
+    window.addEventListener('resize', () => {
+        carouselMap.forEach(ctrl => { ctrl.updateArrows(); ctrl.updateDots(); });
     });
     </script>
 
