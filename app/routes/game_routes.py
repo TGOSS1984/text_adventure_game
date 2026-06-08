@@ -101,6 +101,10 @@ def register(blueprint):
                 session["estus_max"] = amount
             elif stat == "souls":
                 session["souls"] = amount
+            elif stat == "max_hp":                          # ← add this branch
+                current = session["character"].get("max_hp", 0)
+                session["character"]["max_hp"] = current + amount
+                session["hp"] = session["character"]["max_hp"]  # live HP matches new max   
             elif mode == "set":
                 session["character"][stat] = amount
             else:

@@ -186,6 +186,12 @@ GIFTS = {
         "amount": 200,
         "mode":   "set",
     },
+    "life_ring": {
+        "name":   "Life Ring",
+        "stat":   "max_hp",
+        "amount": 15,
+        "mode":   "add",
+    },
     "fading_soul": {
         "name":   "Fading Soul",
         "stat":   None,   # no effect

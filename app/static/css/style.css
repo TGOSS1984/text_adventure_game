@@ -92,6 +92,10 @@
     --hp-bar-height:      22px;
     --hp-bar-width:       min(480px, 90vw);
     --hp-bar-radius:      var(--radius-md);
+
+    /* Carousel */
+    --cards-visible: 4;
+    --cards-visible-gift: 3;
 }
 
 
@@ -1541,13 +1545,20 @@ body.home-page .bonfire-bg {
 
 /* ── Shop page: readable cards over bright background ───────────────────── */
 
+body.shop-page {
+    background-image: url('../images/areas/ariandel.jpg');
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-attachment: fixed;
+}
 
 /* Page-level darkening overlay — only on shop */
 body.shop-page::before {
     content: '';
     position: fixed;
     inset: 0;
-    background: rgba(0, 0, 0, 0.72);
+    background: rgba(0, 0, 0, 0.2);
     pointer-events: none;
     z-index: 0;
 }
@@ -1652,18 +1663,36 @@ body.shop-page .shop-wrapper {
 
 /* Merchant quote */
 .merchant-quote {
-    color: rgba(201, 168, 76, 0.70) !important;
-    text-shadow: 1px 1px 4px #000;
+    color: rgba(201, 168, 76, 0.85) !important;
+    text-shadow: 2px 2px 8px #000, 0 0 20px rgba(0,0,0,0.8);
+    background: rgba(0, 0, 0, 0.55);
+    border-top: 1px solid rgba(201, 168, 76, 0.20);
+    padding: 0.8rem 1.5rem;
+    border-radius: var(--radius-md);
+    display: inline-block;
 }
 
 /* Back to bonfire link */
 .shop-back {
-    color: rgba(210, 195, 160, 0.80) !important;
-    text-shadow: 1px 1px 3px #000;
+    color: rgba(201, 168, 76, 0.90) !important;
+    text-shadow: 2px 2px 6px #000, 0 0 16px rgba(0,0,0,0.9);
+    background: rgba(0, 0, 0, 0.55);
+    border: 1px solid rgba(201, 168, 76, 0.25);
+    border-radius: var(--radius-md);
+    padding: 0.6rem 1.4rem;
+    display: inline-block;
+    margin: 0.5rem auto;
+    letter-spacing: 0.08em;
+    transition: background 0.2s, border-color 0.2s, color 0.2s, box-shadow 0.2s;
 }
 
 .shop-back:hover {
-    color: var(--clr-gold) !important;
+    color: #111 !important;
+    text-shadow: none !important;
+    background: var(--clr-gold) !important;
+    border-color: var(--clr-gold-bright) !important;
+    box-shadow: 0 0 16px rgba(201, 168, 76, 0.50);
+    text-decoration: none;
 }
 
 /* Flash messages on shop page */
@@ -3026,7 +3055,7 @@ body.home-page .overlay {
 
 /* ── Page background ── */
 body.status-page {
-    background-image: url('../images/areas/player_screen.jpeg');
+    background-image: url('../images/areas/souls_images.png');
     background-size: cover;
     background-repeat: no-repeat;
     background-position: center;
@@ -3385,9 +3414,9 @@ body.status-page {
     flex: 0 0 auto;
     scroll-snap-align: start;
     /* Desktop: 4 visible — (100% - 3 gaps) / 4 */
-    width: calc((100%) / 4 - (1.5rem * 3 / 4));
+    width: calc((100%) / var(--cards-visible) - (1.5rem * (var(--cards-visible) - 1) / var(--cards-visible)));
     min-width: 180px;
-    max-width: 220px;
+    max-width: 260px;
     /* Reset the existing class-option sizing */
     box-sizing: border-box;
 }
@@ -3406,7 +3435,7 @@ body.status-page {
     flex: 0 0 auto;
     scroll-snap-align: start;
     /* Desktop: 3 visible */
-    width: calc((100%) / 3 - (1.5rem * 2 / 3));
+    width: calc((100%) / var(--cards-visible-gift) - (1.5rem * (var(--cards-visible-gift) - 1) / var(--cards-visible-gift)));
     min-width: 160px;
     max-width: 220px;
     box-sizing: border-box;
@@ -3502,13 +3531,17 @@ body.status-page {
 /* ── Responsive breakpoints ── */
 
 /* Tablet: 2 class cards, 2 gift cards visible */
+/* Tablet: 2 class cards, 2 gift cards visible */
 @media (max-width: 1099px) and (min-width: 700px) {
-    .carousel-item {
-        width: calc(50% - 0.75rem);
+    :root {
+        --cards-visible: 2;
+        --cards-visible-gift: 2;
     }
-
+    .carousel-item {
+        width: calc((100%) / var(--cards-visible) - (1.5rem * (var(--cards-visible) - 1) / var(--cards-visible)));
+    }
     .carousel-item--gift {
-        width: calc(50% - 0.75rem);
+        width: calc((100%) / var(--cards-visible-gift) - (1.5rem * (var(--cards-visible-gift) - 1) / var(--cards-visible-gift)));
     }
 }
 
@@ -3808,5 +3841,21 @@ body.status-page {
     }
     [data-lightbox]:hover {
         transform: none;
+    }
+}
+
+/*BESTIARY PAGE*/
+
+body.bestiary-page {
+    background-image: url('../images/areas/lotf.jpg');
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-attachment: fixed;
+}
+
+@media (max-width: 768px) {
+    body.bestiary-page {
+        background-attachment: scroll;
     }
 }
