@@ -266,9 +266,10 @@ Carousel upgrade:
             panel.setAttribute('aria-hidden', 'false');
             setTimeout(() => {
                 panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                // Initialise gift carousel arrows now that panel is visible
-                updateCarousel(giftTrack, giftDotsEl, giftArrowLeft, giftArrowRight);
-            }, 350);
+                // Re-initialise gift carousel now panel is visible and has real dimensions
+                const giftCtrl = initCarousel(giftTrack, giftDotsEl, giftArrowLeft, giftArrowRight, 3);
+                carouselMap.set(giftTrack, giftCtrl);
+            }, 400);
         });
     });
 

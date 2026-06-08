@@ -9,6 +9,10 @@ the session already holds.
 Styles live in style.css under the PLAYER STATUS SCREEN section.
 To add a new stat: add it to the session in routes/game_routes.py and
 display it here. No other files need changing.
+
+Lightbox addition:
+- status-portrait has data-lightbox attribute — click to view full size
+- Lightbox overlay at bottom of body, JS wired via data-lightbox selector
 -->
 
 <!DOCTYPE html>
@@ -55,11 +59,13 @@ display it here. No other files need changing.
     </div>
 
     <!-- Portrait + class name + lore -->
+    <!-- data-lightbox: click portrait to view full size -->
     <div class="status-portrait-block">
         <img
             src="{{ url_for('static', filename='images/' + character['image']) }}"
             alt="{{ character['class_name'] }}"
             class="status-portrait"
+            data-lightbox
         >
         <span class="status-class-name">
             <i class="fas {{ class_icon }}"></i>
@@ -228,9 +234,62 @@ display it here. No other files need changing.
 </div>
 </div>
 
+<!-- ── Lightbox overlay ── -->
+<div id="lightbox" role="dialog" aria-modal="true" aria-label="Full size image">
+    <button id="lightbox-close" aria-label="Close image">
+        <i class="fas fa-times"></i>
+    </button>
+    <img id="lightbox-img" src="" alt="">
+    <p id="lightbox-caption"></p>
+</div>
+
 <script src="{{ url_for('static', filename='js/audio_manager.js') }}"></script>
 <script src="{{ url_for('static', filename='js/settings.js') }}"></script>
 <script src="{{ url_for('static', filename='js/sound.js') }}"></script>
+
+<script>
+(function () {
+    const box   = document.getElementById('lightbox');
+    const img   = document.getElementById('lightbox-img');
+    const cap   = document.getElementById('lightbox-caption');
+    const close = document.getElementById('lightbox-close');
+
+    function openLightbox(src, alt) {
+        img.src = src;
+        img.alt = alt;
+        cap.textContent = alt;
+        box.classList.add('lightbox--open');
+        document.body.style.overflow = 'hidden';
+        close.focus();
+    }
+
+    function closeLightbox() {
+        box.classList.remove('lightbox--open');
+        document.body.style.overflow = '';
+        img.src = '';
+    }
+
+    box.addEventListener('click', e => { if (e.target === box) closeLightbox(); });
+    close.addEventListener('click', closeLightbox);
+    document.addEventListener('keydown', e => {
+        if (e.key === 'Escape' && box.classList.contains('lightbox--open')) closeLightbox();
+    });
+
+    document.querySelectorAll('[data-lightbox]').forEach(el => {
+        el.style.cursor = 'zoom-in';
+        el.setAttribute('tabindex', '0');
+        el.setAttribute('role', 'button');
+        el.setAttribute('aria-label', 'View full size: ' + (el.alt || ''));
+        el.addEventListener('click', () => openLightbox(el.src, el.alt || ''));
+        el.addEventListener('keydown', e => {
+            if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                openLightbox(el.src, el.alt || '');
+            }
+        });
+    });
+}());
+</script>
 
 </body>
 </html>

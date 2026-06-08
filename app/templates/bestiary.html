@@ -18,6 +18,11 @@ Commit 21 additions:
 - Damage type badge added to regular enemy and boss codex entries
 - Enemy codex inline stat row updated to show magic_attack where relevant
 - Physical & Magic Damage section added to How to Play
+
+Lightbox addition:
+- codex-image (expanded view only, NOT the thumb) has data-lightbox
+- Clicking the large enemy/boss image opens it full size
+- Same lightbox overlay + JS as status.html
 -->
 
 <!DOCTYPE html>
@@ -603,6 +608,7 @@ Commit 21 additions:
                 {% for enemy in enemies %}
                 <details class="codex-entry">
                     <summary class="codex-summary">
+                        <!-- Thumbnail — no lightbox, clicking here toggles the details panel -->
                         <img
                             class="codex-thumb"
                             src="{{ url_for('static', filename='images/enemies/' + enemy.image) }}"
@@ -630,11 +636,13 @@ Commit 21 additions:
 
                     <div class="codex-body">
                         <div class="codex-image-col">
+                            <!-- Full size image in expanded view — data-lightbox triggers lightbox on click -->
                             <img
                                 class="codex-image"
                                 src="{{ url_for('static', filename='images/enemies/' + enemy.image) }}"
                                 alt="{{ enemy.name }}"
                                 loading="lazy"
+                                data-lightbox
                             >
                             <div class="codex-stat-grid">
                                 <div class="codex-stat">
@@ -687,6 +695,7 @@ Commit 21 additions:
                 {% for name, boss in bosses.items() %}
                 <details class="codex-entry">
                     <summary class="codex-summary">
+                        <!-- Thumbnail — no lightbox -->
                         <img
                             class="codex-thumb"
                             src="{{ url_for('static', filename='images/enemies/' + boss.image) }}"
@@ -717,11 +726,13 @@ Commit 21 additions:
 
                     <div class="codex-body">
                         <div class="codex-image-col">
+                            <!-- Full size image in expanded view — data-lightbox triggers lightbox on click -->
                             <img
                                 class="codex-image"
                                 src="{{ url_for('static', filename='images/enemies/' + boss.image) }}"
                                 alt="{{ name }}"
                                 loading="lazy"
+                                data-lightbox
                             >
                             <div class="codex-stat-grid">
                                 <div class="codex-stat">
@@ -808,8 +819,65 @@ Commit 21 additions:
 
 <div id="bonfire-pulse" class="bonfire-pulse"></div>
 
+<!-- ── Lightbox overlay ── -->
+<div id="lightbox" role="dialog" aria-modal="true" aria-label="Full size image">
+    <button id="lightbox-close" aria-label="Close image">
+        <i class="fas fa-times"></i>
+    </button>
+    <img id="lightbox-img" src="" alt="">
+    <p id="lightbox-caption"></p>
+</div>
+
 <script src="{{ url_for('static', filename='js/audio_manager.js') }}"></script>
 <script src="{{ url_for('static', filename='js/settings.js') }}"></script>
+
+<script>
+(function () {
+    const box   = document.getElementById('lightbox');
+    const img   = document.getElementById('lightbox-img');
+    const cap   = document.getElementById('lightbox-caption');
+    const close = document.getElementById('lightbox-close');
+
+    function openLightbox(src, alt) {
+        img.src = src;
+        img.alt = alt;
+        cap.textContent = alt;
+        box.classList.add('lightbox--open');
+        document.body.style.overflow = 'hidden';
+        close.focus();
+    }
+
+    function closeLightbox() {
+        box.classList.remove('lightbox--open');
+        document.body.style.overflow = '';
+        img.src = '';
+    }
+
+    box.addEventListener('click', e => { if (e.target === box) closeLightbox(); });
+    close.addEventListener('click', closeLightbox);
+    document.addEventListener('keydown', e => {
+        if (e.key === 'Escape' && box.classList.contains('lightbox--open')) closeLightbox();
+    });
+
+    // Wire up on DOMContentLoaded so dynamically revealed <details> images
+    // are also caught when the user expands a codex entry
+    document.addEventListener('DOMContentLoaded', () => {
+        document.querySelectorAll('[data-lightbox]').forEach(el => {
+            el.style.cursor = 'zoom-in';
+            el.setAttribute('tabindex', '0');
+            el.setAttribute('role', 'button');
+            el.setAttribute('aria-label', 'View full size: ' + (el.alt || ''));
+            el.addEventListener('click', () => openLightbox(el.src, el.alt || ''));
+            el.addEventListener('keydown', e => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    openLightbox(el.src, el.alt || '');
+                }
+            });
+        });
+    });
+}());
+</script>
 
 </body>
 </html>
