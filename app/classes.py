@@ -152,6 +152,94 @@ CLASSES = {
             "Each arrow loosed is a memory exiled into the dark."
         ),
     },
+     "Paladin": {
+        # ── Core stats ────────────────────────────────────────────────────────
+        # Balanced hybrid — second highest HP, solid physical and magic stats.
+        # Not as strong as Knight in physical defense, not as strong as Mage
+        # in magic, but holds its own on both fronts.
+        "attack":           18,
+        "magic_attack":     18,
+        "defense":          12,
+        "magic_defense":    14,
+        "max_hp":           150,
+        "mp_max":           90,
+        # ── Combat modifiers ──────────────────────────────────────────────────
+        # Moderate crit — paladins are methodical not opportunistic.
+        # Lower dodge — heavy armour, compensated by high block.
+        # Best block reduction in the game after Knight.
+        "crit_chance":      0.20,
+        "crit_multiplier":  1.5,
+        "dodge_chance":     0.40,
+        "block_multiplier": 0.30,
+        "damage_type":      "mixed",
+        # ── Assets ────────────────────────────────────────────────────────────
+        "image":            "classes/paladin.png",
+        "icon":             "fa-cross",
+        # ── Special move ──────────────────────────────────────────────────────
+        # Healing Light — restores 40% of max HP and blinds the enemy
+        # (stun: enemy cannot counter this turn).
+        # Slightly higher cooldown than other specials (5 vs 4) to balance
+        # the dual utility of heal + stun.
+        "special_name":     "Healing Light",
+        "special_label":    "✝ Healing Light",
+        "special_desc":     "Restore 40% max HP. Sacred light blinds the enemy — they cannot counter.",
+        "special_cost":     50,
+        "special_cooldown": 5,
+        "special_multiplier": 0,      # no damage — heal only
+        "special_effect":     "heal_stun",
+        "special_variance":   0,
+        "special_min_dmg":    0,
+        # ── Flavour ───────────────────────────────────────────────────────────
+        "lore": (
+            "Oathbound to a god who no longer answers, the Paladin carries faith "
+            "as a weapon and a wound. Where others see ruin, they see a reason to endure."
+        ),
+    },
+ 
+    "Necromancer": {
+        # ── Core stats ────────────────────────────────────────────────────────
+        # Second magic class. Higher magic defense than Mage — centuries spent
+        # communing with death grants resilience. Lower magic attack than Mage
+        # but compensated by the devastating special. Better physical defense
+        # than Mage (bone armour). Lower HP — fragile but dangerous.
+        "attack":           0,
+        "magic_attack":     22,
+        "defense":          9,
+        "magic_defense":    22,
+        "max_hp":           90,
+        "mp_max":           130,
+        # ── Combat modifiers ──────────────────────────────────────────────────
+        # Low crit — necromancers are methodical, not lucky.
+        # Good dodge — they spend their life slipping between the living
+        # and the dead. No blocking — robes offer nothing.
+        "crit_chance":      0.20,
+        "crit_multiplier":  1.5,
+        "dodge_chance":     0.55,
+        "block_multiplier": 0.60,
+        "damage_type":      "magic",
+        # ── Assets ────────────────────────────────────────────────────────────
+        "image":            "classes/necromancer.png",
+        "icon":             "fa-skull",
+        # ── Special move ──────────────────────────────────────────────────────
+        # Raise the Dead — summons undead to assault the enemy.
+        # 2.5× magic attack, bypasses physical armor (magic damage).
+        # High variance (0-8) keeps it from being too reliable.
+        # Longer cooldown (5) to balance the very high multiplier.
+        "special_name":     "Raise the Dead",
+        "special_label":    "💀 Raise the Dead",
+        "special_desc":     "3× magic attack. Undead tear through armour — enemy cannot predict the assault.",
+        "special_cost":     50,
+        "special_cooldown": 5,
+        "special_multiplier": 2.5,
+        "special_effect":     None,
+        "special_variance":   8,      # randint(0, 8) — unpredictable horde
+        "special_min_dmg":    12,
+        # ── Flavour ───────────────────────────────────────────────────────────
+        "lore": (
+            "They do not fear death. They have spoken to it, bargained with it, "
+            "and worn its face as a mask. The dead answer when the Necromancer calls."
+        ),
+    },
 }
 
 

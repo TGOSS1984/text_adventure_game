@@ -97,6 +97,8 @@ Carousel upgrade:
                             <div class="class-type-row">
                                 {% if cls.damage_type == 'magic' %}
                                     <span class="damage-type-badge damage-type-badge--lg badge--magic">✨ Magic</span>
+                                {% elif cls.damage_type == 'mixed' %}
+                                    <span class="damage-type-badge damage-type-badge--lg badge--mixed">⚔✨ Mixed</span>
                                 {% else %}
                                     <span class="damage-type-badge damage-type-badge--lg badge--physical">⚔ Physical</span>
                                 {% endif %}

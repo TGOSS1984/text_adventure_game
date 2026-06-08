@@ -32,6 +32,21 @@ Refactor (data-driven specials):
   in classes.py and read here — adding a new class needs zero changes to combat.py
 - resolve_player_action() reads dodge_chance and block_multiplier from the live
   player session dict so shop upgrades (e.g. Dodge Pendant) take effect in combat
+
+New class support:
+- use_special() handles 'heal_stun' effect (Paladin Healing Light):
+  heals 50% max HP, stuns enemy, deals no damage
+- Returns heal_amount as 7th value in tuple (0 for all other classes)
+- Per-class special_cooldown override supported
+
+Mixed damage type for players (Paladin):
+- attack() handles damage_type == 'mixed':
+  base_atk  = average of player attack and magic_attack
+  eff_def   = average of enemy physical and magic defense (with PHYS_PEN on physical)
+  type_label = "holy" — distinct from pure physical or magic
+- Both attack and magic_attack stats are meaningful for Paladin:
+  shop upgrades to either stat improve damage output
+- Same pattern as enemy mixed damage but from the player side
 """
 
 import numpy as np
@@ -90,11 +105,14 @@ class BattleManager:
 
     def attack(self, player, enemy):
         """
-        Routes damage through physical or magic channel depending on the
-        player's damage_type.
+        Routes damage through the correct channel based on player damage_type.
 
-        Physical classes use player['attack'] vs enemy.defense x PHYS_PEN.
-        Mage uses player['magic_attack'] vs enemy.magic_defense (no pen).
+        physical — player['attack'] vs enemy.defense x PHYS_PEN
+        magic    — player['magic_attack'] vs enemy.magic_defense
+        mixed    — average of both attack stats vs average of both defense stats
+                   (Paladin). Both attack and magic_attack are meaningful —
+                   shop upgrades to either stat improve Paladin damage output.
+                   type_label is 'holy' to distinguish in the battle log.
         """
         crit_chance     = float(player.get('crit_chance', 0.0))
         crit_multiplier = float(player.get('crit_multiplier', 1.0))
@@ -106,7 +124,20 @@ class BattleManager:
             base_atk   = player.get('magic_attack', 0)
             eff_def    = enemy.magic_defense
             type_label = "magic"
+
+        elif damage_type == 'mixed':
+            # Average of physical and magic attack stats
+            phys_atk   = player.get('attack', 0)
+            mag_atk    = player.get('magic_attack', 0)
+            base_atk   = (phys_atk + mag_atk) / 2.0
+            # Average of physical defense (with pen) and magic defense
+            phys_def   = int(enemy.defense * PHYS_PEN)
+            mag_def    = enemy.magic_defense
+            eff_def    = (phys_def + mag_def) / 2.0
+            type_label = "holy"
+
         else:
+            # physical (default)
             base_atk   = player['attack']
             eff_def    = int(enemy.defense * PHYS_PEN)
             type_label = "physical"
@@ -137,70 +168,112 @@ class BattleManager:
         Data-driven special moves — all behaviour defined in classes.py.
 
         Reads from CLASSES[class_name]:
-            special_multiplier — applied to the relevant attack stat
-            special_effect     — 'stun', 'smoke', or None
-            special_variance   — max random int subtracted from raw damage
-            special_min_dmg    — damage floor after all reductions
-            damage_type        — determines which attack/defense stats to use
+            special_multiplier  — applied to the relevant attack stat
+            special_effect      — 'stun', 'smoke', 'heal_stun', or None
+            special_variance    — max random int subtracted from raw damage
+            special_min_dmg     — damage floor after all reductions
+            special_cooldown    — per-class cooldown override (falls back to
+                                  COOLDOWN_TURNS from config.py)
+            damage_type         — determines which attack/defense stats to use
 
-        Adding a new class with a special move: define these fields in
-        classes.py. Zero changes needed here.
+        Returns 7-tuple:
+            msg, enemy.hp, new_mp, new_cooldown, stun_enemy, smoke_screen, heal_amount
+
+        heal_amount is non-zero only for 'heal_stun' effect (Paladin).
+        Routes must unpack all 7 values and apply heal_amount to player_hp.
+
+        Mixed damage_type specials (Paladin) use the same averaged stat logic
+        as attack() — multiplier applied to the average of both attack stats.
         """
         class_name = player.get('class_name', 'Knight')
 
         if current_mp < MP_COST:
             return (
                 f"Not enough MP! ({current_mp}/{MP_COST} needed)",
-                enemy.hp, current_mp, cooldown, False, False
+                enemy.hp, current_mp, cooldown, False, False, 0
             )
         if cooldown > 0:
             return (
                 f"Special move recharging — {cooldown} turn{'s' if cooldown != 1 else ''} remaining.",
-                enemy.hp, current_mp, cooldown, False, False
+                enemy.hp, current_mp, cooldown, False, False, 0
             )
 
         cls = CLASSES.get(class_name)
         if not cls:
             return (
                 "No special move available for this class.",
-                enemy.hp, current_mp, cooldown, False, False
+                enemy.hp, current_mp, cooldown, False, False, 0
             )
 
         new_mp       = current_mp - MP_COST
-        new_cooldown = COOLDOWN_TURNS
+        new_cooldown = cls.get('special_cooldown', COOLDOWN_TURNS)
 
         # ── Read special move definition from classes.py ───────────────────────
-        multiplier  = cls.get('special_multiplier', 1.0)
-        effect      = cls.get('special_effect', None)      # 'stun', 'smoke', None
-        variance    = cls.get('special_variance', 0)       # random damage reduction
-        min_dmg     = cls.get('special_min_dmg', 5)
-        damage_type = cls.get('damage_type', 'physical')
-        special_name = cls.get('special_name', 'Special')
-
-        # ── Resolve damage ─────────────────────────────────────────────────────
-        if damage_type == 'magic':
-            base_atk = player.get('magic_attack', 0)
-            eff_def  = enemy.magic_defense
-            dmg_label = "magic"
-        else:
-            base_atk = player.get('attack', 0)
-            eff_def  = int(enemy.defense * PHYS_PEN)
-            dmg_label = "physical"
-
-        raw = int(round(base_atk * multiplier))
-        if variance > 0:
-            raw -= np.random.randint(0, variance)
-        dmg = max(min_dmg, raw - eff_def)
-        enemy.hp -= dmg
-
-        # ── Resolve effect flags ───────────────────────────────────────────────
-        stun_enemy   = (effect == 'stun')
-        smoke_screen = (effect == 'smoke')
-
-        # ── Build battle log message ───────────────────────────────────────────
+        multiplier    = cls.get('special_multiplier', 1.0)
+        effect        = cls.get('special_effect', None)
+        variance      = cls.get('special_variance', 0)
+        min_dmg       = cls.get('special_min_dmg', 5)
+        damage_type   = cls.get('damage_type', 'physical')
         special_label = cls.get('special_label', '⚡ Special')
 
-        if effect == 'stun':
+        # ── Resolve effect flags ───────────────────────────────────────────────
+        stun_enemy   = (effect in ('stun', 'heal_stun'))
+        smoke_screen = (effect == 'smoke')
+        heal_amount  = int(player.get('max_hp', 100) * 0.40) if effect == 'heal_stun' else 0
+
+        # ── Resolve damage ─────────────────────────────────────────────────────
+        if effect == 'heal_stun':
+            # Healing Light — no damage, heal only
+            dmg       = 0
+            dmg_label = "sacred"
+
+        elif damage_type == 'mixed':
+            # Paladin special — averaged stats, same as attack()
+            phys_atk  = player.get('attack', 0)
+            mag_atk   = player.get('magic_attack', 0)
+            base_atk  = (phys_atk + mag_atk) / 2.0
+            phys_def  = int(enemy.defense * PHYS_PEN)
+            mag_def   = enemy.magic_defense
+            eff_def   = (phys_def + mag_def) / 2.0
+            dmg_label = "holy"
+
+            raw = int(round(base_atk * multiplier))
+            if variance > 0:
+                raw -= np.random.randint(0, variance)
+            dmg = max(min_dmg, int(round(raw - eff_def)))
+            enemy.hp -= dmg
+
+        elif damage_type == 'magic':
+            base_atk  = player.get('magic_attack', 0)
+            eff_def   = enemy.magic_defense
+            dmg_label = "magic"
+
+            raw = int(round(base_atk * multiplier))
+            if variance > 0:
+                raw -= np.random.randint(0, variance)
+            dmg = max(min_dmg, raw - eff_def)
+            enemy.hp -= dmg
+
+        else:
+            # physical
+            base_atk  = player.get('attack', 0)
+            eff_def   = int(enemy.defense * PHYS_PEN)
+            dmg_label = "physical"
+
+            raw = int(round(base_atk * multiplier))
+            if variance > 0:
+                raw -= np.random.randint(0, variance)
+            dmg = max(min_dmg, raw - eff_def)
+            enemy.hp -= dmg
+
+        # ── Build battle log message ───────────────────────────────────────────
+        if effect == 'heal_stun':
+            msg = (
+                f"{special_label}! Sacred radiance floods your body, restoring "
+                f"{heal_amount} HP. The blinding light staggers the {enemy.name} "
+                f"— they cannot counter this turn!"
+            )
+        elif effect == 'stun':
             msg = (
                 f"{special_label}! You crash your shield into the {enemy.name} "
                 f"for {dmg} {dmg_label} damage and stun them "
@@ -218,13 +291,18 @@ class BattleManager:
                 f"{enemy.name} for {dmg} {dmg_label} damage "
                 f"— armour is useless against pure arcane force!"
             )
+        elif damage_type == 'mixed':
+            msg = (
+                f"{special_label}! Holy and physical force combine, "
+                f"striking the {enemy.name} for {dmg} {dmg_label} damage!"
+            )
         else:
             msg = (
                 f"{special_label}! A devastating strike finds the "
                 f"{enemy.name}'s weak point for {dmg} {dmg_label} damage!"
             )
 
-        return msg, enemy.hp, new_mp, new_cooldown, stun_enemy, smoke_screen
+        return msg, enemy.hp, new_mp, new_cooldown, stun_enemy, smoke_screen, heal_amount
 
     # ── Enemy actions ──────────────────────────────────────────────────────────
 
@@ -298,7 +376,6 @@ class BattleManager:
             return current_hp, "💨 The smoke screen works — the attack passes harmlessly through shadow!"
 
         if player_action == 'dodge':
-            # Read from session first — picks up any shop-purchased upgrades
             success_chance = player.get(
                 'dodge_chance', Character.get_dodge(class_name)
             )
@@ -309,7 +386,6 @@ class BattleManager:
                 return new_hp, f"You failed to dodge and took {dmg} damage."
 
         elif player_action == 'block':
-            # Read from session first — picks up any shop-purchased upgrades
             reduction_ratio = player.get(
                 'block_multiplier', Character.get_block_mult(class_name)
             )

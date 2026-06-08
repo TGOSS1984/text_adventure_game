@@ -31,7 +31,7 @@ MP_REGEN_ATTACK = 25    # MP gained per standard attack
 COOLDOWN_TURNS  = 4     # turns before special move can be used again
 
 # ── Estus heal amount ─────────────────────────────────────────────────────────
-ESTUS_HEAL_PCT  = 0.80  # fraction of max_hp restored per flask
+ESTUS_HEAL_PCT  = 0.70  # fraction of max_hp restored per flask
 
 # ── Physical penetration ───────────────────────────────────────────────────────
 # Physical attacks apply only PHYS_PEN x enemy/player physical defense.

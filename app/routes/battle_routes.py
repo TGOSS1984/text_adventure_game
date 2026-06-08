@@ -112,12 +112,14 @@ def register(blueprint):
             mp = min(mp + MP_REGEN_ATTACK, mp_max)
 
         elif action == "special":
-            msg, enemy.hp, mp, cooldown, stun_enemy, smoke = battle_manager.use_special(
+            msg, enemy.hp, mp, cooldown, stun_enemy, smoke, heal_amt = battle_manager.use_special(
                 character, enemy, mp, cooldown
             )
             message             = msg
             stunned             = stun_enemy
             smoke_screen_active = smoke
+            if heal_amt > 0:
+                player_hp = min(player_hp + heal_amt, character["max_hp"])
 
         elif action in ["dodge", "block"]:
             message = ""

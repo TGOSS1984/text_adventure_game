@@ -192,6 +192,8 @@ display it here. No other files need changing.
             <span class="stat-row-value">
                 {% if character.get('damage_type') == 'magic' %}
                     <span class="damage-type-badge badge--magic">✨ Magic</span>
+                {% elif character.get('damage_type') == 'mixed' %}
+                    <span class="damage-type-badge badge--mixed">⚔✨ Mixed</span>
                 {% else %}
                     <span class="damage-type-badge badge--physical">⚔ Physical</span>
                 {% endif %}
