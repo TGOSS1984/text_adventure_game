@@ -103,6 +103,15 @@ Carousel upgrade:
                                     <span class="damage-type-badge damage-type-badge--lg badge--physical">⚔ Physical</span>
                                 {% endif %}
                             </div>
+                            <div class="class-special-preview">
+                                <span class="class-special-label">{{ cls.special_label }}</span>
+                                <span class="class-special-desc">{{ cls.special_desc }}</span>
+                                <span class="class-special-cost">
+                                    <i class="fas fa-bolt"></i> {{ cls.special_cost }} MP
+                                    &nbsp;·&nbsp;
+                                    <i class="fas fa-hourglass-half"></i> {{ cls.special_cooldown }} turn cooldown
+                                </span>
+                            </div>
                             <span class="class-lore">{{ cls.lore }}</span>
                         </label>
                     </div>

@@ -202,6 +202,18 @@ display it here. No other files need changing.
 
     </div>
 
+    <hr class="status-divider">
+
+    <p class="status-section-title" style="text-align:center;">Special Move</p>
+    <div class="status-special">
+        <div class="status-special-label">{{ classes[character.class_name].special_label }}</div>
+        <div class="status-special-desc">{{ classes[character.class_name].special_desc }}</div>
+        <div class="status-special-meta">
+            <span><i class="fas fa-bolt"></i> {{ classes[character.class_name].special_cost }} MP</span>
+            <span><i class="fas fa-hourglass-half"></i> {{ classes[character.class_name].special_cooldown }} turn cooldown</span>
+        </div>
+    </div>
+
     <!-- Actions -->
     <div class="status-actions">
         <a href="{{ url_for('main.game') }}" class="status-btn status-btn--return">

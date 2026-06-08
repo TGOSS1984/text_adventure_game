@@ -3588,3 +3588,117 @@ body.status-page {
         transition: none !important;
     }
 }
+
+/* ══════════════════════════════════════════════════════════════
+   SPECIAL MOVE PREVIEW — class selector cards & status screen
+   ══════════════════════════════════════════════════════════════ */
+
+/* ── Class card special preview (index.html) ── */
+.class-special-preview {
+    margin: 0.6rem 0 0.4rem;
+    padding: 0.5rem 0.6rem;
+    background: rgba(201, 168, 76, 0.07);
+    border: 1px solid rgba(201, 168, 76, 0.25);
+    border-radius: var(--radius-sm);
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+    text-align: center;
+}
+
+.class-special-label {
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: var(--clr-gold);
+    letter-spacing: 0.05em;
+    text-transform: none;
+    display: block;
+}
+
+.class-special-desc {
+    font-size: 0.72rem;
+    font-style: italic;
+    color: rgba(230, 210, 170, 0.70);
+    text-transform: none;
+    font-weight: normal;
+    letter-spacing: 0;
+    display: block;
+    line-height: 1.4;
+}
+
+.class-special-cost {
+    font-size: 0.68rem;
+    color: rgba(201, 168, 76, 0.55);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    font-weight: 600;
+    display: block;
+    margin-top: 0.1rem;
+}
+
+.class-special-cost i {
+    font-size: 0.65rem;
+    opacity: 0.80;
+}
+
+/* ── Status screen special move block ── */
+.status-special {
+    max-width: 480px;
+    margin: 0 auto 0.5rem;
+    padding: 1rem 1.2rem;
+    background: rgba(201, 168, 76, 0.07);
+    border: 1px solid rgba(201, 168, 76, 0.25);
+    border-radius: var(--radius-md);
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+}
+
+.status-special-label {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--clr-gold);
+    letter-spacing: 0.06em;
+    text-transform: none;
+    text-shadow: 0 0 10px rgba(201, 168, 76, 0.35);
+}
+
+.status-special-desc {
+    font-size: 0.85rem;
+    font-style: italic;
+    color: rgba(230, 210, 170, 0.75);
+    text-transform: none;
+    font-weight: normal;
+    letter-spacing: 0;
+    line-height: 1.5;
+}
+
+.status-special-meta {
+    display: flex;
+    justify-content: center;
+    gap: 1.2rem;
+    font-size: 0.75rem;
+    color: rgba(201, 168, 76, 0.60);
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    font-weight: 600;
+    margin-top: 0.2rem;
+}
+
+.status-special-meta i {
+    font-size: 0.70rem;
+    margin-right: 0.2rem;
+    opacity: 0.80;
+}
+
+@media (max-width: 520px) {
+    .status-special {
+        max-width: 90vw;
+    }
+
+    .status-special-meta {
+        flex-direction: column;
+        gap: 0.3rem;
+    }
+}

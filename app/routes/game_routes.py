@@ -216,6 +216,7 @@ def register(blueprint):
             estus_max=session.get("estus_max", 5),
             souls=session.get("souls", 0),
             gift=session.get("gift", "fading_soul"),
+            classes=CLASSES,
         )
 
     @blueprint.route("/restart", methods=["POST"])

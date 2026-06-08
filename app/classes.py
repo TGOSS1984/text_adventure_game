@@ -227,7 +227,7 @@ CLASSES = {
         # Longer cooldown (5) to balance the very high multiplier.
         "special_name":     "Raise the Dead",
         "special_label":    "💀 Raise the Dead",
-        "special_desc":     "3× magic attack. Undead tear through armour — enemy cannot predict the assault.",
+        "special_desc":     "2.5× magic attack. Undead tear through armour — enemy cannot predict the assault.",
         "special_cost":     50,
         "special_cooldown": 5,
         "special_multiplier": 2.5,
