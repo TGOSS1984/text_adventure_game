@@ -95,32 +95,82 @@ Lightbox addition:
                 </div>
                 <div class="mechanic-row">
                     <i class="fas fa-star"></i>
-                    <span class="mechanic-label">Special Move</span>
-                    <span class="mechanic-desc">Costs 50 MP, 4-turn cooldown. Unique per class — see below. Only Attack builds MP; blocking/dodging earns nothing.</span>
+                    <span class="mechanic-label">Primary Special</span>
+                    <span class="mechanic-desc">Costs 50 MP, shared cooldown. Unique per class — powerful burst, stun, or heal. Only Attack builds MP; blocking/dodging earns nothing.</span>
+                </div>
+                <div class="mechanic-row">
+                    <i class="fas fa-star-half-stroke"></i>
+                    <span class="mechanic-label">Secondary Special</span>
+                    <span class="mechanic-desc">Costs 35 MP, same shared cooldown. Each class has a second move with a different role — DoT, buff, shield, or sustain. Using either special puts both on cooldown.</span>
                 </div>
 
                 <hr class="bestiary-divider">
 
-                <h3><i class="fas fa-wand-magic-sparkles"></i> &nbsp;Class Special Moves</h3>
+                <h3><i class="fas fa-wand-magic-sparkles"></i> &nbsp;Primary Special Moves</h3>
                 <div class="mechanic-row">
                     <i class="fas fa-chess-knight"></i>
                     <span class="mechanic-label">Knight</span>
-                    <span class="mechanic-desc"><strong>Shield Bash</strong> — Normal damage + stun. The enemy cannot counter this turn.</span>
+                    <span class="mechanic-desc"><strong>Shield Bash</strong> — Normal damage + stun. Enemy cannot counter this turn. 50 MP · 4-turn cooldown.</span>
                 </div>
                 <div class="mechanic-row">
                     <i class="fas fa-wand-magic-sparkles"></i>
                     <span class="mechanic-label">Mage</span>
-                    <span class="mechanic-desc"><strong>Arcane Burst</strong> — 2× magic attack, bypasses all defence. Pure magic damage.</span>
+                    <span class="mechanic-desc"><strong>Arcane Burst</strong> — 2× magic attack, bypasses all physical armour. 50 MP · 4-turn cooldown.</span>
                 </div>
                 <div class="mechanic-row">
                     <i class="fas fa-skull-crossbones"></i>
                     <span class="mechanic-label">Rogue</span>
-                    <span class="mechanic-desc"><strong>Smoke Screen</strong> — Full attack damage + guaranteed dodge on the enemy's counter.</span>
+                    <span class="mechanic-desc"><strong>Smoke Screen</strong> — 1× attack damage + guaranteed dodge on the enemy's counter. 50 MP · 4-turn cooldown.</span>
                 </div>
                 <div class="mechanic-row">
                     <i class="fas fa-feather"></i>
                     <span class="mechanic-label">Archer</span>
-                    <span class="mechanic-desc"><strong>Mark Target</strong> — Guaranteed critical at 2× multiplier (vs normal 1.5×).</span>
+                    <span class="mechanic-desc"><strong>Mark Target</strong> — Guaranteed 2× critical strike. 50 MP · 4-turn cooldown.</span>
+                </div>
+                <div class="mechanic-row">
+                    <i class="fas fa-cross"></i>
+                    <span class="mechanic-label">Paladin</span>
+                    <span class="mechanic-desc"><strong>Healing Light</strong> — Restore 40% max HP + stun. Enemy cannot counter this turn. 50 MP · 5-turn cooldown.</span>
+                </div>
+                <div class="mechanic-row">
+                    <i class="fas fa-skull"></i>
+                    <span class="mechanic-label">Necromancer</span>
+                    <span class="mechanic-desc"><strong>Raise the Dead</strong> — 2.5× magic attack with high variance. Undead assault tears through armour. 50 MP · 5-turn cooldown.</span>
+                </div>
+
+                <hr class="bestiary-divider">
+
+                <h3><i class="fas fa-star-half-stroke"></i> &nbsp;Secondary Special Moves</h3>
+                <p>Secondary specials cost 35 MP and share the same cooldown as the primary. Both buttons grey out when either fires. Choose based on the situation — burst vs sustained, offence vs defence.</p>
+                <div class="mechanic-row">
+                    <i class="fas fa-chess-knight"></i>
+                    <span class="mechanic-label">Knight</span>
+                    <span class="mechanic-desc"><strong>War Cry</strong> — No direct damage. Raises attack by +5 for 3 turns. Best when you have multiple attacks ahead and want sustained pressure.</span>
+                </div>
+                <div class="mechanic-row">
+                    <i class="fas fa-wand-magic-sparkles"></i>
+                    <span class="mechanic-label">Mage</span>
+                    <span class="mechanic-desc"><strong>Nullfield</strong> — No damage. Reduces all incoming damage by 50% for 2 turns. The glass cannon's survival tool — use before a predicted big hit.</span>
+                </div>
+                <div class="mechanic-row">
+                    <i class="fas fa-skull-crossbones"></i>
+                    <span class="mechanic-label">Rogue</span>
+                    <span class="mechanic-desc"><strong>Backstab</strong> — 0.5× hit + bleed for 8 damage per turn for 4 turns (32 bleed total). Distinct from Smoke Screen — sets up sustained damage while you dodge safely.</span>
+                </div>
+                <div class="mechanic-row">
+                    <i class="fas fa-feather"></i>
+                    <span class="mechanic-label">Archer</span>
+                    <span class="mechanic-desc"><strong>Poison Arrow</strong> — No hit damage. Poisons for 7 damage per turn for 5 turns (35 total). Matches Mark Target's total output at lower MP cost — better in long fights.</span>
+                </div>
+                <div class="mechanic-row">
+                    <i class="fas fa-cross"></i>
+                    <span class="mechanic-label">Paladin</span>
+                    <span class="mechanic-desc"><strong>Hammer of Justice</strong> — 1.5× mixed damage + stun. Enemy cannot counter. Use when HP is healthy and healing would be wasteful — the Paladin's offensive option.</span>
+                </div>
+                <div class="mechanic-row">
+                    <i class="fas fa-skull"></i>
+                    <span class="mechanic-label">Necromancer</span>
+                    <span class="mechanic-desc"><strong>Soul Leech</strong> — 1.5× magic damage, heals for 100% of damage dealt (minimum 15 HP). Sustain tool — use when hurt and the primary's raw damage isn't what you need.</span>
                 </div>
 
                 <hr class="bestiary-divider">
@@ -158,6 +208,7 @@ Lightbox addition:
                     <li><strong>Iron Talisman</strong> — +3 Defence.</li>
                     <li><strong>Witch's Ember</strong> — +3 Attack.</li>
                     <li><strong>Old Coin</strong> — Start with 200 souls.</li>
+                    <li><strong>Life Ring</strong> — +15 max HP.</li>
                     <li><strong>Fading Soul</strong> — Nothing. For those who need no comfort.</li>
                 </ul>
 

@@ -404,9 +404,10 @@ class BattleManager:
             dmg = max(min_dmg, int(round(raw - eff_def)))
             enemy.hp -= dmg
 
-        # ── Leech: heal 50% of damage dealt ───────────────────────────────────
+        # ── Leech: heal 50% of damage dealt, with optional minimum ────────────
         if effect == 'leech' and dmg > 0:
-            heal_amount = max(1, int(dmg * 0.5))
+            min_heal    = cls.get('special2_leech_min_heal', 0)
+            heal_amount = max(min_heal, int(dmg * 1.0))
 
         # ── Build battle log message ───────────────────────────────────────────
         if effect == 'dot':

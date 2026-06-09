@@ -164,6 +164,17 @@
     opacity: 0.80;
 }
 
+/* Secondary special preview — teal border, same shape as primary gold */
+.class-special-preview--secondary {
+    background: rgba(93, 173, 226, 0.06);
+    border-color: rgba(93, 173, 226, 0.30);
+    margin-top: 0.3rem;
+}
+
+.class-special-preview--secondary .class-special-label {
+    color: var(--clr-special2);
+}
+
 /* Gift panel */
 .gift-panel {
     width: 100%;
@@ -899,6 +910,22 @@ body.status-page {
 
 .status-btn--quit { background: transparent; border: 1px solid rgba(192, 57, 43, 0.60); color: rgba(220, 100, 80, 0.90); }
 .status-btn--quit:hover { background: rgba(192, 57, 43, 0.20); color: #ff8070; text-decoration: none; }
+
+/* Secondary special on status screen — teal accent */
+.status-special--secondary {
+    background: rgba(93, 173, 226, 0.06);
+    border-color: rgba(93, 173, 226, 0.30);
+    margin-top: var(--space-sm);
+}
+
+.status-special--secondary .status-special-label {
+    color: var(--clr-special2);
+    text-shadow: 0 0 10px rgba(93, 173, 226, 0.30);
+}
+
+.status-special--secondary .status-special-meta {
+    color: rgba(93, 173, 226, 0.55);
+}
 
 /* Status responsive */
 @media (max-width: 768px) {

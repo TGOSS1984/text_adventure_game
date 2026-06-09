@@ -214,13 +214,27 @@ Lightbox addition:
 
     <hr class="status-divider">
 
-    <p class="status-section-title" style="text-align:center;">Special Move</p>
+    <p class="status-section-title" style="text-align:center;">Special Moves</p>
+
+    <!-- Primary special — gold -->
     <div class="status-special">
         <div class="status-special-label">{{ classes[character.class_name].special_label }}</div>
         <div class="status-special-desc">{{ classes[character.class_name].special_desc }}</div>
         <div class="status-special-meta">
             <span><i class="fas fa-bolt"></i> {{ classes[character.class_name].special_cost }} MP</span>
             <span><i class="fas fa-hourglass-half"></i> {{ classes[character.class_name].special_cooldown }} turn cooldown</span>
+            <span><i class="fas fa-star"></i> Primary</span>
+        </div>
+    </div>
+
+    <!-- Secondary special — teal -->
+    <div class="status-special status-special--secondary">
+        <div class="status-special-label">{{ classes[character.class_name].special2_label }}</div>
+        <div class="status-special-desc">{{ classes[character.class_name].special2_desc }}</div>
+        <div class="status-special-meta">
+            <span><i class="fas fa-bolt"></i> {{ classes[character.class_name].special2_cost }} MP</span>
+            <span><i class="fas fa-hourglass-half"></i> {{ classes[character.class_name].special_cooldown }} turn cooldown (shared)</span>
+            <span><i class="fas fa-star-half-stroke"></i> Secondary</span>
         </div>
     </div>
 

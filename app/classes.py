@@ -206,11 +206,11 @@ CLASSES = {
         # ── Secondary special ─────────────────────────────────────────────────
         "special2_name":         "Poison Arrow",
         "special2_label":        "🏹 Poison Arrow",
-        "special2_desc":         "Loose a barbed arrow laced with venom. 6 poison damage per turn for 5 turns.",
+        "special2_desc":         "Loose a barbed arrow laced with venom. 7 poison damage per turn for 5 turns.",
         "special2_cost":         35,
         "special2_effect":       "dot",
         "special2_multiplier":   0,
-        "special2_dot_dmg":      6,
+        "special2_dot_dmg":      7,
         "special2_dot_turns":    5,
         "special2_dot_label":    "poison",
         "special2_buff_stat":    None,
@@ -279,7 +279,7 @@ CLASSES = {
     "Necromancer": {
         # ── Core stats ────────────────────────────────────────────────────────
         "attack":           0,
-        "magic_attack":     22,
+        "magic_attack":     24,
         "defense":          9,
         "magic_defense":    22,
         "max_hp":           100,
@@ -306,10 +306,11 @@ CLASSES = {
         # ── Secondary special ─────────────────────────────────────────────────
         "special2_name":         "Soul Leech",
         "special2_label":        "💉 Soul Leech",
-        "special2_desc":         "Drain life from the enemy — 1× magic damage, heal for 50% of damage dealt.",
+        "special2_desc":         "Drain life from the enemy — 1.5× magic damage, heal for 100% of damage dealt (minimum 15 HP).",
         "special2_cost":         35,
         "special2_effect":       "leech",
-        "special2_multiplier":   1.0,
+        "special2_multiplier":   1.5,
+        "special2_leech_min_heal": 15,
         "special2_dot_dmg":      0,
         "special2_dot_turns":    0,
         "special2_dot_label":    "",
