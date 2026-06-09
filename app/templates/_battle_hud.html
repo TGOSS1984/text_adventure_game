@@ -7,6 +7,10 @@ are passed explicitly as arguments. Both battle.html and battle_fragment.html
 call render_hud(**template_vars) to forward everything in one shot.
 
 To change the battle UI: edit here once. Both templates update automatically.
+
+Dual specials: both buttons share cooldown. When either fires, both grey out
+with the same countdown displayed. Secondary button is teal to distinguish
+from the gold primary.
 #}
 
 {% macro render_hud(
@@ -14,17 +18,32 @@ To change the battle UI: edit here once. Both templates update automatically.
     enemy, enemy_pct=0, boss_phase=1, phase_changed=False,
     move_hint=None, message=None, gift=None,
     estus_max=5, souls=0, classes={},
-    is_fragment=False
+    is_fragment=False,
+    dot_dmg=0, dot_turns=0, dot_label="",
+    buff_stat=None, buff_amount=0, buff_turns=0,
+    shield_pct=0.0, shield_turns=0
 ) %}
 
 {# ── Computed variables ── #}
-{% set player_pct    = ((player_hp / character.max_hp) * 100) | round(1) %}
-{% set mp_pct        = ((mp / mp_max) * 100) | round(1) if mp_max > 0 else 0 %}
-{% set special_ready = (mp >= 50 and cooldown == 0) %}
-{% set enemy_pct     = ((enemy.hp / enemy.max_hp) * 100) | round(1) %}
-{% set s_label       = classes[character.class_name]['special_label'] if character.class_name in classes else '⚡ Special' %}
-{% set s_hint        = ('(' ~ cooldown ~ ' turn cooldown)') if cooldown > 0 else ('(costs 50 MP — ' ~ mp ~ '/' ~ mp_max ~ ')') %}
-{% set class_icon    = classes[character.class_name]['icon'] if character.class_name in classes else 'fa-shield-halved' %}
+{% set player_pct     = ((player_hp / character.max_hp) * 100) | round(1) %}
+{% set mp_pct         = ((mp / mp_max) * 100) | round(1) if mp_max > 0 else 0 %}
+{% set special_ready  = (mp >= 50 and cooldown == 0) %}
+{% set special2_ready = (mp >= 35 and cooldown == 0) %}
+{% set enemy_pct      = ((enemy.hp / enemy.max_hp) * 100) | round(1) %}
+
+{% set cls            = classes.get(character.class_name, {}) %}
+{% set s_label        = cls.get('special_label',  '⚡ Special') %}
+{% set s2_label       = cls.get('special2_label', '⚡ Special 2') %}
+{% set class_icon     = cls.get('icon', 'fa-shield-halved') %}
+
+{# Hint text shown as button title — covers both MP-short and cooldown cases #}
+{% if cooldown > 0 %}
+    {% set s_hint  = '(' ~ cooldown ~ ' turn cooldown — both specials unavailable)' %}
+    {% set s2_hint = s_hint %}
+{% else %}
+    {% set s_hint  = '(costs 50 MP — ' ~ mp ~ '/' ~ mp_max ~ ')' %}
+    {% set s2_hint = '(costs 35 MP — ' ~ mp ~ '/' ~ mp_max ~ ')' %}
+{% endif %}
 
 {% if player_pct > 50 %}
     {% set player_hp_cls = '' %}
@@ -61,12 +80,15 @@ To change the battle UI: edit here once. Both templates update automatically.
         </div>
     {% endif %}
     <div class="player-hud-bars">
+        <!-- HP bar -->
         <div class="stat-bar-group">
             <div class="stat-bar-label">
                 <span>
                     <i class="fas {{ class_icon }}"></i> {{ character['class_name'] }}
                     {% if character.get('damage_type') == 'magic' %}
                         <span class="damage-type-badge badge--magic">✨ Magic</span>
+                    {% elif character.get('damage_type') == 'mixed' %}
+                        <span class="damage-type-badge badge--mixed">⚔✨ Mixed</span>
                     {% else %}
                         <span class="damage-type-badge badge--physical">⚔ Physical</span>
                     {% endif %}
@@ -80,6 +102,8 @@ To change the battle UI: edit here once. Both templates update automatically.
                 ></div>
             </div>
         </div>
+
+        <!-- MP bar -->
         <div class="stat-bar-group mp-bar-group">
             <div class="stat-bar-label">
                 <span>✨ MP</span>
@@ -89,6 +113,33 @@ To change the battle UI: edit here once. Both templates update automatically.
                 <div class="stat-bar-fill stat-bar-fill--mp" style="width: {{ mp_pct }}%;"></div>
             </div>
         </div>
+
+        <!-- Active effects strip — only renders when something is running -->
+        {% if dot_turns > 0 or buff_turns > 0 or shield_turns > 0 %}
+        <div class="active-effects" aria-label="Active effects">
+            {% if dot_turns > 0 %}
+                <span class="effect-pill effect-pill--dot"
+                      title="{{ dot_label|title }} — {{ dot_dmg }} dmg/turn">
+                    {{ '🩸' if dot_label == 'bleed' else '☠️' }}
+                    {{ dot_label|title }} {{ dot_turns }}t
+                </span>
+            {% endif %}
+            {% if buff_turns > 0 %}
+                <span class="effect-pill effect-pill--buff"
+                      title="Attack empowered for {{ buff_turns }} more turns">
+                    ⚔ Empowered {{ buff_turns }}t
+                </span>
+            {% endif %}
+            {% if shield_turns > 0 %}
+                <span class="effect-pill effect-pill--shield"
+                      title="Damage reduced {{ (shield_pct * 100)|int }}% for {{ shield_turns }} more turns">
+                    🔮 Shielded {{ shield_turns }}t
+                </span>
+            {% endif %}
+        </div>
+        {% endif %}
+
+        <!-- Estus icons -->
         <div class="estus-icons" aria-label="Estus Flasks remaining: {{ session['estus'] }}">
             {% for i in range(estus_max) %}
                 <img
@@ -98,6 +149,8 @@ To change the battle UI: edit here once. Both templates update automatically.
                 >
             {% endfor %}
         </div>
+
+        <!-- Souls counter -->
         <div class="battle-souls-counter" title="Souls collected this run" aria-label="Souls: {{ souls }}">
             <i class="fas fa-coins"></i>
             <span>{{ souls }}</span>
@@ -179,10 +232,17 @@ To change the battle UI: edit here once. Both templates update automatically.
         {% if session['estus'] == 0 %}disabled style="opacity:0.45;cursor:not-allowed;"{% endif %}>
         <i class="fas fa-flask"></i> Estus Flask
     </button>
+    <!-- Primary special — gold -->
     <button type="button" data-action="special" class="battle-btn battle-btn--special"
-        {% if not special_ready %}disabled style="opacity:0.45;cursor:not-allowed;"{% endif %}
+        {% if not special_ready %}disabled{% endif %}
         title="{{ s_hint }}">
         {{ s_label }}{% if cooldown > 0 %} ({{ cooldown }}){% endif %}
+    </button>
+    <!-- Secondary special — teal; same cooldown as primary -->
+    <button type="button" data-action="special2" class="battle-btn battle-btn--special2"
+        {% if not special2_ready %}disabled{% endif %}
+        title="{{ s2_hint }}">
+        {{ s2_label }}{% if cooldown > 0 %} ({{ cooldown }}){% endif %}
     </button>
 </form>
 

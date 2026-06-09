@@ -73,6 +73,11 @@
     --clr-souls-bg:          rgba(201, 168, 76, 0.08);
     --clr-souls-border:      rgba(201, 168, 76, 0.25);
 
+    /* ── Secondary special (teal) ── */
+    --clr-special2:           #5dade2;
+    --clr-special2-bright:    #85c1e9;
+    --clr-special2-glow:      rgba(93, 173, 226, 0.60);
+
     /* ── Fonts ── */
     --font-title:            'Mantinia', 'Cinzel', serif;
     --font-body:             'Cinzel', serif;

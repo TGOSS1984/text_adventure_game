@@ -307,7 +307,23 @@ function triggerPhaseTransition() {
   }
 }
 
-// ── Battle button binding ──────────────────────────────────────────────────
+// ── Secondary special move flash (teal) ───────────────────────────────────
+//
+// Mirrors triggerSpecialFlash() but targets #special2-flash with a
+// teal colour scheme — visually distinct from the gold primary flash.
+
+function triggerSpecial2Flash() {
+  const flash = document.getElementById('special2-flash');
+  if (!flash) return;
+  flash.classList.remove('special2-flash-animate');
+  void flash.offsetWidth;   // force reflow to restart animation
+  flash.classList.add('special2-flash-animate');
+  flash.addEventListener(
+    'animationend',
+    () => flash.classList.remove('special2-flash-animate'),
+    { once: true }
+  );
+}
 // Extracted into a named function so it can be called:
 //   1. On initial DOMContentLoaded
 //   2. After every HTMX swap (htmx:afterSwap) — new DOM nodes need new listeners
@@ -351,6 +367,15 @@ function bindBattleButtons() {
           triggerSpecialFlash();
           // Use the special element duration if it has a real src,
           // otherwise fall back to the attack sound duration for timing.
+          sfxId = (document.getElementById('special-' + playerClass)?.src &&
+                   document.getElementById('special-' + playerClass).src !== window.location.href)
+                   ? 'special-' + playerClass
+                   : 'attack-' + playerClass;
+          break;
+        // ── Secondary special — teal flash, same SFX fallback ─────────────
+        case 'special2':
+          playSpecialSound(playerClass);   // reuse primary SFX until dedicated files added
+          triggerSpecial2Flash();
           sfxId = (document.getElementById('special-' + playerClass)?.src &&
                    document.getElementById('special-' + playerClass).src !== window.location.href)
                    ? 'special-' + playerClass

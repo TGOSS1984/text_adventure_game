@@ -54,10 +54,11 @@ from .models import Enemy, Character
 from .enemies import ENEMIES, BOSSES, BOSS_PHASE2_LORE_DEFAULT
 from .classes import CLASSES
 from .config import (
-    MP_COST, MP_REGEN_ATTACK, COOLDOWN_TURNS,
+    MP_COST, MP_COST_SECONDARY, MP_REGEN_ATTACK, COOLDOWN_TURNS,
     PHYS_PEN,
     PHASE2_DMG_MULT, PHASE2_HP_TRIGGER,
     PHASE1_WEIGHTS, PHASE2_WEIGHTS,
+    DOT_TICK_MESSAGES, BUFF_EXPIRE_MESSAGES,
 )
 
 
@@ -304,6 +305,227 @@ class BattleManager:
 
         return msg, enemy.hp, new_mp, new_cooldown, stun_enemy, smoke_screen, heal_amount
 
+    def use_special2(self, player, enemy, current_mp, cooldown):
+        """
+        Data-driven secondary special move — reads special2_* fields from classes.py.
+
+        All secondary specials cost MP_COST_SECONDARY (35) and share the same
+        cooldown as the primary special. Only one special (primary or secondary)
+        can fire per cooldown cycle.
+
+        Effect types:
+            dot          — applies damage-over-time to the enemy; may also hit
+            buff_attack  — raises player attack stat for N turns (via session)
+            shield       — reduces incoming damage by a fraction for N turns
+            stun         — deals damage and prevents enemy counter this turn
+            leech        — deals damage and heals player for 50% of damage dealt
+
+        Returns 9-tuple:
+            msg, enemy.hp, new_mp, new_cooldown,
+            stun_enemy,
+            dot_dmg, dot_turns, dot_label,
+            side_effects dict {
+                buff_stat, buff_amount, buff_turns, buff_label,
+                shield_pct, shield_turns, heal_amount
+            }
+        """
+        class_name = player.get('class_name', 'Knight')
+
+        _no_effect = {
+            "buff_stat": None, "buff_amount": 0, "buff_turns": 0, "buff_label": "",
+            "shield_pct": 0.0, "shield_turns": 0, "heal_amount": 0,
+        }
+
+        if current_mp < MP_COST_SECONDARY:
+            return (
+                f"Not enough MP! ({current_mp}/{MP_COST_SECONDARY} needed)",
+                enemy.hp, current_mp, cooldown,
+                False, 0, 0, "", _no_effect
+            )
+        if cooldown > 0:
+            return (
+                f"Special move recharging — {cooldown} turn{'s' if cooldown != 1 else ''} remaining.",
+                enemy.hp, current_mp, cooldown,
+                False, 0, 0, "", _no_effect
+            )
+
+        cls = CLASSES.get(class_name)
+        if not cls:
+            return (
+                "No special move available for this class.",
+                enemy.hp, current_mp, cooldown,
+                False, 0, 0, "", _no_effect
+            )
+
+        new_mp       = current_mp - MP_COST_SECONDARY
+        new_cooldown = cls.get('special_cooldown', COOLDOWN_TURNS)  # shared cooldown
+
+        # ── Read secondary special definition ─────────────────────────────────
+        effect        = cls.get('special2_effect', None)
+        multiplier    = cls.get('special2_multiplier', 0)
+        dot_dmg       = cls.get('special2_dot_dmg', 0)
+        dot_turns     = cls.get('special2_dot_turns', 0)
+        dot_label     = cls.get('special2_dot_label', '')
+        buff_stat     = cls.get('special2_buff_stat', None)
+        buff_amount   = cls.get('special2_buff_amount', 0)
+        buff_turns    = cls.get('special2_buff_turns', 0)
+        buff_label    = cls.get('special2_buff_label', '')
+        shield_pct    = cls.get('special2_shield_pct', 0.0)
+        shield_turns  = cls.get('special2_shield_turns', 0)
+        special_label = cls.get('special2_label', '⚡ Special 2')
+        damage_type   = cls.get('damage_type', 'physical')
+        min_dmg       = cls.get('special_min_dmg', 5)  # reuse primary floor
+
+        stun_enemy  = (effect == 'stun')
+        heal_amount = 0
+
+        # ── Resolve direct damage (if multiplier > 0) ─────────────────────────
+        dmg = 0
+        dmg_label = "physical"
+        if multiplier > 0:
+            if damage_type == 'magic':
+                base_atk  = player.get('magic_attack', 0)
+                eff_def   = enemy.magic_defense
+                dmg_label = "magic"
+            elif damage_type == 'mixed':
+                phys_atk  = player.get('attack', 0)
+                mag_atk   = player.get('magic_attack', 0)
+                base_atk  = (phys_atk + mag_atk) / 2.0
+                phys_def  = int(enemy.defense * PHYS_PEN)
+                mag_def   = enemy.magic_defense
+                eff_def   = (phys_def + mag_def) / 2.0
+                dmg_label = "holy"
+            else:
+                base_atk  = player.get('attack', 0)
+                eff_def   = int(enemy.defense * PHYS_PEN)
+                dmg_label = "physical"
+
+            raw = int(round(base_atk * multiplier))
+            dmg = max(min_dmg, int(round(raw - eff_def)))
+            enemy.hp -= dmg
+
+        # ── Leech: heal 50% of damage dealt ───────────────────────────────────
+        if effect == 'leech' and dmg > 0:
+            heal_amount = max(1, int(dmg * 0.5))
+
+        # ── Build battle log message ───────────────────────────────────────────
+        if effect == 'dot':
+            dot_name = dot_label.title()
+            if dmg > 0:
+                msg = (
+                    f"{special_label}! You deal {dmg} {dmg_label} damage and the "
+                    f"{enemy.name} begins to {dot_label}! "
+                    f"({dot_dmg} damage/turn for {dot_turns} turns)"
+                )
+            else:
+                msg = (
+                    f"{special_label}! The {enemy.name} begins to {dot_label}! "
+                    f"({dot_dmg} damage/turn for {dot_turns} turns)"
+                )
+
+        elif effect == 'buff_attack':
+            msg = (
+                f"{special_label}! Your battle cry echoes through the arena. "
+                f"Attack raised by {buff_amount} for {buff_turns} turns!"
+            )
+
+        elif effect == 'shield':
+            msg = (
+                f"{special_label}! An arcane barrier surrounds you. "
+                f"Incoming damage reduced by {int(shield_pct * 100)}% for {shield_turns} turns!"
+            )
+
+        elif effect == 'stun':
+            msg = (
+                f"{special_label}! You strike the {enemy.name} for {dmg} {dmg_label} damage "
+                f"with sacred force — they are stunned and cannot counter!"
+            )
+
+        elif effect == 'leech':
+            msg = (
+                f"{special_label}! Life drains from the {enemy.name} — "
+                f"{dmg} {dmg_label} damage dealt, {heal_amount} HP restored!"
+            )
+
+        else:
+            msg = f"{special_label}! {dmg} damage dealt." if dmg > 0 else f"{special_label}!"
+
+        side_effects = {
+            "buff_stat":    buff_stat    if effect == 'buff_attack' else None,
+            "buff_amount":  buff_amount  if effect == 'buff_attack' else 0,
+            "buff_turns":   buff_turns   if effect == 'buff_attack' else 0,
+            "buff_label":   buff_label   if effect == 'buff_attack' else "",
+            "shield_pct":   shield_pct   if effect == 'shield' else 0.0,
+            "shield_turns": shield_turns if effect == 'shield' else 0,
+            "heal_amount":  heal_amount,
+        }
+
+        return (
+            msg, enemy.hp, new_mp, new_cooldown,
+            stun_enemy,
+            dot_dmg if effect == 'dot' else 0,
+            dot_turns if effect == 'dot' else 0,
+            dot_label if effect == 'dot' else "",
+            side_effects,
+        )
+
+    def apply_active_effects(self, enemy, player_hp, char_max_hp,
+                              dot_dmg, dot_turns, dot_label,
+                              buff_stat, buff_amount, buff_turns, buff_label,
+                              shield_pct, shield_turns):
+        """
+        Called at the start of each POST turn before the player action.
+
+        Ticks damage-over-time on the enemy, decrements buff and shield
+        durations, and returns updated values plus a log prefix message.
+
+        Returns:
+            effects_msg  — str to prepend to the turn's battle log (may be "")
+            enemy.hp     — updated after DoT tick
+            dot_dmg      — unchanged (tick amount stays the same)
+            dot_turns    — decremented; 0 when expired
+            buff_stat    — unchanged
+            buff_amount  — unchanged
+            buff_turns   — decremented; 0 when expired
+            buff_label   — unchanged
+            shield_pct   — unchanged
+            shield_turns — decremented; 0 when expired
+        """
+        parts = []
+
+        # ── Tick DoT ──────────────────────────────────────────────────────────
+        if dot_turns > 0 and dot_dmg > 0:
+            enemy.hp -= dot_dmg
+            tick_template = DOT_TICK_MESSAGES.get(dot_label, f"{dot_label} deals {{dmg}} damage!")
+            parts.append(tick_template.format(dmg=dot_dmg))
+            dot_turns -= 1
+
+        # ── Decrement buff ────────────────────────────────────────────────────
+        if buff_turns > 0:
+            buff_turns -= 1
+            if buff_turns == 0 and buff_label:
+                expire_msg = BUFF_EXPIRE_MESSAGES.get(buff_label, "")
+                if expire_msg:
+                    parts.append(expire_msg)
+
+        # ── Decrement shield ──────────────────────────────────────────────────
+        if shield_turns > 0:
+            shield_turns -= 1
+            if shield_turns == 0 and buff_label == "nullfield":
+                expire_msg = BUFF_EXPIRE_MESSAGES.get("nullfield", "")
+                if expire_msg:
+                    parts.append(expire_msg)
+
+        effects_msg = " ".join(parts)
+
+        return (
+            effects_msg,
+            enemy.hp,
+            dot_dmg, dot_turns, dot_label,
+            buff_stat, buff_amount, buff_turns, buff_label,
+            shield_pct, shield_turns,
+        )
+
     # ── Enemy actions ──────────────────────────────────────────────────────────
 
     def enemy_attack(self, player, enemy, action=None, boss_phase=1):
@@ -364,13 +586,20 @@ class BattleManager:
         return action, msg, dmg
 
     def resolve_player_action(self, move_type, player_action, dmg, current_hp, player,
-                               smoke_screen_active=False):
+                               smoke_screen_active=False, shield_pct=0.0):
         """
         Reads dodge_chance and block_multiplier from the live player session dict
         so any shop upgrades (e.g. Dodge Pendant) take effect immediately.
         Falls back to classes.py values if not present in session.
+
+        shield_pct — if > 0 (Mage Nullfield active), reduces incoming damage
+        by this fraction before dodge/block calculations. Applied multiplicatively.
         """
         class_name = player.get('class_name', 'Knight')
+
+        # ── Apply active shield before any other reduction ────────────────────
+        if shield_pct > 0.0:
+            dmg = max(1, int(round(dmg * (1.0 - shield_pct))))
 
         if smoke_screen_active:
             return current_hp, "💨 The smoke screen works — the attack passes harmlessly through shadow!"

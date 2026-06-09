@@ -234,7 +234,7 @@
 }
 
 
-/* ── 5. Special move flash ────────────────────────────────── */
+/* ── 5. Special move flash (primary — gold) ───────────────── */
 
 #special-flash {
     position: fixed;
@@ -282,6 +282,57 @@
     15%  { opacity: 1.0;  transform: scale(1.0); }
     50%  { opacity: 0.60; transform: scale(1.1); }
     100% { opacity: 0;    transform: scale(1.2); }
+}
+
+
+/* ── 5b. Secondary special flash (teal/cyan) ──────────────── */
+
+#special2-flash {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 9995; /* just below primary special flash */
+}
+
+#special2-flash::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-color: rgba(93, 173, 226, 0.40);
+    opacity: 0;
+    will-change: opacity;
+}
+
+#special2-flash::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(
+        ellipse at center,
+        rgba(160, 220, 255, 0.50) 0%,
+        rgba(93, 173, 226, 0.22) 45%,
+        transparent 75%
+    );
+    opacity: 0;
+    will-change: opacity;
+}
+
+.special2-flash-animate::before { animation: special2FlashWash   0.65s ease-out forwards; }
+.special2-flash-animate::after  { animation: special2FlashRadial 0.65s ease-out forwards; }
+
+@keyframes special2FlashWash {
+    0%   { opacity: 0; }
+    10%  { opacity: 0.75; }
+    40%  { opacity: 0.25; }
+    70%  { opacity: 0.45; }
+    100% { opacity: 0; }
+}
+
+@keyframes special2FlashRadial {
+    0%   { opacity: 0;    transform: scale(0.85); }
+    15%  { opacity: 0.90; transform: scale(1.0); }
+    55%  { opacity: 0.55; transform: scale(1.08); }
+    100% { opacity: 0;    transform: scale(1.18); }
 }
 
 
@@ -482,6 +533,11 @@ body.home-page #bg-video {
     50%       { box-shadow: 0 0 14px rgba(201, 168, 76, 0.60); }
 }
 
+@keyframes special2Ready {
+    0%, 100% { box-shadow: 0 0 4px rgba(93, 173, 226, 0.20); }
+    50%       { box-shadow: 0 0 14px rgba(93, 173, 226, 0.55); }
+}
+
 
 /* ── 10. Reduced-motion overrides (consolidated) ──────────── */
 /*
@@ -503,6 +559,8 @@ body.home-page #bg-video {
     .phase-flash-animate::after            { animation: none; opacity: 0; }
     .special-flash-animate::before,
     .special-flash-animate::after          { animation: none; opacity: 0; }
+    .special2-flash-animate::before,
+    .special2-flash-animate::after         { animation: none; opacity: 0; }
 
     /* Stat bars */
     .stat-bar-fill,
@@ -514,6 +572,7 @@ body.home-page #bg-video {
     .stat-bar-fill--phase2                 { animation: barShimmer 2.4s linear infinite; }
     .battle-log-box--phase2                { animation: none; }
     .battle-btn--special:not([disabled])   { animation: none; }
+    .battle-btn--special2:not([disabled])  { animation: none; }
 
     /* Typewriter */
     .typewriter-cursor                     { animation: none; }

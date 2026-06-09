@@ -54,7 +54,15 @@ To change the battle UI, edit _battle_hud.html — not this file.
             estus_max=estus_max,
             souls=souls,
             classes=classes,
-            is_fragment=False
+            is_fragment=False,
+            dot_dmg=dot_dmg,
+            dot_turns=dot_turns,
+            dot_label=dot_label,
+            buff_stat=buff_stat,
+            buff_amount=buff_amount,
+            buff_turns=buff_turns,
+            shield_pct=shield_pct,
+            shield_turns=shield_turns,
         ) }}
     </div><!-- /#battle-state -->
 
@@ -73,6 +81,7 @@ To change the battle UI, edit _battle_hud.html — not this file.
 <div id="bubble-container"></div>
 <div id="phase-flash"></div>
 <div id="special-flash"></div>
+<div id="special2-flash"></div>
 
 <progress value="{{ player_hp }}" max="{{ character.max_hp }}" aria-label="Player HP">{{ player_hp }}/{{ character.max_hp }}</progress>
 <progress value="{{ enemy.hp }}" max="{{ enemy.max_hp }}" aria-label="Enemy HP">{{ enemy.hp }}/{{ enemy.max_hp }}</progress>

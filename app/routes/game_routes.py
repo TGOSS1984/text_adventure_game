@@ -83,6 +83,16 @@ def register(blueprint):
         session["shop_bought"]         = []
         session["boss_phase"]          = 1
         session["phase_changed"]       = False
+        # ── Active effect state (dual specials) ───────────────────────────────
+        session["dot_damage"]          = 0
+        session["dot_turns"]           = 0
+        session["dot_label"]           = ""
+        session["buff_stat"]           = None
+        session["buff_amount"]         = 0
+        session["buff_turns"]          = 0
+        session["buff_label"]          = ""
+        session["shield_pct"]          = 0.0
+        session["shield_turns"]        = 0
 
         gift = (request.form.get("gift") or "fading_soul").strip()
         session["gift"] = gift

@@ -3,20 +3,26 @@ classes.py
 
 Single source of truth for all player class definitions.
 
-Replaces the scattered class data previously spread across:
-- models.py  — create() dict, get_class_stats() dict, DODGE, BLOCK_MULT,
-               MP_MAX, MAGIC_ATTACK, MAGIC_DEFENSE, DAMAGE_TYPE dicts
-- battle.html / battle_fragment.html — hardcoded special_label dicts
-- combat.py  — hardcoded if class_name == 'Knight' special move logic
-- index.html — 4 hardcoded class cards with stats, lore, icons inline
-
 Adding a new class: add one entry here. Everything else updates automatically.
 
-Special move fields:
-    special_multiplier — damage multiplier applied to the relevant attack stat
-    special_effect     — 'stun', 'smoke', or None
-    special_variance   — max random int subtracted from damage (0 = no variance)
-    special_min_dmg    — damage floor after all reductions
+Primary special fields (50 MP, shared cooldown):
+    special_multiplier  — damage multiplier applied to relevant attack stat
+    special_effect      — 'stun', 'smoke', 'heal_stun', or None
+    special_variance    — max random int subtracted from damage (0 = no variance)
+    special_min_dmg     — damage floor after all reductions
+
+Secondary special fields (35 MP, same shared cooldown):
+    special2_effect     — 'dot', 'buff_attack', 'shield', 'stun', 'leech'
+    special2_multiplier — damage multiplier on the hit itself (0 = no direct hit)
+    special2_dot_dmg    — damage per turn (dot only)
+    special2_dot_turns  — duration in turns (dot only)
+    special2_dot_label  — key into DOT_TICK_MESSAGES in config.py ('bleed'/'poison')
+    special2_buff_stat  — session character key to boost ('attack'/'magic_attack')
+    special2_buff_amount— flat amount added to buff_stat
+    special2_buff_turns — duration in turns
+    special2_buff_label — key into BUFF_EXPIRE_MESSAGES in config.py
+    special2_shield_pct — fraction of incoming damage absorbed (0.0–1.0)
+    special2_shield_turns — duration in turns
 """
 
 CLASSES = {
@@ -37,22 +43,39 @@ CLASSES = {
         # ── Assets ────────────────────────────────────────────────────────────
         "image":            "classes/knight.png",
         "icon":             "fa-chess-knight",
-        # ── Special move ──────────────────────────────────────────────────────
-        "special_name":     "Shield Bash",
-        "special_label":    "🛡 Shield Bash",
-        "special_desc":     "Normal damage + stun. Enemy cannot counter.",
-        "special_cost":     50,
-        "special_cooldown": 4,
+        # ── Primary special ───────────────────────────────────────────────────
+        "special_name":       "Shield Bash",
+        "special_label":      "🛡 Shield Bash",
+        "special_desc":       "Normal damage + stun. Enemy cannot counter.",
+        "special_cost":       50,
+        "special_cooldown":   4,
         "special_multiplier": 1.0,
         "special_effect":     "stun",
-        "special_variance":   4,      # randint(0, 4) subtracted from damage
+        "special_variance":   4,
         "special_min_dmg":    5,
+        # ── Secondary special ─────────────────────────────────────────────────
+        "special2_name":         "War Cry",
+        "special2_label":        "⚔ War Cry",
+        "special2_desc":         "Raise your weapon and bellow. Attack +5 for 3 turns.",
+        "special2_cost":         35,
+        "special2_effect":       "buff_attack",
+        "special2_multiplier":   0,
+        "special2_dot_dmg":      0,
+        "special2_dot_turns":    0,
+        "special2_dot_label":    "",
+        "special2_buff_stat":    "attack",
+        "special2_buff_amount":  5,
+        "special2_buff_turns":   3,
+        "special2_buff_label":   "war_cry",
+        "special2_shield_pct":   0.0,
+        "special2_shield_turns": 0,
         # ── Flavour ───────────────────────────────────────────────────────────
         "lore": (
             "Once a sentinel of the Sunken Citadel, their oath was not broken "
             "— only forgotten. Clad in rusted honour, they march through death unbent."
         ),
     },
+
     "Mage": {
         # ── Core stats ────────────────────────────────────────────────────────
         "attack":           0,
@@ -70,22 +93,39 @@ CLASSES = {
         # ── Assets ────────────────────────────────────────────────────────────
         "image":            "classes/mage.png",
         "icon":             "fa-wand-magic-sparkles",
-        # ── Special move ──────────────────────────────────────────────────────
-        "special_name":     "Arcane Burst",
-        "special_label":    "✨ Arcane Burst",
-        "special_desc":     "2× magic attack. Bypasses all physical armour.",
-        "special_cost":     50,
-        "special_cooldown": 4,
+        # ── Primary special ───────────────────────────────────────────────────
+        "special_name":       "Arcane Burst",
+        "special_label":      "✨ Arcane Burst",
+        "special_desc":       "2× magic attack. Bypasses all physical armour.",
+        "special_cost":       50,
+        "special_cooldown":   4,
         "special_multiplier": 2.0,
         "special_effect":     None,
         "special_variance":   0,
         "special_min_dmg":    10,
+        # ── Secondary special ─────────────────────────────────────────────────
+        "special2_name":         "Nullfield",
+        "special2_label":        "🔮 Nullfield",
+        "special2_desc":         "Weave a barrier of arcane force. Incoming damage halved for 2 turns.",
+        "special2_cost":         35,
+        "special2_effect":       "shield",
+        "special2_multiplier":   0,
+        "special2_dot_dmg":      0,
+        "special2_dot_turns":    0,
+        "special2_dot_label":    "",
+        "special2_buff_stat":    None,
+        "special2_buff_amount":  0,
+        "special2_buff_turns":   0,
+        "special2_buff_label":   "nullfield",
+        "special2_shield_pct":   0.50,
+        "special2_shield_turns": 2,
         # ── Flavour ───────────────────────────────────────────────────────────
         "lore": (
             "Bearer of forbidden glintfire, the Mage whispers truths carved in starlight. "
             "Each spell flung is a shard of a dream long devoured."
         ),
     },
+
     "Rogue": {
         # ── Core stats ────────────────────────────────────────────────────────
         "attack":           22,
@@ -103,22 +143,39 @@ CLASSES = {
         # ── Assets ────────────────────────────────────────────────────────────
         "image":            "classes/rogue.png",
         "icon":             "fa-skull-crossbones",
-        # ── Special move ──────────────────────────────────────────────────────
-        "special_name":     "Smoke Screen",
-        "special_label":    "💨 Smoke Screen",
-        "special_desc":     "1× attack damage + guaranteed dodge next enemy turn.",
-        "special_cost":     50,
-        "special_cooldown": 4,
+        # ── Primary special ───────────────────────────────────────────────────
+        "special_name":       "Smoke Screen",
+        "special_label":      "💨 Smoke Screen",
+        "special_desc":       "1× attack damage + guaranteed dodge next enemy turn.",
+        "special_cost":       50,
+        "special_cooldown":   4,
         "special_multiplier": 1.0,
         "special_effect":     "smoke",
         "special_variance":   0,
         "special_min_dmg":    5,
+        # ── Secondary special ─────────────────────────────────────────────────
+        "special2_name":         "Backstab",
+        "special2_label":        "🗡 Backstab",
+        "special2_desc":         "Strike a critical spot — the enemy bleeds for 8 damage per turn for 4 turns.",
+        "special2_cost":         35,
+        "special2_effect":       "dot",
+        "special2_multiplier":   0.5,
+        "special2_dot_dmg":      8,
+        "special2_dot_turns":    4,
+        "special2_dot_label":    "bleed",
+        "special2_buff_stat":    None,
+        "special2_buff_amount":  0,
+        "special2_buff_turns":   0,
+        "special2_buff_label":   "",
+        "special2_shield_pct":   0.0,
+        "special2_shield_turns": 0,
         # ── Flavour ───────────────────────────────────────────────────────────
         "lore": (
             "Born in the shadow of the Ashen Spires, the Rogue strikes like regret "
             "— unseen, swift, and final. No name, no past, only the blade."
         ),
     },
+
     "Archer": {
         # ── Core stats ────────────────────────────────────────────────────────
         "attack":           20,
@@ -136,27 +193,41 @@ CLASSES = {
         # ── Assets ────────────────────────────────────────────────────────────
         "image":            "classes/archer.png",
         "icon":             "fa-feather",
-        # ── Special move ──────────────────────────────────────────────────────
-        "special_name":     "Mark Target",
-        "special_label":    "🎯 Mark Target",
-        "special_desc":     "2× attack. Finds the enemy's weak point.",
-        "special_cost":     50,
-        "special_cooldown": 4,
+        # ── Primary special ───────────────────────────────────────────────────
+        "special_name":       "Mark Target",
+        "special_label":      "🎯 Mark Target",
+        "special_desc":       "2× attack. Finds the enemy's weak point.",
+        "special_cost":       50,
+        "special_cooldown":   4,
         "special_multiplier": 2.0,
         "special_effect":     None,
         "special_variance":   0,
         "special_min_dmg":    5,
+        # ── Secondary special ─────────────────────────────────────────────────
+        "special2_name":         "Poison Arrow",
+        "special2_label":        "🏹 Poison Arrow",
+        "special2_desc":         "Loose a barbed arrow laced with venom. 6 poison damage per turn for 5 turns.",
+        "special2_cost":         35,
+        "special2_effect":       "dot",
+        "special2_multiplier":   0,
+        "special2_dot_dmg":      6,
+        "special2_dot_turns":    5,
+        "special2_dot_label":    "poison",
+        "special2_buff_stat":    None,
+        "special2_buff_amount":  0,
+        "special2_buff_turns":   0,
+        "special2_buff_label":   "",
+        "special2_shield_pct":   0.0,
+        "special2_shield_turns": 0,
         # ── Flavour ───────────────────────────────────────────────────────────
         "lore": (
             "From the ruins of Eldergrove they come, eyes hollow with distant wars. "
             "Each arrow loosed is a memory exiled into the dark."
         ),
     },
-     "Paladin": {
+
+    "Paladin": {
         # ── Core stats ────────────────────────────────────────────────────────
-        # Balanced hybrid — second highest HP, solid physical and magic stats.
-        # Not as strong as Knight in physical defense, not as strong as Mage
-        # in magic, but holds its own on both fronts.
         "attack":           18,
         "magic_attack":     18,
         "defense":          12,
@@ -164,9 +235,6 @@ CLASSES = {
         "max_hp":           150,
         "mp_max":           90,
         # ── Combat modifiers ──────────────────────────────────────────────────
-        # Moderate crit — paladins are methodical not opportunistic.
-        # Lower dodge — heavy armour, compensated by high block.
-        # Best block reduction in the game after Knight.
         "crit_chance":      0.20,
         "crit_multiplier":  1.5,
         "dodge_chance":     0.40,
@@ -175,33 +243,41 @@ CLASSES = {
         # ── Assets ────────────────────────────────────────────────────────────
         "image":            "classes/paladin.png",
         "icon":             "fa-cross",
-        # ── Special move ──────────────────────────────────────────────────────
-        # Healing Light — restores 40% of max HP and blinds the enemy
-        # (stun: enemy cannot counter this turn).
-        # Slightly higher cooldown than other specials (5 vs 4) to balance
-        # the dual utility of heal + stun.
-        "special_name":     "Healing Light",
-        "special_label":    "✝ Healing Light",
-        "special_desc":     "Restore 40% max HP. Sacred light blinds the enemy — they cannot counter.",
-        "special_cost":     50,
-        "special_cooldown": 5,
-        "special_multiplier": 0,      # no damage — heal only
+        # ── Primary special ───────────────────────────────────────────────────
+        "special_name":       "Healing Light",
+        "special_label":      "✝ Healing Light",
+        "special_desc":       "Restore 40% max HP. Sacred light blinds the enemy — they cannot counter.",
+        "special_cost":       50,
+        "special_cooldown":   5,
+        "special_multiplier": 0,
         "special_effect":     "heal_stun",
         "special_variance":   0,
         "special_min_dmg":    0,
+        # ── Secondary special ─────────────────────────────────────────────────
+        "special2_name":         "Hammer of Justice",
+        "special2_label":        "🔨 Hammer of Justice",
+        "special2_desc":         "1.5× mixed damage strike. Sacred force stuns — the enemy cannot counter.",
+        "special2_cost":         35,
+        "special2_effect":       "stun",
+        "special2_multiplier":   1.5,
+        "special2_dot_dmg":      0,
+        "special2_dot_turns":    0,
+        "special2_dot_label":    "",
+        "special2_buff_stat":    None,
+        "special2_buff_amount":  0,
+        "special2_buff_turns":   0,
+        "special2_buff_label":   "",
+        "special2_shield_pct":   0.0,
+        "special2_shield_turns": 0,
         # ── Flavour ───────────────────────────────────────────────────────────
         "lore": (
             "Oathbound to a god who no longer answers, the Paladin carries faith "
             "as a weapon and a wound. Where others see ruin, they see a reason to endure."
         ),
     },
- 
+
     "Necromancer": {
         # ── Core stats ────────────────────────────────────────────────────────
-        # Second magic class. Higher magic defense than Mage — centuries spent
-        # communing with death grants resilience. Lower magic attack than Mage
-        # but compensated by the devastating special. Better physical defense
-        # than Mage (bone armour). Lower HP — fragile but dangerous.
         "attack":           0,
         "magic_attack":     22,
         "defense":          9,
@@ -209,9 +285,6 @@ CLASSES = {
         "max_hp":           100,
         "mp_max":           130,
         # ── Combat modifiers ──────────────────────────────────────────────────
-        # Low crit — necromancers are methodical, not lucky.
-        # Good dodge — they spend their life slipping between the living
-        # and the dead. No blocking — robes offer nothing.
         "crit_chance":      0.20,
         "crit_multiplier":  1.5,
         "dodge_chance":     0.55,
@@ -220,20 +293,32 @@ CLASSES = {
         # ── Assets ────────────────────────────────────────────────────────────
         "image":            "classes/necromancer.png",
         "icon":             "fa-skull",
-        # ── Special move ──────────────────────────────────────────────────────
-        # Raise the Dead — summons undead to assault the enemy.
-        # 2.5× magic attack, bypasses physical armor (magic damage).
-        # High variance (0-8) keeps it from being too reliable.
-        # Longer cooldown (5) to balance the very high multiplier.
-        "special_name":     "Raise the Dead",
-        "special_label":    "💀 Raise the Dead",
-        "special_desc":     "2.5× magic attack. Undead tear through armour — enemy cannot predict the assault.",
-        "special_cost":     50,
-        "special_cooldown": 5,
+        # ── Primary special ───────────────────────────────────────────────────
+        "special_name":       "Raise the Dead",
+        "special_label":      "💀 Raise the Dead",
+        "special_desc":       "2.5× magic attack. Undead tear through armour — enemy cannot predict the assault.",
+        "special_cost":       50,
+        "special_cooldown":   5,
         "special_multiplier": 2.5,
         "special_effect":     None,
-        "special_variance":   8,      # randint(0, 8) — unpredictable horde
+        "special_variance":   8,
         "special_min_dmg":    12,
+        # ── Secondary special ─────────────────────────────────────────────────
+        "special2_name":         "Soul Leech",
+        "special2_label":        "💉 Soul Leech",
+        "special2_desc":         "Drain life from the enemy — 1× magic damage, heal for 50% of damage dealt.",
+        "special2_cost":         35,
+        "special2_effect":       "leech",
+        "special2_multiplier":   1.0,
+        "special2_dot_dmg":      0,
+        "special2_dot_turns":    0,
+        "special2_dot_label":    "",
+        "special2_buff_stat":    None,
+        "special2_buff_amount":  0,
+        "special2_buff_turns":   0,
+        "special2_buff_label":   "",
+        "special2_shield_pct":   0.0,
+        "special2_shield_turns": 0,
         # ── Flavour ───────────────────────────────────────────────────────────
         "lore": (
             "They do not fear death. They have spoken to it, bargained with it, "
@@ -249,9 +334,15 @@ def get_class(class_name: str) -> dict:
 
 
 def get_special_label(class_name: str, fallback: str = "⚡ Special") -> str:
-    """Return the special move button label for a given class."""
+    """Return the primary special move button label for a given class."""
     cls = CLASSES.get(class_name)
     return cls["special_label"] if cls else fallback
+
+
+def get_special2_label(class_name: str, fallback: str = "⚡ Special 2") -> str:
+    """Return the secondary special move button label for a given class."""
+    cls = CLASSES.get(class_name)
+    return cls["special2_label"] if cls else fallback
 
 
 def get_class_icon(class_name: str, fallback: str = "fa-shield-halved") -> str:

@@ -26,9 +26,24 @@ Gift effect fields:
 """
 
 # ── MP & special move ──────────────────────────────────────────────────────────
-MP_COST         = 50    # MP cost to use a special move
-MP_REGEN_ATTACK = 25    # MP gained per standard attack
-COOLDOWN_TURNS  = 4     # turns before special move can be used again
+MP_COST           = 50    # MP cost to use a primary special move
+MP_COST_SECONDARY = 35    # MP cost to use a secondary special move
+MP_REGEN_ATTACK   = 25    # MP gained per standard attack
+COOLDOWN_TURNS    = 4     # turns before special move can be used again (shared cooldown)
+
+# ── Active effect flavour text ─────────────────────────────────────────────
+# Keys match the special2_dot_label field in classes.py.
+# {dmg} is substituted at runtime.
+DOT_TICK_MESSAGES = {
+    "bleed":  "🩸 Bleeding for {dmg} damage!",
+    "poison": "☠️ Poison deals {dmg} damage!",
+}
+
+# Shown in the battle log when a buff or shield expires naturally.
+BUFF_EXPIRE_MESSAGES = {
+    "war_cry":   "⚔️ War Cry fades — attack returns to normal.",
+    "nullfield": "🔮 Nullfield dissipates — you are exposed once more.",
+}
 
 # ── Estus heal amount ─────────────────────────────────────────────────────────
 ESTUS_HEAL_PCT  = 0.70  # fraction of max_hp restored per flask
