@@ -427,7 +427,9 @@
     scroll-behavior: smooth;
     -webkit-overflow-scrolling: touch;
     scrollbar-width: none;
-    padding: 0.5rem 0.25rem 1rem;
+    /* Bottom padding for card hover scale; right padding ensures last card
+       scrolls fully into view even when fewer cards fill the visible area */
+    padding: 0.5rem 1.5rem 1rem 0.25rem;
     margin-bottom: 0;
     -webkit-mask-image: linear-gradient(to right, transparent 0%, black 6%, black 94%, transparent 100%);
     mask-image: linear-gradient(to right, transparent 0%, black 6%, black 94%, transparent 100%);
@@ -446,8 +448,8 @@
     flex: 0 0 auto;
     scroll-snap-align: start;
     width: calc((100%) / var(--cards-visible) - (1.5rem * (var(--cards-visible) - 1) / var(--cards-visible)));
-    min-width: 180px;
-    max-width: 260px;
+    min-width: 240px;
+    max-width: 360px;
     box-sizing: border-box;
 }
 
@@ -557,6 +559,7 @@
 
     .carousel-item {
         width: calc((100%) / var(--cards-visible) - (1.5rem * (var(--cards-visible) - 1) / var(--cards-visible)));
+        max-width: 440px;
     }
 
     .carousel-item--gift {
@@ -565,26 +568,39 @@
 }
 
 @media (max-width: 699px) {
+    /* Outer margin pulls the whole component away from screen edges.
+       Arrows (30px) sit inside the 2.2rem padding zone.
+       Card width is explicitly smaller than the track so arrows are never covered. */
     .carousel-outer {
+        margin: 0 1rem;
+        width: auto;
         padding: 0 2.2rem;
     }
 
     .carousel-arrow {
-        width: 34px;
-        height: 34px;
-        font-size: 0.8rem;
+        width: 28px !important;
+        height: 28px !important;
+        font-size: 0.70rem !important;
     }
 
+    /* Fixed pixel card width — not viewport-relative so it never touches the outer margin */
     .carousel-item {
-        width: 85vw;
-        max-width: 85vw;
+        width: 260px;
+        max-width: 260px;
         min-width: unset;
     }
 
     .carousel-item--gift {
-        width: 72vw;
-        max-width: 72vw;
+        width: 240px;
+        max-width: 240px;
         min-width: unset;
+    }
+
+    /* Remove edge fade — obscures arrows on mobile */
+    .carousel-track {
+        -webkit-mask-image: none !important;
+        mask-image: none !important;
+        padding-right: 3rem; /* trailing space so last card can scroll fully into view */
     }
 
     .class-lore {
@@ -593,13 +609,13 @@
     }
 
     .class-option img {
-        width: 120px;
-        height: 120px;
+        width: 130px;
+        height: 130px;
     }
 }
 
 @media (max-width: 400px) {
-    .carousel-outer { padding: 0 1.8rem; }
-    .carousel-item      { width: 82vw; max-width: 82vw; }
-    .carousel-item--gift { width: 70vw; max-width: 70vw; }
+    .carousel-outer { margin: 0 0.75rem; padding: 0 2rem; }
+    .carousel-item       { width: 230px; max-width: 230px; }
+    .carousel-item--gift { width: 210px; max-width: 210px; }
 }

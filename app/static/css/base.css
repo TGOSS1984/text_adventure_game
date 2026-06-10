@@ -104,7 +104,7 @@
     --hp-bar-radius:         var(--radius-md);
 
     /* ── Carousel card counts (overridden in media queries) ── */
-    --cards-visible:         4;
+    --cards-visible:         3;
     --cards-visible-gift:    3;
 }
 
