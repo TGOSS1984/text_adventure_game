@@ -76,7 +76,7 @@ NORMAL_BATTLE_BGS = [
     "images/areas/bolateria.jpg",
     "images/areas/anor_londo.jpg",
     "images/areas/ariandel.jpg",
-    "images/areas/battle_lotf.jpg",
+    "images/areas/battle_lotf.jpeg",
     "images/areas/battle_lotf_2.jpg",
     "images/areas/halls.jpg",
     "images/areas/irithyl_2.jpg",
@@ -84,9 +84,9 @@ NORMAL_BATTLE_BGS = [
     "images/areas/limgrave.jpg",
     "images/areas/lothric_castle.jpg",
     "images/areas/lothric_corridors.jpg",
-    "images/areas/marshes.jpg",
+    "images/areas/marshes.jpeg",
     "images/areas/ringed_city_2.jpg",
-    "images/areas/shadow_of_erdtree.jpg",
+    "images/areas/shadow_of_erdtree.png",
 ]
 BOSS_BATTLE_BGS = [
     "images/areas/ringed_city.jpg",
