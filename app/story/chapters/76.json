@@ -1,11 +1,12 @@
 {
   "id": 76,
-  "text": "xxx",
+  "text": "The glaciers here were shattered long ago \u2014 not by heat, but by something that struck the ice from beneath. Vast shards lean against one another like broken teeth, each one housing shadows that do not shift with the pale, directionless light.\n\nWithin the ice you see shapes. Figures. Some are animals, long-dead, their forms preserved in perfect stillness. Others are human. Soldiers in armour not of any kingdom you recognise, their mouths open as if caught mid-scream, their eyes aimed upward at something you cannot see.\n\nOne of them is still moving. Barely. A finger, tapping against the ice from the inside. Tapping in a rhythm. Counting. You realise, with a horror that arrives slowly, that it has been counting down to your arrival.\n\nYou hear a sound ahead \u2014 not wind, but breathing. Heavy and patient.",
+  "lore": "The Glacierborn were not always monsters. They were the last priests of the Coldfire, a sect that worshipped not the warmth of flame, but its absence. When the First Flame rose, they retreated north and prayed their cold god would answer. It did. It answered with silence, and they became the silence.",
   "choices": [
-    "choice"
+    "press_through_the_glacial_teeth",
+    "examine_the_frozen_soldier"
   ],
-  "lore": "xxx",
   "battle": false,
   "boss": false,
-  "rest": true
+  "rest": false
 }

@@ -1,11 +1,11 @@
 {
   "id": 90,
-  "text": "This is the placeholder text for chapter 90.",
+  "text": "The House of Prayers is where the city stored its faith after faith had nowhere to go. The walls are covered in prayers \u2014 carved, painted, scratched in desperation and in hope and in the particular handwriting of someone who is not sure if the act of writing is itself the prayer, or merely its container.\n\nThey are addressed to no one in particular. Or rather, they are addressed to whatever might be listening, with the caveat that they understand nothing might be listening, and the prayer stands regardless.\n\nAmong them, one prayer \u2014 newer than the others, the stone not yet settled around the carving \u2014 reads: 'Something stirs in the deep. The Sovereign wakes. If you find this, do not go further.' It is signed with a mark you recognise: a flamebearer's sigil, hastily rendered and not entirely steady.",
+  "lore": "The Sexton of Rot served the House of Prayers until the faith they tended curdled. They continued tending it anyway, because it was what they knew, long after what they tended had become something that should not be tended.",
   "choices": [
-    "final_choice"
+    "descend_toward_the_sunken_cathedral"
   ],
-  "lore": "Lore for chapter 90.",
   "battle": false,
   "boss": false,
-  "rest": true
+  "rest": false
 }

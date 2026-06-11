@@ -1,12 +1,12 @@
 {
   "id": 91,
-  "text": "This is the placeholder text for chapter 91.",
+  "text": "The passage narrows. The moss thins. In the last of its light, a figure blocks the path \u2014 dressed in the rotted vestments of a priest, moving with the deliberate care of someone performing a ritual they have performed ten thousand times and will perform ten thousand more.\n\nIt holds a censer, but what swings from it is not incense. It is a collection of bones \u2014 small ones, human \u2014 and they rattle with each swing in a pattern that might be language, or music, or simply the sound of something that was once meaningful and has since become compulsive.\n\nIt sees you. For a moment, something like relief crosses its ruined face. Then the censer swings faster, and the relief becomes purpose, and the purpose is not kind.",
+  "lore": "The Sexton served the faith for so long that when the faith died, the Sexton continued its duties by instinct. It no longer knows what it serves. It only knows the motions, and performs them with the dedication of something that has confused repetition for meaning.",
   "choices": [
-    "choice_a",
-    "choice_b"
+    "reach_the_sunken_cathedral"
   ],
-  "lore": "Lore for chapter 91.",
-  "battle": false,
+  "battle": true,
   "boss": false,
-  "rest": false
+  "rest": false,
+  "enemy": "Sexton of Rot"
 }

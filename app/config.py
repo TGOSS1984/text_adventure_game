@@ -74,11 +74,25 @@ NORMAL_BATTLE_BGS = [
     "images/areas/high_walls.jpg",
     "images/areas/irithyl.jpg",
     "images/areas/bolateria.jpg",
+    "images/areas/anor_londo.jpg",
+    "images/areas/ariandel.jpg",
+    "images/areas/battle_lotf.jpg",
+    "images/areas/battle_lotf_2.jpg",
+    "images/areas/halls.jpg",
+    "images/areas/irithyl_2.jpg",
+    "images/areas/irithyl_3.jpg",
+    "images/areas/limgrave.jpg",
+    "images/areas/lothric_castle.jpg",
+    "images/areas/lothric_corridors.jpg",
+    "images/areas/marshes.jpg",
+    "images/areas/ringed_city_2.jpg",
+    "images/areas/shadow_of_erdtree.jpg",
 ]
 BOSS_BATTLE_BGS = [
     "images/areas/ringed_city.jpg",
     "images/areas/stormveil.jpg",
     "images/areas/erdtree.jpg",
+    "images/areas/rotted_tree.jpg",
 ]
 
 # ── Per-boss background overrides ─────────────────────────────────────────────

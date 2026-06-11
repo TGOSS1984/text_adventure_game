@@ -1,11 +1,11 @@
 {
   "id": 79,
-  "text": "This is the placeholder text for chapter 79.",
+  "text": "The keep was once grand. You can tell by the scale of its ruin \u2014 the gate alone is forty feet of corroded iron, frozen open mid-swing as if someone left in a hurry and never returned. Towers lean against each other like drunken elders. The battlements are lined not with soldiers, but with the frozen remnants of them \u2014 a last guard who never received the order to stand down.\n\nInside, the great hall is intact. Impossibly so. A long table. Seats. Plates still set, frozen mid-meal. Candles frozen mid-drip. A feast interrupted in an instant, every attendee simply... gone. Only the cold remains, and the sense that whatever took the people here did not need to break anything to do it.\n\nAt the far end of the hall, a throne. Empty. But the frost around it is disturbed in the shape of footprints leading down \u2014 into vaults beneath the keep.",
+  "lore": "The Keep of Vaelund was the seat of the Unmourned Court \u2014 a kingdom that chose cold over fire when the First Flame offered them a seat at its council. Their king, Vaelhis, refused. The Flame burned his kingdom anyway, and in doing so created the Pale Reaches. Vaelhis did not die. He simply stopped being warm.",
   "choices": [
-    "choice_a",
-    "choice_b"
+    "descend_into_the_charnel_vaults",
+    "examine_the_feast_hall"
   ],
-  "lore": "Lore for chapter 79.",
   "battle": false,
   "boss": false,
   "rest": false

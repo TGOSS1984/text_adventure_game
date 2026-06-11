@@ -1,11 +1,11 @@
 {
   "id": 93,
-  "text": "This is the placeholder text for chapter 93.",
+  "text": "At the cathedral's heart, a font. Not of water \u2014 of ash. Grey, still, deep. And at its centre, a flame that burns without consuming, casting neither heat nor shadow but something between them \u2014 a quality of light that makes the cathedral feel, briefly, like what it was built to be.\n\nYou kneel. The ash shifts \u2014 not disturbed, but responsive. It knows you, or knows what you carry, or knows what you're going toward. Visions: a city choosing descent, a sovereign choosing sleep, a bell tolling in a tower that has no bell. The ash settles back. The flame breathes.\n\nBelow, the bell is tolling now. Or something that sounds like a bell. You cannot tell if it has just started, or if you have only just begun to hear it.",
+  "lore": "The Font of Ash was placed in the cathedral on the day Velundra sealed the shaft. The priests called it the Last Offering \u2014 the ash of the surface, brought below to remember what they had left behind. Over centuries, the ash has accumulated. No one is certain where it keeps coming from.",
   "choices": [
-    "final_choice"
+    "descend_to_the_sovereign_s_throne"
   ],
-  "lore": "Lore for chapter 93.",
   "battle": false,
   "boss": false,
-  "rest": false
+  "rest": true
 }

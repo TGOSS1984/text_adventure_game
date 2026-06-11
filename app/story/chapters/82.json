@@ -1,12 +1,11 @@
 {
   "id": 82,
-  "text": "This is the placeholder text for chapter 82.",
+  "text": "Before the throne, at the centre of the mirrored floor, a circle of pale fire burns in a shallow bowl of carved bone. A bonfire in a king's audience chamber, lit by no one visible and burning without fuel.\n\nYou kneel. The cold retreats \u2014 not much, but enough. Enough to remind you that warmth is a choice that must be made again and again, not a condition that persists without effort. The fire shows you fragments: a crown shattering, a throne going cold, a kingdom choosing to sleep rather than burn.\n\nWhatever waits on that throne ahead has waited a very long time. It knows how to wait. You, however, do not have that luxury.",
+  "lore": "The sanctuary fires of the Pale Reaches were not lit by Flamebearers. They were lit by the cold itself \u2014 a concession, or perhaps a trap. The warmth they offer is real. What it costs is unclear until later.",
   "choices": [
-    "choice_a",
-    "choice_b"
+    "face_vaelhis_the_unmourned_king"
   ],
-  "lore": "Lore for chapter 82.",
   "battle": false,
   "boss": false,
-  "rest": false
+  "rest": true
 }

@@ -1,12 +1,12 @@
 {
   "id": 97,
-  "text": "This is the placeholder text for chapter 97.",
+  "text": "It rises slowly \u2014 not from aggression, but from the weight of what it carries. The amber light intensifies, and in it you see the entire history of this place: the sea, the drying, the arrival of the first creatures that breathed air, the building, the descent, the centuries of waiting.\n\nThe Drowned Sovereign does not fight like something that wants to win. It fights like something that has agreed to fight because the alternative is to continue waiting, and it has run out of patience for waiting.\n\nIts blows carry the weight of geological time. When it strikes the ground, you feel it in your teeth. It does not hurry. It does not need to. It simply continues, as it has always simply continued, and trusts that eventually everything stops.",
+  "lore": "The Drowned Sovereign has been defeated before. Twice, in recorded history, and likely more times than were recorded. It does not die. It waits. This is either its greatest strength or its most profound sadness, depending on what you believe about the relationship between endurance and grief.",
   "choices": [
-    "choice_a",
-    "choice_b"
+    "ascend_from_velundra"
   ],
-  "lore": "Lore for chapter 97.",
-  "battle": false,
-  "boss": false,
-  "rest": false
+  "battle": true,
+  "boss": true,
+  "rest": false,
+  "boss_name": "The Drowned Sovereign"
 }

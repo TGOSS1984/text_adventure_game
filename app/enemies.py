@@ -369,4 +369,50 @@ BOSSES = {
             "glows white-hot. \"The walls do not fall. Neither do I.\""
         ),
     },
+
+    "Vaelhis, the Unmourned King": {
+        "hp":            260,
+        "attack":        0,
+        "magic_attack":  22,
+        "defense":       8,
+        "magic_defense": 18,
+        "damage_type":   "magic",
+        "image":         "vaelhis.png",
+        "lore": (
+            "He chose the cold willingly, believing it would preserve what the Flame would burn. "
+            "He was not wrong. He preserved everything — his court, his memories, his grief. "
+            "Vaelhis sits with all of it still, perfectly intact, perfectly alone, in a cold "
+            "that has had centuries to deepen. His crown holds the faces of those he loved, "
+            "frozen in the moment of their ending. He is not mourning them. He is mourning itself, "
+            "given form and given patience."
+        ),
+        "soul_reward":   368,
+        "phase2_lore": (
+            "❄️ SECOND PHASE — Vaelhis raises his crown and the faces within it open their frozen eyes. "
+            "The temperature drops beyond bearing. "
+            "\"You carry warmth into my silence. I have waited centuries for the chance to extinguish it.\""
+        ),
+    },
+    "The Drowned Sovereign": {
+        "hp":            280,
+        "attack":        24,
+        "magic_attack":  20,
+        "defense":       12,
+        "magic_defense": 14,
+        "damage_type":   "mixed",
+        "image":         "drowned_sovereign.png",
+        "lore": (
+            "It predates the city built above it. It predates the civilisation that built that city. "
+            "The Drowned Sovereign was here when this was a seabed, and it remained when the sea left. "
+            "It is not malevolent. It is simply immovable, and immovable things tend to cause damage "
+            "simply by existing. Its amber light pulses with a rhythm that matches every living "
+            "heartbeat nearby. It has been tracking yours since you stepped off the mechanism."
+        ),
+        "soul_reward":   392,
+        "phase2_lore": (
+            "🌊 SECOND PHASE — The Drowned Sovereign's amber light turns deep red. "
+            "The dried seabed cracks and ancient water begins to seep upward. "
+            "\"Bearer. You are persistent. Good. I have not had a worthy ending in a very long time.\""
+        ),
+    },
 }

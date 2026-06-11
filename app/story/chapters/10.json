@@ -1,8 +1,9 @@
 {
   "id": 10,
-  "text": "Stone gives way to silence. You pass into the catacombs through an arch graven with countless names—all scratched out. The air here tastes of dust and finality. Skulls line the passageways like sentinels, some cracked, others weeping tar-black ichor. Your steps echo, but something else echoes back—half a second too late.\n\nA mural along the wall depicts the sundering of the world. The Flame rising, then crumbling. A figure cloaked in ash stands alone, arms outstretched over a broken earth. No name. No crown. Just purpose carved in fire. Deeper into the dark, the tomb calls.",
+  "text": "Stone gives way to silence. You pass into the catacombs through an arch graven with countless names \u2014 all scratched out. The air here tastes of dust and finality. Skulls line the passageways like sentinels, some cracked, others weeping tar-black ichor. Your steps echo, but something else echoes back \u2014 half a second too late.\n\nA mural along the wall depicts the sundering of the world. The Flame rising, then crumbling. A figure cloaked in ash stands alone, arms outstretched over a broken earth. No name. No crown. Just purpose carved in fire.\n\nBut here \u2014 set into the far wall where no wall should be \u2014 a mechanism. Brass, enormous, worked with gears the size of mill wheels. A platform suspended on chains that descend into a shaft that should not exist beneath a catacomb. Cold air rises from the shaft, carrying with it the smell of stone and water and something that might, impossibly, be the distant echo of a bell. Deeper into the dark, the tomb calls. Deeper than the tomb, something else calls entirely.",
   "choices": [
-    "descend_the_winding_ossuary"
+    "descend_the_winding_ossuary",
+    "engage_the_brass_mechanism"
   ],
   "lore": "The Hollow Catacombs were carved during the First Fracture, when the world above collapsed and the dead refused to stay buried. It is said every path here bends toward the soul's last memory, and not all who walk them are truly dead.",
   "battle": false,

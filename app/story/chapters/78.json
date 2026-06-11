@@ -1,10 +1,10 @@
 {
   "id": 78,
-  "text": "This is the placeholder text for chapter 78.",
+  "text": "Impossibly, in the heart of this frozen expanse, a bonfire burns. Not with warmth exactly \u2014 but with the memory of warmth. It sits atop a cairn of blackened stones, its flame pale gold rather than amber, as if the cold has leached the heat from even the fire itself and left only its ghost.\n\nYou approach and feel the exhaustion you have been ignoring finally acknowledge you. The flame leans toward you as you kneel. Visions: a woman walking into a glacier willingly. A king encasing himself in ice to preserve a secret. A child born in cold who never cried, only watched.\n\nThe fire here does not restore warmth. It restores will. And right now, that is enough.",
+  "lore": "The Ember Cairns were lit by the last surviving Flamebearer who reached the Pale Reaches. She could not hold the Flame against the cold, but she refused to let it die entirely. These pale fires are her compromise \u2014 neither warmth nor darkness, but persistence.",
   "choices": [
-    "final_choice"
+    "venture_into_the_frozen_keep"
   ],
-  "lore": "Lore for chapter 78.",
   "battle": false,
   "boss": false,
   "rest": false

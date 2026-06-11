@@ -1,8 +1,9 @@
 {
   "id": 16,
-  "text": "You emerge from the Serpent’s hollow with breath that tastes like rust and rot. The mist thickens as if recoiling from what you’ve done. Shapes flicker at the edges of your vision—half-formed things that vanish when looked at. Somewhere ahead, the air thins, the silence breaks.\n\nA voice—not heard but felt—whispers, 'You have opened the first gate. Now walk the dream that forgets.' The land ahead changes subtly, as though you walk across memories rather than earth. Roads fade. Trees lean closer. And the stars no longer match the sky you knew.",
+  "text": "The mist parts, revealing two diverging paths carved from the same ruined land. Ahead lies the chapel of thorns \u2014 a collapsed spire half-swallowed by vines, its stained glass long melted by past flame. The other path winds north through a crooked archway of fused bone and cinder, where an inverted brazier still burns with a flame that rises downward.\n\nBoth radiate a wrongness that settles in the marrow. The kind of wrongness that precedes revelation \u2014 or annihilation. You must choose.",
   "choices": [
-    "approach_the_chapel_of_thorns"
+    "approach_the_chapel_of_thorns",
+    "pass_beneath_the_cinder_arch"
   ],
   "lore": "The mist between realms was once called 'The Breath of the First Flame.' It guards the path between realities. Only those who carry echoes of broken vows may pass without losing themselves. But not without cost.",
   "battle": false,

@@ -1,11 +1,11 @@
 {
   "id": 86,
-  "text": "This is the placeholder text for chapter 86.",
+  "text": "The city is lit by bioluminescent moss that grows on every surface \u2014 pale blue and cold as starlight, casting everything in a glow that makes shadow unreliable. The streets are wide and purposeful, laid out with a logic that suggests their architects understood not only space but intention. Every road leads somewhere. Every building faces something.\n\nBut the city is not empty. It is inhabited by the memory of inhabitation \u2014 doors left open, tables set, laundry still hanging between buildings, moving slightly in air that should be still. And the inhabitants themselves: figures in the streets, slow and purposeful, going about tasks that have no remaining purpose. They do not look at you. They do not look at anything. Their eyes have long since adjusted to seeing only inward.\n\nThe Hollow Citydwellers. They do not know they are dead. That is, perhaps, the most frightening thing about them.",
+  "lore": "The Sunken City of Velundra was a civilisation that chose to go underground rather than face the First Flame. They built deep, building elaborate systems to sustain life without sunlight. It worked, for a time. Then it worked for too long, and they forgot there had ever been an above.",
   "choices": [
-    "choice_a",
-    "choice_b"
+    "move_through_the_hollow_streets",
+    "approach_the_central_plaza"
   ],
-  "lore": "Lore for chapter 86.",
   "battle": false,
   "boss": false,
   "rest": false

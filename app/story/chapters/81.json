@@ -1,10 +1,11 @@
 {
   "id": 81,
-  "text": "This is the placeholder text for chapter 81.",
+  "text": "Deeper. The archive gives way to a passage that was not built \u2014 it was carved by something slow and enormous over a very long time. The walls bear marks of great claws. Not desperate clawing, but patient, deliberate work. Whatever made this passage was not trying to escape. It was trying to reach something.\n\nThe passage opens into a vast chamber below the keep. The ceiling is lost in cold dark. The floor is a perfect mirror of ice, and in it you see the reflection of a sky you do not recognise \u2014 a sky with too many stars, arranged in patterns that suggest a language. A question. Directed upward, or perhaps downward.\n\nAt the chamber's far end, a throne of ice. And on it \u2014 something that was once a king.",
+  "lore": "Vaelhis chose the cold willingly, believing it would preserve what the Flame would burn. He was not wrong. He preserved everything \u2014 his court, his memories, his grief. He sits with all of it still, perfectly intact, perfectly alone, in a cold that has had centuries to deepen.",
   "choices": [
-    "final_choice"
+    "approach_the_throne_of_ice",
+    "circle_the_mirrored_chamber"
   ],
-  "lore": "Lore for chapter 81.",
   "battle": false,
   "boss": false,
   "rest": false

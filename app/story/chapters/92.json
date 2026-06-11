@@ -1,12 +1,12 @@
 {
   "id": 92,
-  "text": "This is the placeholder text for chapter 92.",
+  "text": "The cathedral was never meant to be underground. It was built on the surface, in sunlight, for a faith that faced upward. When Velundra descended, they brought it with them \u2014 dismantling it stone by stone, descending it, rebuilding it here where the sun would never reach it again.\n\nThe result is a structure of absolute wrongness. Its windows are intact but look onto solid rock. Its altars face a direction that was once east. Its nave ends not in an apse but in a wall of raw stone from which water weeps constantly, staining the floor with minerals in patterns that vaguely, unsettlingly, resemble faces.\n\nThe weeping wall is new. It was not weeping when the cathedral was built. It began weeping when the Sovereign below woke up. The cathedral is the city's way of processing that information. It has not finished yet.",
+  "lore": "The Cathedral of Velundra was dedicated to the Firstborn Flame, a god the city brought underground with them and then slowly forgot the nature of, until what they were worshipping was not the Firstborn Flame at all, but their memory of what it had meant to believe in it.",
   "choices": [
-    "choice_a",
-    "choice_b"
+    "approach_the_font_of_ash",
+    "circle_the_cathedral_nave"
   ],
-  "lore": "Lore for chapter 92.",
-  "battle": true,
+  "battle": false,
   "boss": false,
   "rest": false
 }

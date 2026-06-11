@@ -1,11 +1,11 @@
 {
   "id": 94,
-  "text": "This is the placeholder text for chapter 94.",
+  "text": "The deepest part of Velundra predates it. Long before the city was built, before the shaft was dug, before the decision was made to descend \u2014 this chamber existed. The city grew around it the way a tree grows around a wound: incorporating it, concealing it, unable to leave it behind.\n\nThe passage down is natural stone, unworked. Stalactites, still forming. The bioluminescent moss does not grow here. Instead, a different light \u2014 amber, faint, pulsing with a rhythm that matches no natural cycle but matches, you realise with a crawling certainty, your own heartbeat.\n\nIt found you before you found it. It has been tracking your pulse since you stepped off the mechanism. The Drowned Sovereign knows you are coming, and it has been looking forward to this.",
+  "lore": "The Drowned Sovereign is not from Velundra. It predates the city entirely. The people of Velundra built their city above it thinking they were safe underground, not realising they had placed themselves directly above the thing they were fleeing from. The Sovereign has been waiting with immense patience for someone worth waking for.",
   "choices": [
-    "choice_a",
-    "choice_b"
+    "breach_the_sovereign_s_chamber",
+    "circle_the_amber_passage"
   ],
-  "lore": "Lore for chapter 94.",
   "battle": false,
   "boss": false,
   "rest": false

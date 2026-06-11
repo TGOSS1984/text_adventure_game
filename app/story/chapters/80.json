@@ -1,12 +1,12 @@
 {
   "id": 80,
-  "text": "This is the placeholder text for chapter 80.",
+  "text": "The vaults beneath the keep are not crypts. They are archives. The walls are lined with shelves of frozen flesh \u2014 not decomposing, but preserved, each body tagged with a label in that same undecipherable cold-language. They are sorted by something. Size, perhaps. Or importance. Or something else entirely.\n\nAt the centre of the archive, a figure works. Pale and thin, wearing robes of stitched white fur, it moves between the shelves with the quiet efficiency of a librarian. It does not acknowledge you until you are close enough that fleeing would be pointless.\n\nWhen it finally turns, you see its face is a mask of frost \u2014 behind it, two hollow eye sockets where flame once burned, long since extinguished. It opens its mouth and breathes out a cloud of cold that carries, buried in it, the distinct shape of a scream.",
+  "lore": "The Pale Wraiths are what remain of the Coldfire priests after their god answered their prayers completely. They are not undead \u2014 they are post-living. The distinction matters to them, though it offers you no comfort.",
   "choices": [
-    "choice_a",
-    "choice_b"
+    "fight_the_pale_archivist"
   ],
-  "lore": "Lore for chapter 80.",
   "battle": true,
   "boss": false,
-  "rest": true
+  "rest": false,
+  "enemy": "Pale Wraith"
 }

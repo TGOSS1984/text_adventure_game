@@ -118,7 +118,7 @@ CLASSES = {
         "special2_buff_turns":   0,
         "special2_buff_label":   "nullfield",
         "special2_shield_pct":   0.50,
-        "special2_shield_turns": 2,
+        "special2_shield_turns": 3,
         # ── Flavour ───────────────────────────────────────────────────────────
         "lore": (
             "Bearer of forbidden glintfire, the Mage whispers truths carved in starlight. "

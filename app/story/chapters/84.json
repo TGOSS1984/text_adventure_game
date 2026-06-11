@@ -1,11 +1,11 @@
 {
   "id": 84,
-  "text": "This is the placeholder text for chapter 84.",
+  "text": "The Pale Reaches release you reluctantly \u2014 the cold clings to your skin for miles after you cross back over the ridge, as if the tundra wants to be remembered. Perhaps it does. Perhaps that is all any of this is.\n\nYou descend back through the obsidian ledges, carrying something that was not with you before \u2014 not a weapon, not a trinket, but a knowledge. Cold things endure. Warm things burn. And somewhere in the balance of those truths, a door opens.\n\nThe mist ahead shifts. Through it, you can make out the silhouette of a chapel \u2014 or what was once a chapel \u2014 its spire crooked against the ashen sky. The path forward is the same as it always was. Only you have changed.",
+  "lore": "Those who survived the Pale Reaches returned fundamentally altered \u2014 not corrupted, but recalibrated. They understood things that could not be taught, only experienced: that grief without expression becomes armour, and armour becomes prison.",
   "choices": [
-    "final_choice"
+    "push_on_through_the_mist"
   ],
-  "lore": "Lore for chapter 84.",
-  "battle": true,
+  "battle": false,
   "boss": false,
   "rest": false
 }

@@ -1,12 +1,12 @@
 {
   "id": 83,
-  "text": "This is the placeholder text for chapter 83.",
+  "text": "He does not rise from the throne so much as the throne releases him \u2014 a figure of absolute cold, draped in robes of frost-crystal that crack and reform with every movement. His crown is a circlet of ice, and within each shard, a face is trapped. Not the faces of enemies. The faces of those he loved, preserved in the moment of their freezing.\n\nVaelhis, the Unmourned King. He looks at you not with malice but with something worse \u2014 recognition. As if he has seen this moment before, in one of those faces in his crown. As if he knows exactly how this ends.\n\nHe speaks, finally. His voice is the sound of ice forming on still water \u2014 quiet, absolute, inevitable.\n\n'You carry warmth into my kingdom. I cannot allow that. I have worked too long to perfect this silence.'",
+  "lore": "Vaelhis was the only king who refused the Flame's covenant and survived. He did not survive by strength or cunning, but by becoming something the Flame could not burn. His grief was too cold. His love, preserved in ice rather than expressed, became his armour. He is not evil. He is a monument to the wrong choice made for the right reason.",
   "choices": [
-    "choice_a",
-    "choice_b"
+    "emerge_from_the_pale_reaches"
   ],
-  "lore": "Lore for chapter 83.",
-  "battle": false,
-  "boss": false,
-  "rest": false
+  "battle": true,
+  "boss": true,
+  "rest": false,
+  "boss_name": "Vaelhis, the Unmourned King"
 }

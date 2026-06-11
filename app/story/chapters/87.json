@@ -1,11 +1,12 @@
 {
   "id": 87,
-  "text": "This is the placeholder text for chapter 87.",
+  "text": "One of them notices you. Not with its eyes \u2014 those remain fixed on the middle distance \u2014 but with something older than eyes. It stops mid-motion, its head tilting at an angle that is not quite anatomically possible.\n\nThen another stops. And another. All at once, without a signal you can perceive, every figure in the street orients toward you. Not with hostility, precisely. More like curiosity. The curiosity of something that has not encountered novelty in so long that it has forgotten how to react proportionately.\n\nOne advances. Its hands \u2014 once a craftsperson's hands, careful and skilled \u2014 reach for you with an intention that is neither malicious nor reasoned. Just reflexive. Just old. You have no choice but to defend yourself against a thing that has no idea it is attacking.",
+  "lore": "The Hollow Citydwellers cannot be reasoned with because there is nothing left to reason with. They are not evil. They are the end product of a civilisation that chose isolation so completely that even their own minds eventually became strangers to them.",
   "choices": [
-    "final_choice"
+    "press_deeper_into_velundra"
   ],
-  "lore": "Lore for chapter 87.",
-  "battle": false,
+  "battle": true,
   "boss": false,
-  "rest": false
+  "rest": false,
+  "enemy": "Hollow Citydweller"
 }

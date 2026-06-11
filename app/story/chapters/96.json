@@ -1,11 +1,11 @@
 {
   "id": 96,
-  "text": "This is the placeholder text for chapter 96.",
+  "text": "The chamber is water \u2014 or was water, long ago. Now it is the dry bed of an ancient sea, the sediment still bearing the impressions of creatures that moved through it before any land creature drew breath. The walls still hold tide marks from a time when this space was fully submerged.\n\nAt the chamber's centre, a figure of impossible size sits cross-legged in the dried sea bed, head bowed, hands palm-upward in a gesture that might be supplication or might be offering. It is covered in the same amber light that pulsed in the passage. The light is coming from within it.\n\nIt is awake. It has been awake for a very long time. It opens eyes the colour of drowned things and regards you with an expression that a mountain might wear if mountains had expressions: patient, aware of its own weight, tired of being misunderstood.\n\n'Bearer,' it says, in a voice like water finding the lowest point. 'You are not the first. But you are the one the fire described.'",
+  "lore": "The Drowned Sovereign was not named by Velundra. It named itself, from a language that predates human speech. The translation is approximate: 'the one who remained when the water left.' It did not choose to stay. It simply could not leave. After long enough, that distinction stops mattering.",
   "choices": [
-    "final_choice"
+    "challenge_the_drowned_sovereign"
   ],
-  "lore": "Lore for chapter 96.",
-  "battle": true,
+  "battle": false,
   "boss": false,
   "rest": false
 }

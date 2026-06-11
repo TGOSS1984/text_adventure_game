@@ -1,10 +1,10 @@
 {
   "id": 75,
-  "text": "text",
+  "text": "The cold does not arrive gradually. It strikes like a blade \u2014 absolute, immediate, intimate. The ashlands fall behind you as you crest the ridge, and what lies ahead defies the logic of the dying world below.\n\nEndless pale expanse. A tundra vast as grief, swept by winds that carry no warmth, no memory of warmth. The sky here is the colour of old bone. Frost-laden towers rise from the ice like accusations, their banners long since frozen mid-flutter. You can read nothing from the sigils etched in their faces \u2014 the language is older than fire.\n\nYet beneath the ice, something stirs. Not warmth. Not life. Something that remembers what warmth was, and hates itself for the memory. The Pale Reaches do not welcome the living. But then, you are not entirely sure you qualify.",
+  "lore": "The Pale Reaches were not always frozen. In the age before the First Flame, they were called the Thornfields \u2014 a place of strange, cold beauty. When the Flame rose, its heat never reached this far. Instead, the cold deepened, and the things that lived here changed accordingly. They did not die. They endured.",
   "choices": [
-    "choice"
+    "descend_into_the_pale_reaches"
   ],
-  "lore": "Lore for chapter 75.",
   "battle": false,
   "boss": false,
   "rest": false

@@ -1,13 +1,14 @@
 {
   "id": 3,
-  "text": "Ash clings to your boots like a second skin as you tread deeper. The wind here carries whispers—some mournful, some mocking. You pass rows of pyres long extinguished, each bearing the sigil of forgotten houses. The path narrows between jagged spires of obsidian glass, their surfaces cracked with ancient heat.\n\nTwo smells mingle in the air now: rot and something older, fainter... a promise broken. The landscape splits ahead. You sense danger in either direction, but one path beckons with the scent of decay, the other with the pull of unkindled flame.",
+  "text": "Ash clings to your boots like a second skin as you tread deeper. The wind here carries whispers \u2014 some mournful, some mocking. You pass rows of pyres long extinguished, each bearing the sigil of forgotten houses. The path narrows between jagged spires of obsidian glass, their surfaces cracked with ancient heat.\n\nTwo smells mingle in the air now: rot and something older, fainter \u2014 a promise broken. The landscape splits ahead. You sense danger in every direction. The stench of decay pulls toward the marsh. Unkindled flame pulls toward the tombmouth. The ridge above offers height, but not safety.\n\nAnd yet \u2014 to the north, past a ridge of blackened stone, the air shifts. Cold. Unnaturally cold. The kind of cold that does not come from winter, but from something that has forgotten warmth entirely. A pale gleam crowns the horizon there, like the moon fell and never left.",
   "choices": [
     "follow_the_stench_of_rot",
     "descend_into_the_tombmouth",
     "climb_the_forgotten_ledge",
-    "kneel_before_the_flame"
+    "kneel_before_the_flame",
+    "follow_the_pale_gleam_north"
   ],
-  "lore": "In the age before light, it was said that every ruin bore the mark of its last truth. Here in the Ashlands, those who walked deeper rarely returned—drawn toward roots of something far more ancient than the Flame.",
+  "lore": "In the age before light, it was said that every ruin bore the mark of its last truth. Here in the Ashlands, those who walked deeper rarely returned\u2014drawn toward roots of something far more ancient than the Flame.",
   "battle": false,
   "boss": false,
   "rest": false

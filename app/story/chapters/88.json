@@ -1,12 +1,11 @@
 {
   "id": 88,
-  "text": "This is the placeholder text for chapter 88.",
+  "text": "Off a side street, down three steps worn smooth by generations of feet that no longer exist, a small alcove. Inside, a bonfire \u2014 impossible, underground, lit by nothing \u2014 burns with the particular quality of a flame that has been here longer than the city around it.\n\nCandles surround it. Not placed by the Hollow Citydwellers \u2014 they do not seem to see it. Placed by others, other visitors, other wanderers who found this alcove and understood what it was. Some candles are nearly new. Someone else was here recently. Recently is a relative concept in a city without sun, but still.\n\nYou rest. The city breathes around you, slow and purposeless. The flame shows you visions of a surface you might have forgotten was real. Keep going. The city has a heart, and hearts can be found.",
+  "lore": "The Alcove Flame is older than Velundra. It preceded the city. The architects built around it deliberately, leaving this small space unclaimed. Perhaps they understood that some fires should not be owned.",
   "choices": [
-    "choice_a",
-    "choice_b"
+    "seek_the_grand_atrium"
   ],
-  "lore": "Lore for chapter 88.",
-  "battle": true,
+  "battle": false,
   "boss": false,
   "rest": false
 }

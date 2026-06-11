@@ -1,12 +1,12 @@
 {
   "id": 89,
-  "text": "This is the placeholder text for chapter 89.",
+  "text": "The Grand Atrium occupies the city's centre \u2014 a vast domed space where the bioluminescent moss grows thickest, its light pooling in the bowl of the dome like a captured sea. The floor is a mosaic depicting the city's founding: the descent, the building, the centuries. At its centre, a figure with its back turned, looking downward at something the mosaic does not show.\n\nThe atrium is where the Hollow Citydwellers congregate in greatest numbers, moving in slow orbits around the central mosaic as if caught in a current. They have been doing this so long that their footsteps have worn a groove into the mosaic, obscuring the very image they orbit.\n\nPassages lead off in multiple directions \u2014 market halls, residential tiers, and downward, always downward, toward what the oldest part of this city holds. Something massive shifted below the atrium recently. The dust is still settling.",
+  "lore": "The Grand Atrium was once the site of Velundra's Great Deliberation \u2014 the council that decided, three centuries into their underground existence, to seal the shaft to the surface permanently. The vote was unanimous. No one dissented. Historians argue about whether that says something about consensus, or about what had already happened to them by then.",
   "choices": [
-    "choice_a",
-    "choice_b"
+    "follow_the_downward_passage",
+    "pass_through_the_house_of_prayers"
   ],
-  "lore": "Lore for chapter 89.",
-  "battle": false,
+  "battle": true,
   "boss": false,
   "rest": false
 }

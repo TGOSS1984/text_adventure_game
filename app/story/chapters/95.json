@@ -1,12 +1,12 @@
 {
   "id": 95,
-  "text": "This is the placeholder text for chapter 95.",
+  "text": "At the threshold of the Sovereign's chamber, the last guard of Velundra stands. It was once a person \u2014 a soldier, perhaps, or a priest-militant \u2014 but centuries of proximity to the Sovereign have changed it. Its armour has fused with its skin. Its face is a smooth plane of scar tissue from which two eyes still burn with the stubborn, unreasoning fire of a thing that was told to stand here and has never received the order to stop.\n\nIt does not speak. It does not need to. Its purpose is written in every calcified joint and every weapon it still carries \u2014 corroded but unbreakable, like its will.",
+  "lore": "The last guard was placed here by the last elected council of Velundra, three hundred years after they built the city, when they realised what was below them. The guard's name was struck from all records at its own request. It wanted nothing to return to.",
   "choices": [
-    "choice_a",
-    "choice_b"
+    "enter_the_sovereign_s_chamber"
   ],
-  "lore": "Lore for chapter 95.",
-  "battle": false,
+  "battle": true,
   "boss": false,
-  "rest": false
+  "rest": false,
+  "enemy": "Velundra Cathedral Guard"
 }

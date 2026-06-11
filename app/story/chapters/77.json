@@ -1,12 +1,12 @@
 {
   "id": 77,
-  "text": "This is the placeholder text for chapter 77.",
+  "text": "It steps from the glacier as though the ice has simply released it \u2014 a figure of ancient armour fused with frost, its joints sealed with centuries of cold, its visor a sheet of blackened ice through which two amber embers still burn.\n\nThe Frostbound Sentinel does not rush. It has never needed to. In this tundra, all things come to it eventually. It raises a halberd of fused bone and glacial iron, its movements grinding like a mill wheel catching. The cold around it deepens. Your breath becomes visible, then laboured.\n\nIt will not speak. It will not negotiate. It will simply endure until you cannot.",
+  "lore": "The Sentinels were placed here by the Pale Watchers, guardians of the tundra's only truth: that warmth is a lie told by the dying. Each Sentinel was once a flamebearer, stripped of fire and sealed in the cold as punishment for their faith.",
   "choices": [
-    "choice_a",
-    "choice_b"
+    "push_deeper_after_the_sentinel"
   ],
-  "lore": "Lore for chapter 77.",
-  "battle": false,
+  "battle": true,
   "boss": false,
-  "rest": false
+  "rest": false,
+  "enemy": "Frostbound Sentinel"
 }
