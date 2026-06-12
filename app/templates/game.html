@@ -173,6 +173,23 @@ Inline quit-confirm JS kept small here (page-specific DOM wiring only).
     <!-- Bonfire pulse overlay -->
     <div id="bonfire-pulse" class="bonfire-pulse"></div>
 
+    <!--
+      Story background video — desktop only (hidden via CSS on mobile).
+      Sits behind everything at z-index -1. The static bonfire.jpg CSS
+      background shows instantly beneath it while the video loads.
+      Only visible on plain story chapters — battle/rest/boss pages
+      have their own body class backgrounds that override the body bg.
+    -->
+    <video
+        id="story-bg-video"
+        autoplay muted loop playsinline
+        preload="auto"
+        aria-hidden="true"
+        poster="{{ url_for('static', filename='images/areas/bonfire.jpg') }}"
+    >
+        <source src="{{ url_for('static', filename='videos/dark-souls-bonfire.mp4') }}" type="video/mp4">
+    </video>
+
     <!-- Quit confirmation dialog -->
     <div id="quit-confirm-overlay" role="dialog" aria-modal="true" aria-labelledby="quit-confirm-title">
         <div class="quit-confirm-box">
@@ -273,6 +290,16 @@ Inline quit-confirm JS kept small here (page-specific DOM wiring only).
         const pulse = document.getElementById('bonfire-pulse');
         if (messages.some(([cat, msg]) => cat === 'info' && msg.includes('bonfire'))) {
             pulse.classList.add('active');
+        }
+
+        // Story background video — fade in once ready
+        const vid = document.getElementById('story-bg-video');
+        if (vid) {
+            if (vid.readyState >= 3) {
+                vid.classList.add('loaded');
+            } else {
+                vid.addEventListener('canplaythrough', () => vid.classList.add('loaded'), { once: true });
+            }
         }
 
         // Quit confirmation overlay

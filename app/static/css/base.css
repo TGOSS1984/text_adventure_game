@@ -122,7 +122,8 @@ body {
     font-family: var(--font-body);
     background-color: var(--clr-bg-body);
     color: var(--clr-text);
-    background-image: url('../images/areas/bonfire.jpg');
+    /* No background-image on desktop — story pages use the video instead.
+       Mobile gets the static image via the media query below. */
     background-size: cover;
     background-repeat: no-repeat;
     background-position: center;
@@ -577,6 +578,11 @@ progress {
 
 @media (max-width: 768px) {
 
+    /* Restore static bonfire image on mobile — video is hidden there */
+    body {
+        background-image: url('../images/areas/bonfire.jpg');
+    }
+
     /* Shrink stat bars on mobile */
     :root {
         --hp-bar-width:  88vw;
@@ -612,4 +618,40 @@ progress {
     .battle-info { font-size: 1rem; }
 
     .class-image { width: 80px; }
+}
+
+
+/* ── Story background video (game.html desktop only) ──────────────────────────
+   Sits at z-index -1 behind all content. The static bonfire.jpg CSS background
+   shows immediately beneath it as a fallback while the video loads.
+   Hidden on battle/rest/boss pages — those have their own backgrounds.
+   Hidden on mobile — too costly for a background video on small screens.
+── */
+#story-bg-video {
+    position: fixed;
+    inset: 0;
+    width: 100vw;
+    height: 100vh;
+    object-fit: cover;
+    z-index: -1;
+    pointer-events: none;
+    /* Fade in once loaded — no hard cut from static to video */
+    opacity: 0;
+    transition: opacity 1.2s ease;
+}
+
+#story-bg-video.loaded {
+    opacity: 1;
+}
+
+/* Hide on battle, boss, rest — they have their own backgrounds */
+body.battle-mode #story-bg-video,
+body.boss-mode   #story-bg-video,
+body.rest-bg     #story-bg-video {
+    display: none;
+}
+
+/* Hide on mobile — use static image instead */
+@media (max-width: 768px) {
+    #story-bg-video { display: none; }
 }
