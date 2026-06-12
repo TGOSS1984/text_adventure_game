@@ -1,0 +1,11 @@
+{
+  "id": 112,
+  "text": "The black stone path leads to a junction — a crossroads marked by a monument to a decision that was never made. Four roads, one of which is the one you came from. The monument at the centre is a figure with its head in its hands, sitting on a throne it clearly does not want.\n\nFrom here, the deeper realm calls. Not loudly. The Shadow Realm does not shout. It waits, with the confidence of something that knows you have nowhere else to go.",
+  "lore": "Every crossroads in the Shadow Realm marks a moment of indecision from the world above — a choice that was not made, preserved here as a monument to the cost of hesitation.",
+  "choices": [
+    "enter_the_shadow_depths"
+  ],
+  "battle": false,
+  "boss": false,
+  "rest": false
+}

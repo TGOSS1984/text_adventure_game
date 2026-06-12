@@ -1,0 +1,11 @@
+{
+  "id": 111,
+  "text": "Beyond the colosseum, the Shadow Realm narrows. The amber plains give way to something more deliberate — pathways of black stone, lined with monuments to things that never happened. A victory celebration for a battle that was lost. A coronation for a king who was never crowned. A funeral for someone who is still alive.\n\nYou follow the path of black stone. It is the only thing here that knows where it is going.",
+  "lore": "The monuments of the Shadow Realm are not memorials. They are corrections — the world documenting, in stone, everything that should have happened and didn't. The realm takes its archival duties very seriously.",
+  "choices": [
+    "follow_the_black_stone_path"
+  ],
+  "battle": false,
+  "boss": false,
+  "rest": false
+}

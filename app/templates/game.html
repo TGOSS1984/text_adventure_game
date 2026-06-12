@@ -39,7 +39,8 @@ Inline quit-confirm JS kept small here (page-specific DOM wiring only).
     {% set hp_cls = 'hp-low' %}
 {% endif %}
 
-<body class="{% if is_rest %}rest-bg{% endif %}">
+<body class="{% if is_rest %}rest-bg{% endif %}"
+      {% if is_rest %}style="--rest-bg: url('/static/{{ session.get('rest_bg', 'images/areas/firelink.jpg') }}');"{% endif %}>
 
     <div class="bonfire-bg">
 
@@ -198,6 +199,72 @@ Inline quit-confirm JS kept small here (page-specific DOM wiring only).
     <script src="{{ url_for('static', filename='js/settings.js') }}"></script>
     <script src="{{ url_for('static', filename='js/sound.js') }}"></script>
     <script src="{{ url_for('static', filename='js/typewriter.js') }}"></script>
+
+    {% if show_secret_map %}
+    <!-- ── Secret Map Icon ──────────────────────────────────────────────────
+         Pulses subtly bottom-right. Clicking opens a full-screen lightbox
+         with cryptic notes and two options: enter or return.
+    ── -->
+    <button id="secret-map-btn" aria-label="A strange map" title="">
+        <img src="{{ url_for('static', filename='images/icons/secret_map.png') }}"
+             alt="A worn map, glowing faintly">
+    </button>
+
+    <div id="secret-map-lightbox" role="dialog" aria-modal="true" aria-label="The Shadow Map">
+        <div class="secret-map-inner">
+            <img
+                src="{{ url_for('static', filename='images/icons/secret_map.png') }}"
+                alt="The Shadow Map"
+                class="secret-map-fullimg"
+            >
+            <div class="secret-map-notes">
+                <p class="secret-map-title">❧ A Map Not Meant To Be Found ❧</p>
+                <p class="secret-map-text">
+                    The parchment is old. Older than the kingdoms you have walked through,
+                    older than the flame that lit them. The cartography is wrong in ways
+                    that suggest the mapmaker could see places that should not be visible
+                    from any surface vantage point. Annotations crowd the margins in a
+                    script that predates language, and yet you can almost read them.
+                    <em>Here lies what was kept from the burning.</em>
+                    <em>Here lies what was too dangerous to remember.</em>
+                    <em>Do not enter unless you are prepared to be changed by what you find.</em>
+                    A golden thread marks a path into the tear. It ends at a single word:
+                    <strong>Shadow.</strong>
+                </p>
+                <div class="secret-map-actions">
+                    <form method="POST" action="{{ url_for('main.enter_shadow_realm') }}" style="display:inline;">
+                        <button type="submit" class="secret-map-btn--enter">
+                            ✦ Step Into The Shadow
+                        </button>
+                    </form>
+                    <button type="button" id="secret-map-close" class="secret-map-btn--return">
+                        ↩ Turn Back
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    (function() {
+        const btn       = document.getElementById('secret-map-btn');
+        const lightbox  = document.getElementById('secret-map-lightbox');
+        const closeBtn  = document.getElementById('secret-map-close');
+
+        btn.addEventListener('click', () => {
+            lightbox.classList.add('secret-map-lightbox--open');
+            document.body.style.overflow = 'hidden';
+        });
+        function close() {
+            lightbox.classList.remove('secret-map-lightbox--open');
+            document.body.style.overflow = '';
+        }
+        closeBtn.addEventListener('click', close);
+        lightbox.addEventListener('click', e => { if (e.target === lightbox) close(); });
+        document.addEventListener('keydown', e => { if (e.key === 'Escape') close(); });
+    }());
+    </script>
+    {% endif %}
 
     <script>
     window.addEventListener('DOMContentLoaded', () => {

@@ -1,0 +1,12 @@
+{
+  "id": 144,
+  "text": "The Serpent Prince — Mesmereth, as the inscriptions name him, the name the burning civilisations gave before they stopped — fills the sanctum and still manages to seem contained. Controlled. Even in his full, terrible form, he maintains the quality of something that has chosen this.\n\nHis attacks come as fire that does not burn but illuminates — each strike showing you, briefly, a truth you have been avoiding. His serpentine form moves with the grace of something in its natural element, which this is. The cold flame is not his weapon. It is his language.\n\nTo fight him is to be read. To survive is to be found, by the reading, as something that deserves to continue. The Serpent Prince does not spare the unworthy. He simply does not encounter them, because the unworthy do not reach this place.",
+  "lore": "Mesmereth served something older than the Erdtree and older than the flame. He served the principle of transformation itself, the force that insists all things must change and that the quality of change matters. He is its last practitioner. He has been waiting for someone to receive the practice.",
+  "choices": [
+    "claim_the_serpent_s_flame"
+  ],
+  "battle": true,
+  "boss": true,
+  "rest": false,
+  "boss_name": "Mesmereth, the Serpent Prince"
+}

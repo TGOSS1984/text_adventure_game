@@ -1,0 +1,11 @@
+{
+  "id": 134,
+  "text": "The Silk Road North from the gardens leads back into the Shadow Realm's amber heart. The rot recedes behind you — not retreating, simply not following. The garden has its domain. Beyond it, the world continues its own kind of decay, slower and less elegant.\n\nThe paths here begin to converge. Others must have come before you, by different routes, to different trials. The footprints in the amber dust are varied. None of them were made by the same person. All of them are heading the same direction.",
+  "lore": "All roads in the Shadow Realm eventually lead to the same place. This is not a design choice. It is a property of the realm itself — a realm made of things that were trying to reach something when they were stopped. The momentum carries forward, even here.",
+  "choices": [
+    "follow_the_convergent_path"
+  ],
+  "battle": false,
+  "boss": false,
+  "rest": false
+}

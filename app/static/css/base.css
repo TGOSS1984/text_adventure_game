@@ -139,9 +139,9 @@ body.boss-mode {
     background-attachment: fixed;
 }
 
-/* Bonfire rest area */
+/* Bonfire rest area — background picked randomly per rest chapter */
 body.rest-bg {
-    background-image: url('../images/areas/firelink.jpg');
+    background-image: var(--rest-bg, url('../images/areas/firelink.jpg'));
 }
 
 /* Title / class-select — video background */

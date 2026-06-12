@@ -1,0 +1,12 @@
+{
+  "id": 140,
+  "text": "The Moon Monastery clings to the western cliff with the determined grip of something that has decided it will not fall regardless of what the cliff does. Its walls are mirror-polished obsidian that reflects not the landscape but the sky — specifically, a moon that is not visible from where you stand but is very clearly visible to the monastery's walls.\n\nWithin, a single figure practices forms with a sword made of solidified moonlight — not metaphorically, but literally: light made dense enough to hold an edge. She moves through her forms with the focus of someone for whom focus is not a discipline but a natural state, the way water is naturally wet.",
+  "lore": "The Moon-Sworn Blade took her oath to the moon because the moon, unlike the sun, acknowledges that it only reflects rather than generates. She found this honest. Honesty, in a sword, is everything. Her blade has never been used in a cause she believed to be false. She is uncertain what to believe about you.",
+  "choices": [
+    "approach_the_moon_sword_saint",
+    "observe_from_the_doorway"
+  ],
+  "battle": false,
+  "boss": false,
+  "rest": false
+}

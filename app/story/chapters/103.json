@@ -1,0 +1,11 @@
+{
+  "id": 103,
+  "text": "The map led you here. You were not sure it would — the paths it showed did not correspond to any road you recognised, any landmark that should still exist. But you followed the golden light in the margins, the faint annotations in a script that predated the kingdoms you have walked through, and here you are.\n\nHere is a tear in the world. Not a door — doors are built with intention. This was made by something pulling the fabric of existence apart and stepping through, and the fabric never quite closed behind it. Through it: a sky of amber and ash, a realm that exists in the space between the dying of one age and the birth of nothing. The air that bleeds through smells of burnt flowers and old blood.\n\nThe Shadow of the Erdtree realm. The place the map was warning you about, or inviting you toward. The distinction no longer seems meaningful. You step through.",
+  "lore": "The Shadow Realm was not built. It accreted — accumulated from the discarded histories of the world above, the things that were real and then were forgotten so completely they fell through the floor of memory and landed here. It is everything that was not allowed to happen, given landscape and weather and the slow dignity of permanence.",
+  "choices": [
+    "descend_into_the_shadow_realm"
+  ],
+  "battle": false,
+  "boss": false,
+  "rest": false
+}

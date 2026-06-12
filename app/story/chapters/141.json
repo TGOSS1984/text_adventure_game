@@ -1,0 +1,12 @@
+{
+  "id": 141,
+  "text": "She stops mid-form. Not startled — she knew you were there. She stops because she has finished considering what your presence means and has reached a conclusion.\n\n'You carry the marks of a Shadow traveller,' she says. Her voice is even, metered, the voice of someone who weighs each word before spending it. 'And something else. Something that has been through fire and not been changed by it. That is either impressive or alarming.'\n\nShe levels the moonlight blade at you. Not threatening. Testing. 'I cannot let you pass without understanding what you are. I hope you will convince me.'",
+  "lore": "The Moon-Sworn's test is not one of strength but of quality. She can tell, from the way someone fights, whether they are truthful. She has been waiting for a truthful fighter for a very long time. Most people lie with their bodies without knowing they are doing it.",
+  "choices": [
+    "duel_the_moon_sworn_blade"
+  ],
+  "battle": true,
+  "boss": true,
+  "rest": false,
+  "boss_name": "The Moon-Sworn Blade"
+}

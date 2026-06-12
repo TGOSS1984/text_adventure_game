@@ -1,0 +1,11 @@
+{
+  "id": 110,
+  "text": "He falls with the sound of a constellation rearranging — the stars in the pit scatter briefly, then reform in new patterns around where he lies. As if even in defeat he cannot stop holding things in orbit.\n\nIn his fist: a fragment of collapsed star, cold and impossibly heavy, radiating a light that travels inward rather than out. You take it. It will be important later, or it won't. In this realm, significance and insignificance are the same thing wearing different clothes.\n\nA passage opens in the colosseum's far wall — not revealed, but remembered. It was always there. You simply needed to earn the right to see it.",
+  "lore": "Star fragments are the compressed memory of collapsed stars — matter so dense with history that reality bends slightly around them. Carrying one is carrying a small piece of inevitable entropy. Most people find this comforting.",
+  "choices": [
+    "pass_through_the_colosseum_gate"
+  ],
+  "battle": false,
+  "boss": false,
+  "rest": true
+}

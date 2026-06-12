@@ -1,0 +1,11 @@
+{
+  "id": 116,
+  "text": "The black spire's base is a threshold. You feel it before you see it — a change in the quality of the air, the way attention changes quality when something very significant is paying it. The spire is the realm's heart, and the heart is aware of you.\n\nAt the threshold, an inscription in the same pre-language as the map that brought you here. You cannot read it fully, but fragments resolve: servant... fire-keeper... he who burns but is not consumed... The Serpent Prince.\n\nThe door to the spire stands open. It has always been open. It opens inward.",
+  "lore": "The Serpent Prince is not a title granted by any court. It was the name given to him by what he burned — the civilisations that felt his fire and named the source before they stopped existing. He did not choose the name. He kept it anyway.",
+  "choices": [
+    "enter_the_black_spire"
+  ],
+  "battle": false,
+  "boss": false,
+  "rest": false
+}

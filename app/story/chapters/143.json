@@ -1,0 +1,11 @@
+{
+  "id": 143,
+  "text": "From the monastery, a path descends to the obsidian floor of the realm — a different route than the direct path, but arriving at the same destination. The black spire is visible from here, its cold flame unchanged. Its patience is, by now, something you have come to understand as a form of courtesy. It is not making you hurry. It is simply remaining available.",
+  "lore": "The monastery path was built by the Moon-Sworn herself, as an alternative for those who came to the spire by way of understanding rather than force. It is slightly longer than the direct route. She considers this appropriate.",
+  "choices": [
+    "reach_the_black_spire_gate"
+  ],
+  "battle": false,
+  "boss": false,
+  "rest": false
+}

@@ -1,0 +1,12 @@
+{
+  "id": 132,
+  "text": "She finally looks up. The Saintess of Rot regards you with something that is not hostility but is adjacent to pity — the look of someone watching a creature struggle against the inevitable. Her form is half mortal, half the thing her faith made her: silk robes trailing into chitinous extensions, her face serene above a body that has been lovingly, willingly transformed.\n\n'Everything rots,' she says. Her voice is many voices, layered. 'I simply love what rots. Is that so different from what you do?'\n\nShe raises one graceful hand. The garden rises with it.",
+  "lore": "The Saintess was once a healer. She cured so many diseases that she began to wonder what the diseases were for — what role they played in the world's design. Her faith is the conclusion she reached after long contemplation. It is not the conclusion most would reach.",
+  "choices": [
+    "face_the_saintess_of_rot"
+  ],
+  "battle": true,
+  "boss": true,
+  "rest": false,
+  "boss_name": "The Saintess of Rot"
+}

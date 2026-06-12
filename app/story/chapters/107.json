@@ -1,0 +1,12 @@
+{
+  "id": 107,
+  "text": "The Colosseum was built for a giant and never scaled down. Its archways are eighty feet of crumbling sandstone, each one carved with battle reliefs so detailed you can read the expressions on the faces of the dying. The fighting pit below is full of stars.\n\nNot metaphorically. The pit is open to a sky that does not correspond to anything above — a sky of captured constellations, near enough to touch, wheeling in patterns that suggest not astronomy but choreography. Someone arranged these stars deliberately. Someone with enough gravitational will to hold them in place by force of personality alone.\n\nThe Colosseum's champion is still here. You can tell by the way the stars lean toward the far end of the pit.",
+  "lore": "The Starbound Colossus was once a general of impossible renown — a warrior who fought so many battles that the stars themselves began to track his movements, drawn by the gravity of his consequence. When he fell, the stars followed him here. They have been waiting for a fight worthy of his memory.",
+  "choices": [
+    "descend_into_the_star_pit",
+    "circle_the_upper_battlements"
+  ],
+  "battle": false,
+  "boss": false,
+  "rest": false
+}

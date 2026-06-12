@@ -1,0 +1,11 @@
+{
+  "id": 147,
+  "text": "The Frostbound Gallery receives you. Its frozen portraits — those versions of you that the gallery preserved as futures that never happened — regard you differently now. Some of them look like what you have become. The gallery did not show these versions before. You were not this version before.\n\nThe brazier at the gallery's end glows. The flame knows you, as it always has. But now the recognition is different — not the recognition of something expected, but of something that arrived carrying more than it left with.\n\nRest. The Lord of Ashes waits, as he has always waited. And now you carry the permission of the Serpent Prince, the gravity of the Colossus, the honesty of the Moon-Sworn, and the understanding that transformation is available. It is enough. It will have to be.",
+  "lore": "The Frostbound Gallery was always a room of futures. What it shows now — the future that includes the Shadow Realm, the Serpent Prince's flame, the completion of all these trials — this was always one of the portraits on its walls. It was simply covered in frost until you were ready to see it.",
+  "choices": [
+    "offer_ashes_to_the_flame"
+  ],
+  "battle": false,
+  "boss": false,
+  "rest": true
+}

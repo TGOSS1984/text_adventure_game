@@ -1,0 +1,12 @@
+{
+  "id": 108,
+  "text": "The battlements are lined with the weapons of every warrior the Colossus ever defeated — thousands of them, rusted into abstract sculpture by time, their names scratched into the stone beside them. The collection is not a trophy display. It is a record. A monument to everyone who tried.\n\nAt the pit's edge, you see him for the first time. Vast. Armoured in constellations that have fused to his plate over centuries. His sword is a collapsed star on a chain — dense, burning cold, orbiting him like a moon. He is not asleep. He is waiting, with the particular patience of something that has learned patience the hard way.\n\nHe sees you. The stars in the pit tighten their orbits. He says nothing. He raises his sword arm.\n\nYou realise that entering this colosseum was itself a challenge declaration.",
+  "lore": "The Colossus held back his own decay through sheer gravitational will — the same force that kept the stars in his orbit kept his body intact long past its natural end. He is not undead. He is unfinished.",
+  "choices": [
+    "fight_the_starbound_colossus"
+  ],
+  "battle": true,
+  "boss": false,
+  "rest": false,
+  "enemy": "Starbound Colossus"
+}

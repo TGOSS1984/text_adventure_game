@@ -1,0 +1,13 @@
+{
+  "id": 133,
+  "text": [
+    "She falls with grace — of course she does. Even her defeat has the quality of a ceremony. The rot-blooms fold closed around her. The spores settle. For a moment, in the sudden stillness, the garden is just a garden.\n\nA small sealed vessel rests where she fell — her offering, or perhaps a test she left in case she lost. Inside, preserved in a medium that smells of iron and flowers: a fragment of her faith. Not the rot itself, but the belief that drove it. Warm in your hand. Still, somehow, alive."
+  ],
+  "lore": "The Saintess's faith vessel is one of three she prepared against the possibility of defeat. She was not arrogant. She simply wanted her beliefs to outlast her body. In this, as in most things, she was practical.",
+  "choices": [
+    "leave_the_rot_gardens"
+  ],
+  "battle": false,
+  "boss": false,
+  "rest": true
+}

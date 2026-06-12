@@ -1,0 +1,12 @@
+{
+  "id": 122,
+  "text": "It fights like water flowing uphill — wrong, impossible, and yet entirely consistent with its own internal logic. It cycles through forms mid-combat: vast and leonine, then serpentine, then something with too many joints moving in directions joints should not move.\n\nEach form has different tells. Each form you learn is replaced before the lesson fully lands. Fighting the Gilded Predator is fighting the concept of unpredictability made flesh.",
+  "lore": "The Predator has been beaten before. It remembers every technique used against it and incorporates them into its repertoire. Theoretically, this makes it unbeatable. In practice, it also means it is fighting against itself as much as against you, and that creates openings.",
+  "choices": [
+    "descend_from_the_dancing_hollows"
+  ],
+  "battle": true,
+  "boss": true,
+  "rest": false,
+  "boss_name": "The Gilded Predator"
+}

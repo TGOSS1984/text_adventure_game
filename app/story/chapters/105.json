@@ -1,0 +1,12 @@
+{
+  "id": 105,
+  "text": "They come from the amber itself — shapes that were preserved in the glass and have since learned to step out of it. Shadow Revenants: the echoes of those who died in the burning, still moving through the motions of their final moments. The deer still run. The birds still wheel. The people still scream, silently, in a loop that has played so many times it has become indistinguishable from intention.\n\nOne turns toward you. Its face is a smear of amber where features should be. It raises hands that are half-solid and half-light and comes at you with the desperate energy of something that has been running for centuries and finally found a direction.",
+  "lore": "The Revenants of the Shadow Realm are not ghosts. They are impressions — the marks left by the living in the substance of existence, still moving after the body that made them has long since stopped.",
+  "choices": [
+    "reach_the_shadow_bonfire"
+  ],
+  "battle": true,
+  "boss": false,
+  "rest": false,
+  "enemy": "Shadow Revenant"
+}

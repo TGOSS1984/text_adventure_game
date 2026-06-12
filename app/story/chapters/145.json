@@ -1,0 +1,11 @@
+{
+  "id": 145,
+  "text": "He burns. Not in defeat — in completion. The cold flame rises from him like breath released, filling the sanctum, passing through you without harm, carrying in its passage everything he was: the memories, the choices, the long centuries of tending this realm against the hope of someone arriving who could receive what he had kept.\n\nYou feel it settle. Not in your body — somewhere behind it. Something has been added to you that has no name yet because you have not yet done what it was added to enable.\n\nThe sanctum is empty. The cold flame dies to embers. Above, through the absent walls, the Shadow Erdtree's branches move — for the first time since you entered this realm — and their movement looks, unmistakably, like relief.",
+  "lore": "What Mesmereth passed to you at the moment of his completion is not power, exactly. It is permission. The realm has been waiting for this permission to be carried back to the world above. What it permits is something only the next fire will reveal.",
+  "choices": [
+    "ascend_from_the_black_spire"
+  ],
+  "battle": false,
+  "boss": false,
+  "rest": false
+}

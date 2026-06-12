@@ -1,0 +1,12 @@
+{
+  "id": 109,
+  "text": "The colosseum holds its breath. Then the Starbound Colossus moves, and the stars move with him — each swing of his chain-sword trailing a comet arc of cold light. He fights without words, without theatre. He fights the way mountains erode: with total indifference to anything that cannot match his scale.\n\nBetween his blows, in the gaps of his assault, you find your openings. Small. Costly. Each one purchased with something you didn't know you could spend.",
+  "lore": "It is said the Colossus never lost a fight. This is technically true — he lost this realm and everything in it, but to something that cannot be fought. He would like a rematch with something he can at least wound.",
+  "choices": [
+    "claim_the_star_fragment"
+  ],
+  "battle": true,
+  "boss": true,
+  "rest": false,
+  "boss_name": "The Starbound Colossus"
+}

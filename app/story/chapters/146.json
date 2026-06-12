@@ -1,0 +1,11 @@
+{
+  "id": 146,
+  "text": "The realm releases you as it released the cold flame — not ejecting, but completing. The tear in the world through which you entered has widened slightly. On the other side: the world you left, its particular quality of dying light, its ash and its persistence.\n\nYou carry the Shadow Realm back with you. Not as weight — as understanding. You know now what the realm was preserving: the truth that things can be transformed rather than simply ended. That the choice between continuation and cessation is not the only choice available.\n\nThe path forward leads toward the final confrontation. Cindergloom waits, as Cindergloom has always waited. But you are different now than you were when the waiting was all you knew about.",
+  "lore": "Those who return from the Shadow Realm carry a particular quality the scholars call the Mesmereth-mark — an inability to see situations as simply binary. It is, in most contexts, a disadvantage. In the context of what comes next, it is exactly what is needed.",
+  "choices": [
+    "return_through_the_shadow_gate"
+  ],
+  "battle": false,
+  "boss": false,
+  "rest": false
+}

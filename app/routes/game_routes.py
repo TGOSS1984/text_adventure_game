@@ -14,9 +14,10 @@ General game flow routes:
 """
 
 from flask import render_template, request, redirect, url_for, session, flash
+import random
 from ..combat import BattleManager
 from ..config import (
-    NORMAL_BATTLE_BGS, BOSS_BATTLE_BGS, BOSS_BG_OVERRIDES,
+    NORMAL_BATTLE_BGS, BOSS_BATTLE_BGS, BOSS_BG_OVERRIDES, REST_BGS,
     GIFTS, DEFAULT_ESTUS,
 )
 from ..models import Character
@@ -24,7 +25,6 @@ from ..classes import CLASSES
 from ..save_load import save_game, load_game, has_save, delete_save
 from ..enemies import ENEMIES, BOSSES
 from ..story.story_engine import Story
-import random
 
 story          = Story()
 battle_manager = BattleManager()
@@ -169,6 +169,7 @@ def register(blueprint):
         data    = story.get_chapter(chapter)
 
         if data.get("rest") and not session.get("rested_here"):
+            session["rest_bg"] = random.choice(REST_BGS)
             session["hp"]    = session["character"]["max_hp"]
             session["estus"] = session.get("estus_max", DEFAULT_ESTUS)
             session["mp"]    = 0
@@ -179,6 +180,30 @@ def register(blueprint):
         session["rested_here"] = False
         hp = session.get("hp", session["character"]["max_hp"])
 
+        # ── Secret map icon ───────────────────────────────────────────────────
+        # Show on any story chapter that is not a battle, boss, or rest area.
+        # Probability is set per-session so the icon appears consistently on the
+        # same chapter across a single playthrough (not randomly per page load).
+        chapter_id      = session.get("chapter", 0)
+        is_eligible     = (
+            not data.get("battle") and
+            not data.get("boss") and
+            not data.get("rest") and
+            chapter_id not in [0, 100, 101, 102]  # exclude terminal chapters
+        )
+        # Use a session-stable set of "secret" chapters so the map appears
+        # on the same chapters every playthrough (seeded when session starts).
+        secret_chapters = session.get("secret_chapters", [])
+        if not secret_chapters and is_eligible:
+            # Pick 8 random eligible chapters to show the map on this run
+            all_story = [n for n in range(1, 100)
+                         if n not in [7,14,20,25,34,40,45,50,54,59,62,65,68,
+                                      71,74,76,78,80,82,88,93]]
+            secret_chapters = random.sample(all_story, min(8, len(all_story)))
+            session["secret_chapters"] = secret_chapters
+
+        show_secret_map = is_eligible and chapter_id in secret_chapters
+
         return render_template(
             "game.html",
             chapter=data,
@@ -187,7 +212,23 @@ def register(blueprint):
             is_rest=bool(data.get("rest", False)),
             gift=session.get("gift", "fading_soul"),
             souls=session.get("souls", 0),
+            show_secret_map=show_secret_map,
         )
+
+    @blueprint.route("/enter_shadow_realm", methods=["POST"])
+    def enter_shadow_realm():
+        """Store the return chapter and redirect to the Shadow Realm entry."""
+        return_chapter = session.get("chapter", 0)
+        session["secret_return_chapter"] = return_chapter
+        session["chapter"] = 103
+        return redirect(url_for("main.game"))
+
+    @blueprint.route("/leave_shadow_realm", methods=["POST"])
+    def leave_shadow_realm():
+        """Return to the chapter the player was on when they found the map."""
+        return_chapter = session.get("secret_return_chapter", 0)
+        session["chapter"] = return_chapter
+        return redirect(url_for("main.game"))
 
     @blueprint.route("/death")
     def death():

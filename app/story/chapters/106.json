@@ -1,0 +1,13 @@
+{
+  "id": 106,
+  "text": "In the heart of the amber plain, a bonfire burns with light that casts no shadow. This is appropriate. Everything here is shadow — to cast one would be redundant.\n\nYou rest. The Erdtree's silhouette looms above, its inverted branches stirring in a wind that does not exist. The fire shows you the realm's shape: vast, three-chambered, each chamber watched over by something that was once formidable and is now something else entirely.\n\nThree paths diverge ahead. The realm does not care which you take. All roads here lead through the same darkness, only the shape of it varies. Choose by instinct. Instinct is what survives when everything else burns.",
+  "lore": "The bonfires of the Shadow Realm burn without fuel because they are not burning matter — they are burning possibility. Each flame is a version of the world that did not happen, consumed slowly in the hope that its warmth might reach something that needs it.",
+  "choices": [
+    "venture_toward_the_shattered_colosseum",
+    "descend_into_the_dancing_hollows",
+    "follow_the_silk_road_south"
+  ],
+  "battle": false,
+  "boss": false,
+  "rest": true
+}

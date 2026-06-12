@@ -1,0 +1,11 @@
+{
+  "id": 115,
+  "text": "The obsidian path beyond is clear. You walk it with the specific awareness of someone who knows they are being watched but cannot identify the watcher. The black spire grows larger ahead. Its flame is cold — you can feel the cold from here, distinctive from the ambient chill of the realm. This cold is intentional. Curated.\n\nA rest point in a natural hollow of the obsidian cliff — a small fire, a ledge, the particular intimacy of a cramped shelter in a hostile landscape. You take it. What waits at the spire has waited this long. It can wait a little more.",
+  "lore": "The obsidian hollows were carved by those who came before — waymarkers left not as guidance but as testimony. I was here. I rested here. I continued. The fire was lit by the last person to pass through. They did not come back to extinguish it.",
+  "choices": [
+    "approach_the_black_spire"
+  ],
+  "battle": false,
+  "boss": false,
+  "rest": true
+}

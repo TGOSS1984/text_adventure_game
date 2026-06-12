@@ -1,0 +1,12 @@
+{
+  "id": 130,
+  "text": "The Silk Road South was beautiful once. You can tell by what remains: pavilions of carved bone-white stone, their latticed screens intact, their courtyard gardens still growing — but the gardens have changed. What grows now is not cultivated. It is deliberate in a different way, the way plague is deliberate, the way corruption has intention.\n\nScarlet rot blooms carpet the pathways. They are, genuinely, beautiful — deep crimson, almost luminescent, releasing spores that catch the amber light of the Shadow Erdtree like snow catching streetlight. The beauty is the warning. Things that evolved to be beautiful to attract attention did not evolve beauty as a kindness.\n\nThe Saintess tends her garden at its far end. You can see her, distantly, moving between the blooms with the care of a devotee tending sacred relics.",
+  "lore": "The Saintess of Rot came to the Shadow Realm willingly, bringing her faith with her. She does not see rot as corruption but as completion — the final form of all things, the destination everything is travelling toward. She is simply helping things arrive sooner.",
+  "choices": [
+    "approach_through_the_rot_gardens",
+    "circle_along_the_pavilion_walls"
+  ],
+  "battle": false,
+  "boss": false,
+  "rest": false
+}

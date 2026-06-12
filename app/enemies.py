@@ -415,4 +415,116 @@ BOSSES = {
             "\"Bearer. You are persistent. Good. I have not had a worthy ending in a very long time.\""
         ),
     },
+
+    "The Starbound Colossus": {
+        "hp":            300,
+        "attack":        28,
+        "magic_attack":  0,
+        "defense":       14,
+        "magic_defense": 8,
+        "damage_type":   "physical",
+        "image":         "starbound_colossus.png",
+        "lore": (
+            "He fought so many battles that the stars began to track his movements, "
+            "drawn by the gravity of his consequence. When he fell, they followed him "
+            "into the Shadow Realm and have been waiting there ever since — "
+            "a constellation arranged around a defeat, still hoping for a rematch."
+        ),
+        "soul_reward":   420,
+        "phase2_lore": (
+            "🌟 SECOND PHASE — The Starbound Colossus slams his chain-sword into the pit floor. "
+            "The stars in orbit collapse inward, fusing to his armour. "
+            "He rises larger, heavier, burning cold. The constellations rearrange into siege formations."
+        ),
+    },
+    "The Gilded Predator": {
+        "hp":            270,
+        "attack":        22,
+        "magic_attack":  22,
+        "defense":       10,
+        "magic_defense": 12,
+        "damage_type":   "mixed",
+        "image":         "gilded_predator.png",
+        "lore": (
+            "It has no fixed form. It wears shapes the way performers wear costumes, "
+            "chosen for effect and discarded when the scene demands otherwise. "
+            "Its true form is motion itself — and motion, when given teeth and will, "
+            "is the most dangerous predator that exists."
+        ),
+        "soul_reward":   395,
+        "phase2_lore": (
+            "✨ SECOND PHASE — The Gilded Predator abandons all pretence of form. "
+            "It becomes light and motion and hunger, cycling through shapes faster than the eye can track. "
+            "The bells of the temple toll in frantic counterpoint."
+        ),
+    },
+    "The Saintess of Rot": {
+        "hp":            255,
+        "attack":        0,
+        "magic_attack":  24,
+        "defense":       8,
+        "magic_defense": 16,
+        "damage_type":   "magic",
+        "image":         "saintess_of_rot.png",
+        "lore": (
+            "She was once a healer. She cured so many diseases that she began to wonder "
+            "what they were for — what role they played in the design of things. "
+            "Her faith is the conclusion she reached after long contemplation. "
+            "She does not see rot as corruption. She sees it as completion."
+        ),
+        "soul_reward":   385,
+        "phase2_lore": (
+            "🌸 SECOND PHASE — The Saintess of Rot opens her arms and the garden responds. "
+            "Scarlet blooms erupt from the ground around her, filling the air with spores "
+            "so thick they blot the amber light. She smiles. This is her sermon."
+        ),
+    },
+    "The Moon-Sworn Blade": {
+        "hp":            280,
+        "attack":        26,
+        "magic_attack":  18,
+        "defense":       12,
+        "magic_defense": 14,
+        "damage_type":   "mixed",
+        "image":         "moon_sworn_blade.png",
+        "lore": (
+            "She took her oath to the moon because the moon, unlike the sun, "
+            "acknowledges that it only reflects rather than generates. "
+            "She found this honest. Her blade has never been raised in a cause "
+            "she did not believe to be true. She is uncertain what to believe about you. "
+            "The uncertainty is, itself, a form of respect."
+        ),
+        "soul_reward":   405,
+        "phase2_lore": (
+            "🌙 SECOND PHASE — The Moon-Sworn Blade sheathes her weapon. "
+            "When she draws it again, it carries the moon's full weight — "
+            "tidal, inevitable, pulling everything toward her orbit. "
+            "\"You fight honestly. Now let me show you what honesty costs.\""
+        ),
+    },
+    "Mesmereth, the Serpent Prince": {
+        "hp":            350,
+        "attack":        26,
+        "magic_attack":  28,
+        "defense":       16,
+        "magic_defense": 20,
+        "damage_type":   "mixed",
+        "image":         "mesmereth.png",
+        "lore": (
+            "He served the principle of transformation itself — the force that insists "
+            "all things must change and that the quality of change matters. "
+            "He shed what he was and became what the realm needed, and has been "
+            "what the realm needs for so long he has forgotten what he was before. "
+            "This forgetting is the only thing that still grieves him. "
+            "His cold flame does not burn. It illuminates. Each strike reveals a truth "
+            "the struck has been avoiding. He is the last of his kind. He chose to be."
+        ),
+        "soul_reward":   500,
+        "phase2_lore": (
+            "🐍 SECOND PHASE — Mesmereth, the Serpent Prince sheds his contained form entirely. "
+            "The sanctum fills with cold flame — every surface, the air itself, burning "
+            "with transformative light. His voice fills the space from everywhere at once: "
+            "\"You have come far enough to see what I am. Now see what you are.\""
+        ),
+    },
 }

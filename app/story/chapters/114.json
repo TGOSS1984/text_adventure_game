@@ -1,0 +1,12 @@
+{
+  "id": 114,
+  "text": "The path to the black spire passes through the Realm's oldest section — where the Shadow of the Erdtree is thickest and the amber gives way to obsidian. Here the preserved-moment quality of the realm falters. Things move here that should not move. Old decisions replay themselves, trying different outcomes, finding none of them satisfactory.\n\nA guardian of the deep path emerges from the obsidian — not from behind it, but from within it, stepping through solid rock as though the rock is simply a surface it has learned to ignore.",
+  "lore": "The Deep Walkers are what remain of those who tried to reach the black spire before you and learned, too late, that the path through the obsidian does not lead forward but inward. They have been walking for a very long time.",
+  "choices": [
+    "fight_the_deep_walker"
+  ],
+  "battle": true,
+  "boss": false,
+  "rest": false,
+  "enemy": "Deep Walker"
+}

@@ -1,0 +1,11 @@
+{
+  "id": 142,
+  "text": "She fights with the economy of someone who has never needed to waste a movement. Every attack is exactly calibrated. Every defence is precisely sufficient. She is not trying to defeat you — she is trying to read you, and fighting is simply the medium she reads in.\n\nWhen she finally lowers the blade, it is not because you have beaten her. It is because she has finished reading. Her expression — neutral throughout — shifts fractionally into something that might be approval.\n\n'You fight honestly,' she says. 'Continue through the monastery. What waits beyond the realm's heart — it will recognise you as I do.'",
+  "lore": "The Moon-Sworn has stood aside for three fighters in all her centuries here. She does not remember their names. She remembers the quality of their attention. You are the fourth.",
+  "choices": [
+    "descend_from_the_moon_monastery"
+  ],
+  "battle": false,
+  "boss": false,
+  "rest": true
+}

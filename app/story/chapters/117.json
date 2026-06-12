@@ -1,0 +1,12 @@
+{
+  "id": 117,
+  "text": "The interior of the black spire is not what the exterior suggested. Outside: cold, forbidding, ancient. Inside: warm. The warmth of something living, inhabited, tended. Tapestries of serpents line the walls — not threatening serpents, but serpents in the act of things serpents in tapestries rarely do: building, comforting, carrying things carefully.\n\nThe spire's interior is a home. Has been a home for a very long time. The books on the shelves are real. The food on the table is — impossibly — fresh. The fireplace burns with the same cold flame as the spire's exterior, but here, inside, the cold flame is warm.\n\nA child sits by the fire. When it turns, you see it is not a child. It is merely something that has chosen to look at you from below because it finds the perspective informative.",
+  "lore": "The Serpent Prince has lived in the black spire since before the Shadow Realm had its current shape. He did not build it. He arrived and it became his. The realm accommodated him the way a wound accommodates the thing that made it — with reluctant permanence.",
+  "choices": [
+    "speak_with_the_serpent_prince",
+    "examine_the_serpent_tapestries"
+  ],
+  "battle": false,
+  "boss": false,
+  "rest": false
+}

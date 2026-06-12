@@ -102,6 +102,17 @@ BOSS_BG_OVERRIDES = {
     "Cindergloom": "images/areas/fiery_end.jpeg",
 }
 
+# ── Rest / bonfire backgrounds ─────────────────────────────────────────────────
+# One is picked randomly each time a rest chapter is entered.
+# Add any image from static/images/areas/ here.
+REST_BGS = [
+    "images/areas/firelink.jpg",
+    "images/areas/bonfire2.jpg",
+    "images/areas/bonfire3.jpg",
+    "images/areas/bonfire4.jpg",
+    "images/areas/bonfire5.jpg",
+]
+
 # ── Shop catalogue ────────────────────────────────────────────────────────────
 # Adding a new item: add one entry here + one elif in routes.py /buy.
 # The shop display, cost checks, and already-bought logic are all automatic.

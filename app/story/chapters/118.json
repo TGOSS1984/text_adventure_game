@@ -1,0 +1,11 @@
+{
+  "id": 118,
+  "text": "He speaks at length. His voice is the voice of someone who has been waiting to speak to someone specific and has been patient about finding the right person. He tells you about the Shadow Realm — its origins, its purpose, the thing it is waiting for. He tells you about the Erdtree's shadow and what it covers. He tells you about fire, specifically about the fire that does not consume but transforms.\n\nThen he tells you about himself. About what he was before. About the choice he made, and what it cost, and what it gave him in return. About the serpents on the tapestries and why they are doing the things they are doing.\n\nIt is, you realise, a confession. And at the end of confessions there is always an ask.\n\n'I need you to end this,' he says. 'I have been here long enough. I have done everything I was supposed to do. The only thing left is to be ended by someone worthy of the task. And here you are.'",
+  "lore": "The Serpent Prince chose transformation over continuation. He shed what he was and became what the realm needed. He has been what the realm needs for so long that he has forgotten what he was before, and this forgetting is the only thing that still grieves him.",
+  "choices": [
+    "enter_the_serpent_sanctum"
+  ],
+  "battle": false,
+  "boss": false,
+  "rest": false
+}

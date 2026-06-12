@@ -1342,3 +1342,215 @@ details[open] > .codex-summary .codex-chevron { transform: rotate(180deg); }
         rgba(0, 0, 0, 0) 100%
     );
 }
+
+
+/* ══════════════════════════════════════════════════════════════
+   SECRET MAP ICON + LIGHTBOX
+   game.html only — conditionally rendered when show_secret_map=True
+   ══════════════════════════════════════════════════════════════ */
+
+/* ── Map icon button — fixed bottom-right, above settings gear ── */
+#secret-map-btn {
+    position: fixed;
+    bottom: 7rem;   /* higher above settings gear */
+    right: 2rem;    /* slightly more inset from edge */
+    z-index: 10050;
+    width: 52px;
+    height: 52px;
+    background: transparent !important;
+    background-image: none !important;
+    border: none;
+    padding: 0;
+    margin: 0;
+    cursor: pointer;
+    animation: secretMapPulse 3s ease-in-out infinite;
+    filter: drop-shadow(0 0 10px rgba(201, 168, 76, 0.80));
+    transition: transform 0.2s ease, filter 0.2s ease;
+}
+
+#secret-map-btn img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    border-radius: var(--radius-sm);
+    opacity: 0.90;
+}
+
+#secret-map-btn:hover {
+    transform: scale(1.15);
+    filter: drop-shadow(0 0 20px rgba(201, 168, 76, 1.0));
+    background-color: transparent !important;
+    box-shadow: none;
+}
+
+#secret-map-btn:hover img {
+    opacity: 1;
+}
+
+@keyframes secretMapPulse {
+    0%, 100% {
+        filter: drop-shadow(0 0 8px rgba(201, 168, 76, 0.60));
+        opacity: 0.85;
+    }
+    50% {
+        filter: drop-shadow(0 0 22px rgba(201, 168, 76, 0.95));
+        opacity: 1.0;
+    }
+}
+
+/* Mobile — move up further to clear both gear and action buttons */
+@media (max-width: 768px) {
+    #secret-map-btn {
+        bottom: 10rem;
+        right: 1.8rem;
+        width: 44px;
+        height: 44px;
+    }
+}
+
+/* ── Lightbox overlay ── */
+#secret-map-lightbox {
+    position: fixed;
+    inset: 0;
+    z-index: 20500;  /* above standard lightbox (20000) */
+    background: rgba(0, 0, 0, 0.93);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1.5rem;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+}
+
+#secret-map-lightbox.secret-map-lightbox--open {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.secret-map-inner {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.5rem;
+    max-width: 640px;
+    width: 100%;
+    max-height: 90vh;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+}
+
+.secret-map-fullimg {
+    width: min(300px, 70vw);
+    height: auto;
+    object-fit: contain;
+    border-radius: var(--radius-lg);
+    border: 1px solid rgba(201, 168, 76, 0.40);
+    box-shadow: 0 0 40px rgba(201, 168, 76, 0.20), 0 0 80px rgba(0,0,0,0.80);
+    animation: secretMapGlow 3s ease-in-out infinite;
+}
+
+@keyframes secretMapGlow {
+    0%, 100% { box-shadow: 0 0 30px rgba(201, 168, 76, 0.15), 0 0 80px rgba(0,0,0,0.80); }
+    50%       { box-shadow: 0 0 50px rgba(201, 168, 76, 0.40), 0 0 80px rgba(0,0,0,0.80); }
+}
+
+.secret-map-notes {
+    background: rgba(0, 0, 0, 0.75);
+    border: 1px solid rgba(201, 168, 76, 0.25);
+    border-radius: var(--radius-lg);
+    padding: 1.5rem;
+    text-align: center;
+    width: 100%;
+}
+
+.secret-map-title {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--clr-gold);
+    letter-spacing: 0.10em;
+    text-transform: uppercase;
+    text-shadow: 0 0 14px rgba(201, 168, 76, 0.50);
+    margin: 0 0 1rem;
+}
+
+.secret-map-text {
+    font-size: 0.88rem;
+    color: rgba(230, 210, 170, 0.88);
+    line-height: 1.75;
+    font-style: italic;
+    text-shadow: 1px 1px 3px #000;
+    margin: 0 0 1.4rem;
+    text-transform: none;
+    font-weight: normal;
+    letter-spacing: 0;
+}
+
+.secret-map-text em  { color: rgba(201, 168, 76, 0.70); font-style: italic; display: block; margin: 0.3rem 0; }
+.secret-map-text strong { color: var(--clr-gold); font-style: normal; letter-spacing: 0.06em; }
+
+.secret-map-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+/* Enter button — gold, significant */
+.secret-map-btn--enter {
+    padding: 0.7rem 1.8rem;
+    background: rgba(0, 0, 0, 0.70) !important;
+    background-image: none !important;
+    border: 2px solid var(--clr-gold) !important;
+    color: var(--clr-gold) !important;
+    font-family: var(--font-body);
+    font-size: 1rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    transition: background var(--transition-fast), color var(--transition-fast), box-shadow var(--transition-fast);
+    text-shadow: 1px 1px 3px #000;
+}
+
+.secret-map-btn--enter:hover {
+    background: var(--clr-gold) !important;
+    color: #111 !important;
+    box-shadow: 0 0 20px rgba(201, 168, 76, 0.55) !important;
+    text-shadow: none !important;
+    transform: scale(1.02);
+}
+
+/* Return button — muted, secondary */
+.secret-map-btn--return {
+    padding: 0.7rem 1.4rem;
+    background: transparent !important;
+    background-image: none !important;
+    border: 1px solid rgba(255, 255, 255, 0.20) !important;
+    color: rgba(210, 195, 160, 0.60) !important;
+    font-family: var(--font-body);
+    font-size: 0.88rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    transition: border-color var(--transition-fast), color var(--transition-fast);
+}
+
+.secret-map-btn--return:hover {
+    border-color: rgba(255, 255, 255, 0.40) !important;
+    color: rgba(210, 195, 160, 0.90) !important;
+    box-shadow: none !important;
+    transform: none !important;
+    background-color: transparent !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    #secret-map-btn     { animation: none; opacity: 0.80; }
+    .secret-map-fullimg { animation: none; }
+    #secret-map-lightbox { transition: none; }
+}

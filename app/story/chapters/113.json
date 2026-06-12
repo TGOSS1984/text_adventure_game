@@ -1,0 +1,12 @@
+{
+  "id": 113,
+  "text": "The paths converge at a tower that should not be standing. Half of it is missing — not collapsed, but simply absent, as if the architect only had time to complete one side and decided this was sufficient. Inside the intact half, a staircase spirals upward to an observatory at its summit.\n\nThrough the missing half of the tower, you can see the Shadow Realm laid out below — the amber plains, the dancing hollows, the silk road's scarlet stain, and beyond them all, rising from the realm's deepest point, a spire of black flame. Still. Purposeful. Waiting.\n\nTwo paths from the tower base. One toward the spire directly. One toward a monastery clinging to the realm's western cliff — where, legend says, a sword-saint performs her eternal vigil.",
+  "lore": "The Half-Tower was built by someone who could see both this realm and another simultaneously and built accordingly — one half for each reality. When the builder left, one reality went with them, taking its half of the tower along.",
+  "choices": [
+    "climb_toward_the_moon_monastery",
+    "descend_toward_the_black_spire"
+  ],
+  "battle": false,
+  "boss": false,
+  "rest": false
+}

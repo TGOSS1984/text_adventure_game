@@ -1,0 +1,13 @@
+{
+  "id": 123,
+  "text": [
+    "It collapses into itself — not dying, but condensing. All the forms it cycled through compress into a single point of golden light that hovers for a moment, regarding you, then disperses into the hollow's air like a held note finally resolved.\n\nThe temple stops revolving. The bells sound once, softly, the way the final note of a performance sounds — both ending and remembrance. The hollow stills. You have been judged worthy of witnessing the performance, which may be the highest compliment this realm knows how to pay."
+  ],
+  "lore": "Those who bested the Gilded Predator were not celebrated for their strength but for their adaptability. The Predator was testing not whether you could fight, but whether you could learn faster than it could teach.",
+  "choices": [
+    "leave_the_dancing_hollows"
+  ],
+  "battle": false,
+  "boss": false,
+  "rest": true
+}

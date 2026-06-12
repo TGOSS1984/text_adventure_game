@@ -1,0 +1,12 @@
+{
+  "id": 104,
+  "text": "The Shadow Realm opens before you like a held breath finally released. Plains of amber glass stretch in every direction — the fossilised remains of a forest that burned so completely it vitrified, preserving in translucent amber the exact shapes of trees, birds, running deer, frozen mid-flight in the moment the fire found them.\n\nAbove, the Erdtree looms. But not as it was — not golden and proud. This is its shadow, cast backwards through time: a silhouette of bark and memory, its branches reaching downward instead of up, as if trying to reclaim something it dropped into the earth. Its presence is a pressure on the chest. A reminder that even gods leave shadows.\n\nThe realm is not empty. You can hear it breathing.",
+  "lore": "The Shadow Erdtree is not a corruption of the true tree. It is its memory. When the Erdtree was changed, what it had been did not simply cease — it retreated here, to a realm made of the space between what is and what was. It remembers being golden. It has not forgiven the forgetting.",
+  "choices": [
+    "cross_the_amber_plains",
+    "examine_the_vitrified_forest"
+  ],
+  "battle": false,
+  "boss": false,
+  "rest": false
+}

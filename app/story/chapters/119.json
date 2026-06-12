@@ -1,0 +1,11 @@
+{
+  "id": 119,
+  "text": "The sanctum beneath the spire is the spire's true purpose — a space of absolute intentionality, every surface covered in the cold flame that has defined this realm's heart. It burns at your feet. It burns in the walls. It burns in the air you breathe.\n\nThe Serpent Prince descends behind you, and as he descends he changes. Not grotesquely — gracefully. The child-form unfolds into something that was always there beneath it, vast and serpentine and burning, its scales the same cold flame as the sanctum walls.\n\nHe is enormous. He is also, unmistakably, exactly what he said he was: something that wants to be ended, by someone worthy, after a fight that honours what he was.\n\nYou can give him that. You intend to.",
+  "lore": "The cold flame of the Serpent Prince is not destructive. It is transformative — it burns away what is unnecessary and leaves what remains clarified, stripped of pretence, capable of being exactly what it is without apology. Being burned by it is not a punishment. It is a service.",
+  "choices": [
+    "face_the_serpent_prince"
+  ],
+  "battle": true,
+  "boss": false,
+  "rest": false
+}

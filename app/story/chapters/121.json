@@ -1,0 +1,12 @@
+{
+  "id": 121,
+  "text": "The temple's rotation slows as you approach, as if acknowledging an audience. The bells cease. A silence that is clearly theatrical — the silence before the entrance, not the silence of absence.\n\nThe doors, currently on your side of the rotation, open. Inside: darkness, and within the darkness, two points of golden light at eye level that are not eyes but function as eyes, regarding you with an intelligence that finds you interesting in the way a musician finds an instrument interesting before picking it up.\n\nThen it moves, and you understand why it is called the Gilded Predator.",
+  "lore": "The Gilded Predator has no fixed form. It wears shapes the way performers wear costumes — chosen for effect, discarded when the scene demands something new. Its true form is motion itself.",
+  "choices": [
+    "face_the_gilded_predator"
+  ],
+  "battle": true,
+  "boss": false,
+  "rest": false,
+  "enemy": "Gilded Predator"
+}

@@ -1,0 +1,12 @@
+{
+  "id": 120,
+  "text": "The Dancing Hollows earned their name. You understand why immediately: the landscape moves. Not with seismic violence, but with something worse — grace. Hills rise and fall on a rhythm you almost recognise. Rock formations extend and retract in patterns that suggest choreography.\n\nAt the hollow's centre, a structure that was once a temple revolves slowly on an invisible axis, its architecture rearranging itself with each quarter-turn. The stained glass in its windows depicts a creature that cannot decide what shape to be, cycling through them with evident pleasure.\n\nFrom within the revolving temple, the sound of bells. Not warning bells. Performance bells.",
+  "lore": "The Gilded Predator was worshipped as a god of motion by a civilisation that believed standing still was a form of death. They built the Dancing Hollows as an arena worthy of its performance. The civilisation is gone. The performance continues.",
+  "choices": [
+    "approach_the_revolving_temple",
+    "watch_from_the_hollow_ridge"
+  ],
+  "battle": false,
+  "boss": false,
+  "rest": false
+}

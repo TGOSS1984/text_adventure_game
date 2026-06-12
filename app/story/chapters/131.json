@@ -1,0 +1,12 @@
+{
+  "id": 131,
+  "text": "The spores thicken. You move through them holding your breath, then accepting that breath-holding will not save you here — the rot is in the air itself, in the light, in the careful attention of everything that grows in this garden.\n\nOne of the blooms reaches for you. Not wind-moved. Intentional. The roots beneath the path surface and reach upward with the particular reach of things that are very hungry and have been very patient.\n\nThe garden defends itself. The Saintess does not look up from her work.",
+  "lore": "The rot-blooms are not merely plants. They carry fragments of the Saintess's consciousness — extensions of her faith expressed botanically. Harming them is, to her, a theological argument.",
+  "choices": [
+    "push_through_to_the_saintess"
+  ],
+  "battle": true,
+  "boss": false,
+  "rest": false,
+  "enemy": "Rot Bloom"
+}
