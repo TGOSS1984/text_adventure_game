@@ -432,6 +432,36 @@ document.addEventListener('DOMContentLoaded', () => {
 
   bindBattleButtons();
 
+  // ── Victory overlay — intercept before HTMX processes the redirect ────────
+  // htmx:beforeOnLoad fires before HTMX reads the response.
+  // We check for HX-Redirect pointing to /game, show the overlay,
+  // then delay 2.8s before allowing navigation via window.location.
+  let victoryPending = false;
+
+  document.body.addEventListener('htmx:beforeOnLoad', (e) => {
+    const xhr = e.detail?.xhr;
+    if (!xhr) return;
+
+    const redirect = xhr.getResponseHeader('HX-Redirect');
+    if (!redirect || !redirect.includes('/game')) return;
+
+    // Stop HTMX from processing this response at all
+    e.preventDefault();
+
+    if (victoryPending) return;
+    victoryPending = true;
+
+    // Show overlay
+    const overlay = document.getElementById('victory-overlay');
+    if (overlay) overlay.classList.add('victory-visible');
+
+    // Navigate after 2.8s
+    setTimeout(() => {
+      victoryPending = false;
+      window.location.href = redirect;
+    }, 2800);
+  });
+
   document.body.addEventListener('htmx:afterSwap', e => {
     bindBattleButtons();
 

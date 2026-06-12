@@ -83,6 +83,13 @@ To change the battle UI, edit _battle_hud.html — not this file.
 <div id="special-flash"></div>
 <div id="special2-flash"></div>
 
+<!-- ── Victory overlay — shown for 2.8s when enemy HP reaches 0 ── -->
+<div id="victory-overlay" aria-live="assertive" aria-label="Victory achieved">
+    <div class="victory-banner">
+        <span class="victory-text">Victory Achieved</span>
+    </div>
+</div>
+
 <progress value="{{ player_hp }}" max="{{ character.max_hp }}" aria-label="Player HP">{{ player_hp }}/{{ character.max_hp }}</progress>
 <progress value="{{ enemy.hp }}" max="{{ enemy.max_hp }}" aria-label="Enemy HP">{{ enemy.hp }}/{{ enemy.max_hp }}</progress>
 

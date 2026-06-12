@@ -546,3 +546,101 @@ details[open] > .enemy-lore-summary .lore-chevron {
 @media (prefers-reduced-motion: reduce) {
     .effect-pill { animation: none; }
 }
+
+
+/* ══════════════════════════════════════════════════════════════
+   VICTORY OVERLAY
+   Shown for ~2.8s when enemy HP hits 0 before redirecting.
+   Dark overlay + centred banner with fading left/right edges.
+   ══════════════════════════════════════════════════════════════ */
+
+#victory-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 19000;  /* above all battle UI, below lightbox */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
+    opacity: 0;
+    background: rgba(0, 0, 0, 0);
+    transition: background 0.4s ease, opacity 0.4s ease;
+}
+
+#victory-overlay.victory-visible {
+    opacity: 1;
+    pointer-events: auto;
+    background: rgba(0, 0, 0, 0.55);  /* darkened overlay over battle scene */
+    animation: victoryOverlayIn 0.4s ease forwards;
+}
+
+@keyframes victoryOverlayIn {
+    from { background: rgba(0, 0, 0, 0); }
+    to   { background: rgba(0, 0, 0, 0.55); }
+}
+
+/* ── Banner ── */
+.victory-banner {
+    /* Fades to transparent at left and right edges */
+    background: linear-gradient(
+        to right,
+        transparent 0%,
+        rgba(0, 0, 0, 0.82) 18%,
+        rgba(0, 0, 0, 0.82) 82%,
+        transparent 100%
+    );
+    width: 100%;
+    padding: 1.4rem 6rem;
+    text-align: center;
+    /* Entrance animation */
+    opacity: 0;
+    transform: scale(0.92);
+    transition: opacity 0.5s ease 0.25s, transform 0.5s ease 0.25s;
+}
+
+#victory-overlay.victory-visible .victory-banner {
+    opacity: 1;
+    transform: scale(1);
+}
+
+/* ── Text ── */
+.victory-text {
+    display: block;
+    font-family: var(--font-title);
+    font-size: clamp(2rem, 7vw, 4.5rem);  /* scales down on small screens */
+    font-weight: 700;
+    color: var(--clr-gold-bright);
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    text-shadow:
+        0 0 30px rgba(255, 215, 0, 0.80),
+        0 0 60px rgba(255, 215, 0, 0.40),
+        2px 2px 8px rgba(0, 0, 0, 0.90);
+    white-space: normal;  /* allows wrapping on mobile */
+    line-height: 1.2;
+}
+
+/* ── Mobile — tighter banner padding so text has room to wrap ── */
+@media (max-width: 768px) {
+    .victory-banner {
+        padding: 1.2rem 2.5rem;
+        background: linear-gradient(
+            to right,
+            transparent 0%,
+            rgba(0, 0, 0, 0.82) 12%,
+            rgba(0, 0, 0, 0.82) 88%,
+            transparent 100%
+        );
+    }
+
+    .victory-text {
+        letter-spacing: 0.06em;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    #victory-overlay,
+    .victory-banner { transition: none; animation: none; }
+    #victory-overlay.victory-visible { opacity: 1; background: rgba(0, 0, 0, 0.55); }
+    #victory-overlay.victory-visible .victory-banner { opacity: 1; transform: scale(1); }
+}
