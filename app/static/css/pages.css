@@ -1649,3 +1649,256 @@ details[open] > .codex-summary .codex-chevron { transform: rotate(180deg); }
 .btn--ng-plus-legacy:hover {
     opacity: 0.85;
 }
+
+/* ============================================================
+   Run Stats & Completion Summary
+   
+   ============================================================ */
+
+/* ── Shared: collapsible toggle button ───────────────────────── */
+.run-stats-toggle {
+    display:         flex;
+    align-items:     center;
+    gap:             0.5rem;
+    background:      rgba(0, 0, 0, 0.35);
+    border:          1px solid rgba(201, 162, 39, 0.30);
+    border-radius:   4px;
+    color:           rgba(201, 162, 39, 0.85);
+    font-size:       0.88rem;
+    letter-spacing:  0.06em;
+    padding:         0.55rem 1rem;
+    cursor:          pointer;
+    width:           100%;
+    justify-content: space-between;
+    transition:      background 0.2s, border-color 0.2s;
+}
+
+.run-stats-toggle:hover {
+    background:    rgba(0, 0, 0, 0.5);
+    border-color:  rgba(201, 162, 39, 0.55);
+}
+
+.run-stats-chevron {
+    transition: transform 0.25s ease;
+    font-size:  0.75rem;
+}
+
+.run-stats-chevron--open {
+    transform: rotate(180deg);
+}
+
+/* ── Collapsible panel ───────────────────────────────────────── */
+.run-stats-panel {
+    display:    none;
+    margin-top: 0.75rem;
+}
+
+.run-stats-panel--open {
+    display: block;
+}
+
+/* ── Death screen wrapper ────────────────────────────────────── */
+.run-stats-death {
+    width:      min(520px, 90vw);
+    margin:     1rem auto 0;
+    text-align: left;
+}
+
+/* ── Status screen wrapper ───────────────────────────────────── */
+.run-stats-status {
+    width:      min(520px, 88vw);
+    margin:     0 auto;
+    text-align: left;
+}
+
+/* ── Stat grid — shared by death, status, and ending screen ─── */
+.run-stats-grid {
+    display:               grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap:                   0.6rem;
+    margin-top:            0.75rem;
+}
+
+/* Wider grid on ending completion screen */
+.run-stats-grid--completion {
+    grid-template-columns: repeat(3, 1fr);
+}
+
+@media (max-width: 480px) {
+    .run-stats-grid,
+    .run-stats-grid--completion {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+/* ── Individual stat cell ────────────────────────────────────── */
+.run-stat-item {
+    display:         flex;
+    flex-direction:  column;
+    align-items:     center;
+    gap:             0.15rem;
+    background:      rgba(0, 0, 0, 0.30);
+    border:          1px solid rgba(255, 255, 255, 0.06);
+    border-radius:   4px;
+    padding:         0.55rem 0.4rem;
+    text-align:      center;
+}
+
+.run-stat-icon {
+    font-size: 1rem;
+    color:     rgba(201, 162, 39, 0.70);
+}
+
+.run-stat-value {
+    font-size:   1.15rem;
+    font-weight: bold;
+    color:       #e8d89a;
+}
+
+.run-stat-label {
+    font-size: 0.65rem;
+    color:     rgba(255, 255, 255, 0.50);
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+}
+
+/* ── Boss tags — hit and missed ──────────────────────────────── */
+.completion-bosses-hit,
+.completion-bosses-missed {
+    margin-top: 1rem;
+}
+
+.completion-bosses-title {
+    font-size:      0.78rem;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    color:          rgba(201, 162, 39, 0.75);
+    margin-bottom:  0.4rem;
+}
+
+.completion-bosses-title--missed {
+    color: rgba(200, 80, 80, 0.75);
+}
+
+.completion-bosses-tags {
+    display:   flex;
+    flex-wrap: wrap;
+    gap:       0.35rem;
+}
+
+.completion-boss-tag {
+    display:       inline-flex;
+    align-items:   center;
+    gap:           0.25rem;
+    font-size:     0.72rem;
+    padding:       0.2rem 0.55rem;
+    border-radius: 3px;
+}
+
+.completion-boss-tag--hit {
+    background: rgba(39, 174, 96, 0.18);
+    border:     1px solid rgba(39, 174, 96, 0.35);
+    color:      #7dcea0;
+}
+
+.completion-boss-tag--missed {
+    background: rgba(120, 40, 40, 0.20);
+    border:     1px solid rgba(200, 80, 80, 0.25);
+    color:      rgba(200, 160, 160, 0.70);
+    font-style: italic;
+}
+
+/* ── Missed boss hint text ───────────────────────────────────── */
+.completion-missed-hint {
+    font-size:   0.75rem;
+    font-style:  italic;
+    color:       rgba(255, 255, 255, 0.40);
+    margin-top:  0.5rem;
+}
+
+/* ── 100% completion trophy ──────────────────────────────────── */
+.completion-perfect {
+    display:         flex;
+    align-items:     center;
+    gap:             0.6rem;
+    justify-content: center;
+    margin-top:      1rem;
+    color:           #e8d89a;
+    font-size:       0.9rem;
+    font-style:      italic;
+}
+
+.completion-perfect i {
+    font-size: 1.3rem;
+    color:     #c9a227;
+}
+
+/* ── Completion summary wrapper (ending screen) ──────────────── */
+.completion-summary {
+    width:         min(580px, 92vw);
+    margin:        1.5rem auto;
+    background:    rgba(0, 0, 0, 0.40);
+    border:        1px solid rgba(201, 162, 39, 0.20);
+    border-radius: 6px;
+    padding:       1.5rem;
+    text-align:    center;
+}
+
+.completion-title {
+    font-size:      1.1rem;
+    letter-spacing: 0.08em;
+    color:          rgba(201, 162, 39, 0.90);
+    margin-bottom:  1rem;
+}
+
+/* ── Boss completion progress bar ────────────────────────────── */
+.completion-boss-bar-wrap {
+    margin-bottom: 0.75rem;
+}
+
+.completion-boss-bar-label {
+    display:         flex;
+    justify-content: space-between;
+    font-size:       0.78rem;
+    color:           rgba(255, 255, 255, 0.60);
+    margin-bottom:   0.3rem;
+}
+
+/* Completion bar fill — gold/teal gradient */
+.stat-bar-fill--completion {
+    background:    linear-gradient(90deg, #c9a227, #5dade2);
+    border-radius: 3px;
+    height:        100%;
+    transition:    width 0.6s ease;
+}
+
+/* ── Death screen — bosses felled sub-section ────────────────── */
+.run-stats-bosses-death {
+    margin-top: 0.85rem;
+}
+
+.run-stats-bosses-title {
+    font-size:      0.75rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color:          rgba(201, 162, 39, 0.65);
+    margin-bottom:  0.35rem;
+}
+
+.run-stats-bosses-list {
+    display:   flex;
+    flex-wrap: wrap;
+    gap:       0.3rem;
+}
+
+.run-stat-boss-tag {
+    display:       inline-flex;
+    align-items:   center;
+    gap:           0.2rem;
+    font-size:     0.70rem;
+    padding:       0.15rem 0.45rem;
+    border-radius: 3px;
+    background:    rgba(39, 174, 96, 0.15);
+    border:        1px solid rgba(39, 174, 96, 0.30);
+    color:         #7dcea0;
+}

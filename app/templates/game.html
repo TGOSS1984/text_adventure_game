@@ -144,11 +144,137 @@ Inline quit-confirm JS kept small here (page-specific DOM wiring only).
                 </a>
                 {% endif %}
             </div>
-        {% else %}
+         {% else %}
             <div class="center-links">
                 <a href="{{ url_for('main.index') }}">Return to Title</a>
             </div>
  
+            {# ── Commit 4/5: Run completion summary — shown on ending chapters ── #}
+            {% if show_ng_plus and run_stats is defined %}
+            <div class="completion-summary">
+ 
+                <h2 class="completion-title">
+                    <i class="fas fa-scroll"></i> Journey Complete
+                </h2>
+ 
+                {# ── Boss completion bar ── #}
+                <div class="completion-boss-bar-wrap">
+                    <div class="completion-boss-bar-label">
+                        <span>Bosses Defeated</span>
+                        <span>{{ run_stats.get('bosses_list', [])|length }} / {{ total_bosses }}
+                              &nbsp;({{ completion_pct }}%)</span>
+                    </div>
+                    <div class="stat-bar-track">
+                        <div class="stat-bar-fill stat-bar-fill--completion"
+                             style="width: {{ completion_pct }}%;"></div>
+                    </div>
+                </div>
+ 
+                {# ── Stat grid ── #}
+                <div class="run-stats-grid run-stats-grid--completion">
+ 
+                    <div class="run-stat-item">
+                        <span class="run-stat-icon"><i class="fas fa-skull"></i></span>
+                        <span class="run-stat-value">{{ run_stats.get('enemies_defeated', 0) }}</span>
+                        <span class="run-stat-label">Enemies Slain</span>
+                    </div>
+ 
+                    <div class="run-stat-item">
+                        <span class="run-stat-icon"><i class="fas fa-dragon"></i></span>
+                        <span class="run-stat-value">{{ run_stats.get('bosses_defeated', 0) }}</span>
+                        <span class="run-stat-label">Bosses Defeated</span>
+                    </div>
+ 
+                    <div class="run-stat-item">
+                        <span class="run-stat-icon"><i class="fas fa-swords"></i></span>
+                        <span class="run-stat-value">{{ run_stats.get('damage_dealt', 0) }}</span>
+                        <span class="run-stat-label">Damage Dealt</span>
+                    </div>
+ 
+                    <div class="run-stat-item">
+                        <span class="run-stat-icon"><i class="fas fa-heart-crack"></i></span>
+                        <span class="run-stat-value">{{ run_stats.get('damage_taken', 0) }}</span>
+                        <span class="run-stat-label">Damage Taken</span>
+                    </div>
+ 
+                    <div class="run-stat-item">
+                        <span class="run-stat-icon"><i class="fas fa-flask"></i></span>
+                        <span class="run-stat-value">{{ run_stats.get('estus_used', 0) }}</span>
+                        <span class="run-stat-label">Estus Used</span>
+                    </div>
+ 
+                    <div class="run-stat-item">
+                        <span class="run-stat-icon"><i class="fas fa-bolt"></i></span>
+                        <span class="run-stat-value">{{ run_stats.get('specials_fired', 0) }}</span>
+                        <span class="run-stat-label">Specials Fired</span>
+                    </div>
+ 
+                    <div class="run-stat-item">
+                        <span class="run-stat-icon"><i class="fas fa-map"></i></span>
+                        <span class="run-stat-value">{{ run_stats.get('chapters_visited', 0) }}</span>
+                        <span class="run-stat-label">Chapters Visited</span>
+                    </div>
+ 
+                    <div class="run-stat-item">
+                        <span class="run-stat-icon"><i class="fas fa-crosshairs"></i></span>
+                        <span class="run-stat-value">{{ run_stats.get('crits_landed', 0) }}</span>
+                        <span class="run-stat-label">Critical Hits</span>
+                    </div>
+ 
+                    <div class="run-stat-item">
+                        <span class="run-stat-icon"><i class="fas fa-coins"></i></span>
+                        <span class="run-stat-value">{{ run_stats.get('souls_earned', 0) }}</span>
+                        <span class="run-stat-label">Souls Earned</span>
+                    </div>
+ 
+                </div><!-- /.run-stats-grid -->
+ 
+                {# ── Bosses defeated list ── #}
+                {% if run_stats.get('bosses_list') %}
+                <div class="completion-bosses-hit">
+                    <p class="completion-bosses-title">
+                        <i class="fas fa-check-circle"></i> Bosses Defeated
+                    </p>
+                    <div class="completion-bosses-tags">
+                        {% for boss in run_stats.get('bosses_list', []) %}
+                        <span class="completion-boss-tag completion-boss-tag--hit">
+                            <i class="fas fa-check"></i> {{ boss }}
+                        </span>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+ 
+                {# ── Bosses missed — nudge toward NG+ ── #}
+                {% if bosses_missed %}
+                <div class="completion-bosses-missed">
+                    <p class="completion-bosses-title completion-bosses-title--missed">
+                        <i class="fas fa-question-circle"></i> Yet to be Found
+                    </p>
+                    <div class="completion-bosses-tags">
+                        {% for boss in bosses_missed %}
+                        <span class="completion-boss-tag completion-boss-tag--missed">
+                            <i class="fas fa-question"></i> ???
+                        </span>
+                        {% endfor %}
+                    </div>
+                    <p class="completion-missed-hint">
+                        {{ bosses_missed | length }} boss
+                        {{ 'encounter remains' if bosses_missed | length == 1 else 'encounters remain' }}
+                        undiscovered. The cycle invites you to look deeper.
+                    </p>
+                </div>
+                {% else %}
+                <div class="completion-perfect">
+                    <i class="fas fa-trophy"></i>
+                    <p>All bosses defeated. True completion achieved.</p>
+                </div>
+                {% endif %}
+ 
+            </div><!-- /.completion-summary -->
+            {% endif %}
+ 
+            {# ── NG+ mode buttons ── #}
             {% if show_ng_plus %}
             <div class="ng-plus-container">
  
@@ -158,7 +284,6 @@ Inline quit-confirm JS kept small here (page-specific DOM wiring only).
  
                 <div class="ng-plus-modes">
  
-                    <!-- Mode A: New Journey — pick a new class, base stats -->
                     <div class="ng-plus-mode-card">
                         <p class="ng-plus-mode-title">🔥 New Journey</p>
                         <p class="ng-plus-mode-desc">
@@ -173,7 +298,6 @@ Inline quit-confirm JS kept small here (page-specific DOM wiring only).
                         </form>
                     </div>
  
-                    <!-- Mode B: Bearer's Legacy — same class, inherited stats -->
                     <div class="ng-plus-mode-card">
                         <p class="ng-plus-mode-title">⚔ Bearer's Legacy</p>
                         <p class="ng-plus-mode-desc">

@@ -5,6 +5,13 @@ Game over / You Died screen.
 Commit 12 addition:
 - Bestiary link added alongside the Restart button
 - Font Awesome loaded for the book-skull icon
+
+Commit 4 addition:
+- Collapsible run stats panel — collapsed by default, toggle on button click
+- Shows: enemies defeated, bosses defeated, damage dealt/taken,
+         estus used, specials fired, chapters visited, crits landed
+- Sombre tone — compact, no boss checklist (that lives on the ending screen)
+- ng_level Journey indicator shown when ng_level > 0
 -->
 
 <!DOCTYPE html>
@@ -12,7 +19,7 @@ Commit 12 addition:
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Elden Souls is a Flask-based, text-driven adventure game inspired by Dark Souls and Elden Ring. Choose your class, battle lore-rich enemies, explore branching story paths, and make impactful decisions that shape the fate of a fallen world. Built in Python with deep narrative, RPG mechanics, and session-based progression.">
+    <meta name="description" content="Elden Souls is a Flask-based, text-driven adventure game inspired by Dark Souls and Elden Ring.">
     <title>You Died — Elden Souls</title>
 
     <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
@@ -34,8 +41,11 @@ Commit 12 addition:
     </video>
 
     <div class="bonfire-bg">
+
         <h1 class="you-died" style="color: crimson; font-size: 3rem;">YOU DIED</h1>
-        <p class="battle-info" style="font-style: italic; margin-bottom: 20px;">The flames fade... but your will endures.</p>
+        <p class="battle-info" style="font-style: italic; margin-bottom: 20px;">
+            The flames fade... but your will endures.
+        </p>
 
         {% if ng_level is defined and ng_level > 0 %}
         <p class="death-ng-note" style="color: #e74c3c; font-size: 0.9rem; margin-bottom: 1rem;">
@@ -43,29 +53,134 @@ Commit 12 addition:
         </p>
         {% endif %}
 
-        <form action="{{ url_for('main.restart') }}" method="post">
+        {# ── Commit 4: run stats panel ─────────────────────────────────────── #}
+        {% if run_stats is defined and run_stats %}
+        <div class="run-stats-death">
+
+            <button
+                class="run-stats-toggle"
+                id="run-stats-toggle"
+                aria-expanded="false"
+                aria-controls="run-stats-panel"
+            >
+                <i class="fas fa-scroll"></i> View Run Stats
+                <i class="fas fa-chevron-down run-stats-chevron" id="run-stats-chevron"></i>
+            </button>
+
+            <div class="run-stats-panel" id="run-stats-panel" aria-hidden="true">
+                <div class="run-stats-grid">
+
+                    <div class="run-stat-item">
+                        <span class="run-stat-icon"><i class="fas fa-skull"></i></span>
+                        <span class="run-stat-value">{{ run_stats.get('enemies_defeated', 0) }}</span>
+                        <span class="run-stat-label">Enemies Slain</span>
+                    </div>
+
+                    <div class="run-stat-item">
+                        <span class="run-stat-icon"><i class="fas fa-dragon"></i></span>
+                        <span class="run-stat-value">{{ run_stats.get('bosses_defeated', 0) }}</span>
+                        <span class="run-stat-label">Bosses Defeated</span>
+                    </div>
+
+                    <div class="run-stat-item">
+                        <span class="run-stat-icon"><i class="fas fa-sword"></i></span>
+                        <span class="run-stat-value">{{ run_stats.get('damage_dealt', 0) }}</span>
+                        <span class="run-stat-label">Damage Dealt</span>
+                    </div>
+
+                    <div class="run-stat-item">
+                        <span class="run-stat-icon"><i class="fas fa-heart-crack"></i></span>
+                        <span class="run-stat-value">{{ run_stats.get('damage_taken', 0) }}</span>
+                        <span class="run-stat-label">Damage Taken</span>
+                    </div>
+
+                    <div class="run-stat-item">
+                        <span class="run-stat-icon"><i class="fas fa-flask"></i></span>
+                        <span class="run-stat-value">{{ run_stats.get('estus_used', 0) }}</span>
+                        <span class="run-stat-label">Estus Used</span>
+                    </div>
+
+                    <div class="run-stat-item">
+                        <span class="run-stat-icon"><i class="fas fa-bolt"></i></span>
+                        <span class="run-stat-value">{{ run_stats.get('specials_fired', 0) }}</span>
+                        <span class="run-stat-label">Specials Fired</span>
+                    </div>
+
+                    <div class="run-stat-item">
+                        <span class="run-stat-icon"><i class="fas fa-map"></i></span>
+                        <span class="run-stat-value">{{ run_stats.get('chapters_visited', 0) }}</span>
+                        <span class="run-stat-label">Chapters Visited</span>
+                    </div>
+
+                    <div class="run-stat-item">
+                        <span class="run-stat-icon"><i class="fas fa-crosshairs"></i></span>
+                        <span class="run-stat-value">{{ run_stats.get('crits_landed', 0) }}</span>
+                        <span class="run-stat-label">Critical Hits</span>
+                    </div>
+
+                    <div class="run-stat-item">
+                        <span class="run-stat-icon"><i class="fas fa-coins"></i></span>
+                        <span class="run-stat-value">{{ run_stats.get('souls_earned', 0) }}</span>
+                        <span class="run-stat-label">Souls Earned</span>
+                    </div>
+
+                </div><!-- /.run-stats-grid -->
+
+                {% if run_stats.get('bosses_list') %}
+                <div class="run-stats-bosses-death">
+                    <p class="run-stats-bosses-title">Bosses Felled</p>
+                    <div class="run-stats-bosses-list">
+                        {% for boss in run_stats.get('bosses_list', []) %}
+                        <span class="run-stat-boss-tag">
+                            <i class="fas fa-check"></i> {{ boss }}
+                        </span>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+
+            </div><!-- /#run-stats-panel -->
+        </div><!-- /.run-stats-death -->
+        {% endif %}
+
+        <form action="{{ url_for('main.restart') }}" method="post" style="margin-top: 1.5rem;">
             <button type="submit" style="padding: 10px 20px; font-weight: bold;">
                 <i class="fas fa-rotate-left"></i> Restart
             </button>
         </form>
 
-        {# ── Commit 12: bestiary link — useful to study enemies after dying ── #}
         <div class="menu" style="margin-top: 1.2rem;">
             <a href="{{ url_for('main.bestiary') }}" style="color: rgba(201,168,76,0.80); letter-spacing: 0.06em;">
                 <i class="fas fa-book-skull"></i> Study the Bestiary
             </a>
         </div>
-    </div>
+
+    </div><!-- /.bonfire-bg -->
 
     <script src="{{ url_for('static', filename='js/audio_manager.js') }}"></script>
     <script src="{{ url_for('static', filename='js/settings.js') }}"></script>
     <script>
     sessionStorage.setItem('elden_fast', '1');
-    // Fade in background video once ready
+
+    // Background video fade in
     const vid = document.getElementById('story-bg-video');
     if (vid) {
         if (vid.readyState >= 3) { vid.classList.add('loaded'); }
         else { vid.addEventListener('canplaythrough', () => vid.classList.add('loaded'), { once: true }); }
+    }
+
+    // Run stats toggle
+    const toggle  = document.getElementById('run-stats-toggle');
+    const panel   = document.getElementById('run-stats-panel');
+    const chevron = document.getElementById('run-stats-chevron');
+
+    if (toggle && panel) {
+        toggle.addEventListener('click', () => {
+            const open = panel.classList.toggle('run-stats-panel--open');
+            toggle.setAttribute('aria-expanded', open);
+            panel.setAttribute('aria-hidden', !open);
+            chevron.classList.toggle('run-stats-chevron--open', open);
+        });
     }
     </script>
 

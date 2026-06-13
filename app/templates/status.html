@@ -247,6 +247,117 @@ Lightbox addition:
         </div>
     </div>
 
+    <hr class="status-divider">
+ 
+    <!-- ── Commit 4/5: Run Progress — collapsible ── -->
+    {% if run_stats is defined and run_stats %}
+    <div class="run-stats-status">
+ 
+        <button
+            class="run-stats-toggle"
+            id="status-stats-toggle"
+            aria-expanded="false"
+            aria-controls="status-stats-panel"
+        >
+            <i class="fas fa-chart-bar"></i> Run Progress
+            <i class="fas fa-chevron-down run-stats-chevron" id="status-stats-chevron"></i>
+        </button>
+ 
+        <div class="run-stats-panel" id="status-stats-panel" aria-hidden="true">
+ 
+            {# ── Boss completion bar ── #}
+            <div class="completion-boss-bar-wrap" style="margin-bottom: 1rem;">
+                <div class="completion-boss-bar-label">
+                    <span>Bosses Defeated</span>
+                    <span>{{ bosses_hit }} / {{ total_bosses }}
+                          &nbsp;({{ completion_pct }}%)</span>
+                </div>
+                <div class="stat-bar-track">
+                    <div class="stat-bar-fill stat-bar-fill--completion"
+                         style="width: {{ completion_pct }}%;"></div>
+                </div>
+            </div>
+ 
+            {# ── Stat grid ── #}
+            <div class="run-stats-grid">
+ 
+                <div class="run-stat-item">
+                    <span class="run-stat-icon"><i class="fas fa-skull"></i></span>
+                    <span class="run-stat-value">{{ run_stats.get('enemies_defeated', 0) }}</span>
+                    <span class="run-stat-label">Enemies Slain</span>
+                </div>
+ 
+                <div class="run-stat-item">
+                    <span class="run-stat-icon"><i class="fas fa-dragon"></i></span>
+                    <span class="run-stat-value">{{ run_stats.get('bosses_defeated', 0) }}</span>
+                    <span class="run-stat-label">Bosses Defeated</span>
+                </div>
+ 
+                <div class="run-stat-item">
+                    <span class="run-stat-icon"><i class="fas fa-swords"></i></span>
+                    <span class="run-stat-value">{{ run_stats.get('damage_dealt', 0) }}</span>
+                    <span class="run-stat-label">Damage Dealt</span>
+                </div>
+ 
+                <div class="run-stat-item">
+                    <span class="run-stat-icon"><i class="fas fa-heart-crack"></i></span>
+                    <span class="run-stat-value">{{ run_stats.get('damage_taken', 0) }}</span>
+                    <span class="run-stat-label">Damage Taken</span>
+                </div>
+ 
+                <div class="run-stat-item">
+                    <span class="run-stat-icon"><i class="fas fa-flask"></i></span>
+                    <span class="run-stat-value">{{ run_stats.get('estus_used', 0) }}</span>
+                    <span class="run-stat-label">Estus Used</span>
+                </div>
+ 
+                <div class="run-stat-item">
+                    <span class="run-stat-icon"><i class="fas fa-bolt"></i></span>
+                    <span class="run-stat-value">{{ run_stats.get('specials_fired', 0) }}</span>
+                    <span class="run-stat-label">Specials Fired</span>
+                </div>
+ 
+                <div class="run-stat-item">
+                    <span class="run-stat-icon"><i class="fas fa-map"></i></span>
+                    <span class="run-stat-value">{{ run_stats.get('chapters_visited', 0) }}</span>
+                    <span class="run-stat-label">Chapters Visited</span>
+                </div>
+ 
+                <div class="run-stat-item">
+                    <span class="run-stat-icon"><i class="fas fa-crosshairs"></i></span>
+                    <span class="run-stat-value">{{ run_stats.get('crits_landed', 0) }}</span>
+                    <span class="run-stat-label">Critical Hits</span>
+                </div>
+ 
+                <div class="run-stat-item">
+                    <span class="run-stat-icon"><i class="fas fa-coins"></i></span>
+                    <span class="run-stat-value">{{ run_stats.get('souls_earned', 0) }}</span>
+                    <span class="run-stat-label">Souls Earned</span>
+                </div>
+ 
+            </div><!-- /.run-stats-grid -->
+ 
+            {# ── Bosses defeated this run ── #}
+            {% if run_stats.get('bosses_list') %}
+            <div class="completion-bosses-hit" style="margin-top: 1rem;">
+                <p class="completion-bosses-title">
+                    <i class="fas fa-check-circle"></i> Bosses Defeated This Run
+                </p>
+                <div class="completion-bosses-tags">
+                    {% for boss in run_stats.get('bosses_list', []) %}
+                    <span class="completion-boss-tag completion-boss-tag--hit">
+                        <i class="fas fa-check"></i> {{ boss }}
+                    </span>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+ 
+        </div><!-- /#status-stats-panel -->
+ 
+    </div><!-- /.run-stats-status -->
+    {% endif %}
+
     <!-- Actions -->
     <div class="status-actions">
         <a href="{{ url_for('main.game') }}" class="status-btn status-btn--return">
@@ -275,6 +386,20 @@ Lightbox addition:
 <script src="{{ url_for('static', filename='js/sound.js') }}"></script>
 
 <script src="{{ url_for('static', filename='js/lightbox.js') }}"></script>
-
+<script>
+    // Run stats collapsible toggle
+    const statusToggle  = document.getElementById('status-stats-toggle');
+    const statusPanel   = document.getElementById('status-stats-panel');
+    const statusChevron = document.getElementById('status-stats-chevron');
+    
+    if (statusToggle && statusPanel) {
+        statusToggle.addEventListener('click', () => {
+            const open = statusPanel.classList.toggle('run-stats-panel--open');
+            statusToggle.setAttribute('aria-expanded', open);
+            statusPanel.setAttribute('aria-hidden', !open);
+            statusChevron.classList.toggle('run-stats-chevron--open', open);
+        });
+    }
+</script>
 </body>
 </html>
