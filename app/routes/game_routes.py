@@ -2,21 +2,22 @@
 routes/game_routes.py
 
 General game flow routes:
-    /           — class selection screen
-    /start      — POST: create character, apply gift, init session
-    /game       — story chapter display and choice handling
-    /ng_plus    — POST: begin New Game+, preserve class/ng_level, cap souls
-    /death      — death screen
-    /restart    — clear session and return to start
-    /save       — persist session to disk
-    /load       — restore session from disk
-    /bestiary   — enemy/boss reference page
-    /status     — player stats overview screen
+    /                — class selection screen
+    /start           — POST: create character, apply gift, init session
+    /game            — story chapter display and choice handling
+    /ng_plus         — POST: New Journey (new class, base stats, scaled enemies)
+    /ng_plus_legacy  — POST: Bearer's Legacy (same class, inherited stats, scaled enemies)
+    /death           — death screen
+    /restart         — clear session and return to start
+    /save            — persist session to disk
+    /load            — restore session from disk
+    /bestiary        — enemy/boss reference page
+    /status          — player stats overview screen
 
 Commit 2 — New Game+ additions:
     session['ng_plus']
         Integer tracking the current NG+ depth. 0 = first run, 1 = NG+, 2 = NG++.
-        Persists across the /ng_plus route and is never reset by /restart
+        Persists across both NG+ routes and is never reset by /restart
         (restart always returns to NG+0 since it clears the full session).
         Passed to generate_enemy() so combat.py can apply stat scaling.
 
@@ -24,34 +25,41 @@ Commit 2 — New Game+ additions:
         Souls carried into this NG+ run after the cap was applied. Stored for
         display purposes (status screen, death screen). Not used in combat logic.
 
-    /ng_plus route:
-        - Reads current ng_plus level and increments by 1.
-        - Caps carried souls at NG_PLUS_SOUL_CAP (config.py). Any excess is
-          discarded — this prevents players from immediately buying everything
-          on NG+ entry with banked souls from optional content.
-        - Preserves: char_class, ng_plus level, capped souls.
-        - Resets: everything else (HP, MP, Estus, shop_bought, active effects,
-          chapter, enemy state). This is intentional — NG+ is a fresh run of
-          the story with harder enemies, not a continuation.
-        - Does NOT re-apply the starting gift — that was a first-run choice.
-          On NG+ the player starts without a gift bonus, which is consistent
-          with starting from a position of strength (upgrades carried over).
-        - Redirects to /start with the class pre-filled so the player sees
-          the class select screen and can confirm before the run begins.
-          This also gives a natural moment to see the NG+ indicator.
+    session['ng_plus_mode']
+        'new_journey'   — player chose a new class, base stats reset
+        'legacy'        — player inherited upgraded stats from previous run
+        Set by the respective route and read in /start to decide how to
+        initialise the character dict.
+
+    /ng_plus (New Journey):
+        - Increments ng_plus level.
+        - Caps carried souls at NG_PLUS_SOUL_CAP.
+        - Resets character to base class stats (player picks class on index).
+        - No gift applied on NG+ runs.
+        - Redirects to index so player selects (or confirms) their class.
+
+    /ng_plus_legacy (Bearer's Legacy):
+        - Increments ng_plus level.
+        - Caps carried souls at NG_PLUS_SOUL_CAP.
+        - Preserves the FULL session['character'] dict including all shop
+          upgrades (attack, defense, max_hp, dodge_chance etc).
+        - shop_bought is reset so the shop is not empty and the player can
+          stack upgrades across runs (intentional — Dark Souls behaviour).
+        - Redirects directly to /game (chapter 0) — no class select needed
+          since the class is unchanged.
+
+    Balance note — Bearer's Legacy stat stacking:
+        Enemies scale at NG_PLUS_ATK_SCALE (20%) and NG_PLUS_HP_SCALE (35%)
+        per level. A fully upgraded player entering NG+1 will have roughly:
+          Knight: ~190 HP, ~23 atk, ~18 def vs enemies at ×1.35 HP / ×1.20 atk
+        By NG+2 (×1.70 HP / ×1.40 atk) the scaling outpaces shop upgrades.
+        If NG+1 feels too easy, increase NG_PLUS_ATK_SCALE in config.py.
+        shop_bought resets on both modes so upgrades can compound across runs.
 
     show_ng_plus flag in /game GET:
-        When the player reaches an ending chapter (100, 101, 102) and their
-        session is still live (not yet restarted), show_ng_plus=True is passed
-        to game.html so the template can render a "Begin Journey 2" button
-        alongside the existing ending text. The button POSTs to /ng_plus.
-        No changes to the chapter JSON files are needed.
-
-    ng_plus passed to generate_enemy():
-        game_routes.py reads session['ng_plus'] and passes it through to
-        battle_manager.generate_enemy() whenever a battle chapter is entered.
-        combat.py applies the scaling — game_routes.py never touches enemy stats
-        directly (clean separation of concerns).
+        When the player reaches an ending chapter (100, 101, 102),
+        show_ng_plus=True is passed to game.html which renders both
+        NG+ mode buttons below the ending text.
 """
 
 from flask import render_template, request, redirect, url_for, session, flash
@@ -67,20 +75,88 @@ from ..save_load import save_game, load_game, has_save, delete_save
 from ..enemies import ENEMIES, BOSSES
 from ..story.story_engine import Story
 
-# ── Ending chapter IDs — show 'Begin Journey 2' on these ─────────────────────
+# ── Ending chapter IDs — show NG+ buttons on these ───────────────────────────
 ENDING_CHAPTERS = {100, 101, 102}
 
 story          = Story()
 battle_manager = BattleManager()
 
 
+def _cap_and_store_souls(current_ng):
+    """
+    Shared soul-capping logic for both NG+ routes.
+
+    Reads session souls, applies NG_PLUS_SOUL_CAP, stores carried amount,
+    flashes the appropriate message, and returns the new ng_level.
+    """
+    new_ng_level  = current_ng + 1
+    current_souls = session.get("souls", 0)
+    carried_souls = min(current_souls, NG_PLUS_SOUL_CAP)
+    discarded     = current_souls - carried_souls
+
+    session["ng_plus"]               = new_ng_level
+    session["ng_plus_souls_carried"] = carried_souls
+
+    if discarded > 0:
+        flash(
+            f"🔥 Journey {new_ng_level + 1} begins. "
+            f"{carried_souls} souls carried. "
+            f"{discarded} souls faded beyond the threshold.",
+            "info"
+        )
+    else:
+        flash(
+            f"🔥 Journey {new_ng_level + 1} begins. "
+            f"{carried_souls} souls carried into the dark.",
+            "info"
+        )
+
+    return new_ng_level, carried_souls
+
+
+def _reset_combat_state(souls=0, ng_level=0):
+    """
+    Reset all combat and run-progression session keys WITHOUT touching
+    session['character']. Used by /ng_plus_legacy so the character dict
+    (with all its shop upgrades) survives into the new run.
+
+    Also used internally by _reset_run_session after it writes the
+    character dict, so the two helpers stay in sync.
+    """
+    session["chapter"]             = 0
+    session["enemy"]               = {}
+    session["estus"]               = DEFAULT_ESTUS
+    session["mp"]                  = 0
+    session["special_cooldown"]    = 0
+    session["stunned"]             = False
+    session["smoke_screen_active"] = False
+    session["souls"]               = souls
+    session["estus_max"]           = DEFAULT_ESTUS
+    session["shop_bought"]         = []   # reset so shop is not empty on NG+
+    session["boss_phase"]          = 1
+    session["phase_changed"]       = False
+    session["ng_plus"]             = ng_level
+    # ── Active effect state ───────────────────────────────────────────────────
+    session["dot_damage"]          = 0
+    session["dot_turns"]           = 0
+    session["dot_label"]           = ""
+    session["buff_stat"]           = None
+    session["buff_amount"]         = 0
+    session["buff_turns"]          = 0
+    session["buff_label"]          = ""
+    session["shield_pct"]          = 0.0
+    session["shield_turns"]        = 0
+    # ── Shadow realm state ────────────────────────────────────────────────────
+    session["secret_chapters"]     = []
+
+
 def _reset_run_session(char_class, souls=0, ng_level=0):
     """
-    Shared helper: initialise all run-specific session keys.
+    Shared helper: build a fresh character dict and reset all session keys.
 
-    Used by both /start (fresh run) and /ng_plus (NG+ run).
-    Separating this into a helper prevents the two routes from drifting
-    out of sync as new session keys are added in future commits.
+    Used by /start (fresh run and New Journey NG+).
+    For Bearer's Legacy NG+, use _reset_combat_state() instead so the
+    existing character dict is preserved.
 
     char_class — class name string (e.g. 'Knight')
     souls      — starting souls (0 for fresh runs, capped value for NG+)
@@ -107,32 +183,10 @@ def _reset_run_session(char_class, souls=0, ng_level=0):
         "dodge_chance":     character.dodge_chance,
         "block_multiplier": character.block_multiplier,
     }
-    session["chapter"]             = 0
-    session["hp"]                  = character.max_hp
-    session["enemy"]               = {}
-    session["estus"]               = DEFAULT_ESTUS
-    session["mp"]                  = 0
-    session["special_cooldown"]    = 0
-    session["stunned"]             = False
-    session["smoke_screen_active"] = False
-    session["souls"]               = souls
-    session["estus_max"]           = DEFAULT_ESTUS
-    session["shop_bought"]         = []
-    session["boss_phase"]          = 1
-    session["phase_changed"]       = False
-    session["ng_plus"]             = ng_level
-    # ── Active effect state ────────────────────────────────────────────────────
-    session["dot_damage"]          = 0
-    session["dot_turns"]           = 0
-    session["dot_label"]           = ""
-    session["buff_stat"]           = None
-    session["buff_amount"]         = 0
-    session["buff_turns"]          = 0
-    session["buff_label"]          = ""
-    session["shield_pct"]          = 0.0
-    session["shield_turns"]        = 0
-    # ── Shadow realm state ────────────────────────────────────────────────────
-    session["secret_chapters"]     = []
+
+    _reset_combat_state(souls=souls, ng_level=ng_level)
+    # HP must be set after character dict is written
+    session["hp"] = session["character"]["max_hp"]
 
     return character
 
@@ -156,12 +210,24 @@ def register(blueprint):
             )
             return redirect(url_for("main.index"))
 
-        # ── For NG+ re-entry: class is pre-filled, ng_level already set ───────
-        # Read before _reset_run_session clears the session.
+        # Read NG+ state before _reset_run_session clears the session
         ng_level      = session.get("ng_plus", 0)
         carried_souls = session.get("ng_plus_souls_carried", 0)
+        ng_mode       = session.get("ng_plus_mode", "new_journey")
 
         delete_save()
+
+        # Legacy mode bypasses /start entirely (redirects to /game directly),
+        # but guard here in case someone navigates back to /start manually.
+        if ng_level > 0 and ng_mode == "legacy":
+            # Character dict already set by /ng_plus_legacy — just ensure
+            # HP is synced to max_hp (which may have been upgraded).
+            session["hp"] = session["character"].get("max_hp", 100)
+            session.pop("ng_plus_souls_carried", None)
+            session.pop("ng_plus_mode", None)
+            session.pop("_flashes", None)
+            return redirect(url_for("main.game"))
+
         character = _reset_run_session(
             char_class,
             souls=carried_souls,
@@ -173,8 +239,6 @@ def register(blueprint):
             return redirect(url_for("main.index"))
 
         # ── Apply starting gift (first run only) ───────────────────────────────
-        # On NG+ the player keeps their class but gets no gift bonus — they
-        # already start with carried upgrades and carried souls.
         gift = (request.form.get("gift") or "fading_soul").strip()
         if ng_level == 0:
             session["gift"] = gift
@@ -201,63 +265,82 @@ def register(blueprint):
                     current = session["character"].get(stat, 0)
                     session["character"][stat] = round(current + amount, 4)
         else:
-            # NG+ run — clear the carried_souls flag now that it's been applied
             session["gift"] = "fading_soul"
             session.pop("ng_plus_souls_carried", None)
+            session.pop("ng_plus_mode", None)
 
         session.pop("_flashes", None)
         return redirect(url_for("main.game"))
 
+    # ── New Game+ — New Journey ────────────────────────────────────────────────
+
     @blueprint.route("/ng_plus", methods=["POST"])
     def ng_plus():
         """
-        Begin a New Game+ run.
+        Begin a New Journey run.
 
-        Reads the current ng_plus level, increments it, caps carried souls,
-        and preserves the char_class. All other run state is cleared by
-        _reset_run_session() when the player hits /start.
-
-        We redirect to /start (not directly to /game) so the player sees the
-        class select screen and can confirm their class before the run begins.
-        The class is pre-filled via a hidden field in index.html when ng_level > 0.
+        Player chooses a new class on the index screen. Character resets to
+        base stats for that class. Enemies scale up. Souls capped and carried.
+        No gift applied on NG+ runs.
         """
-        current_ng   = session.get("ng_plus", 0)
-        new_ng_level = current_ng + 1
-
-        # Cap souls at NG_PLUS_SOUL_CAP — excess is discarded
-        current_souls  = session.get("souls", 0)
-        carried_souls  = min(current_souls, NG_PLUS_SOUL_CAP)
-        discarded      = current_souls - carried_souls
+        current_ng = session.get("ng_plus", 0)
 
         char_class = session.get("character", {}).get("char_class", "")
         if not char_class:
-            flash("Could not determine class for New Game+. Please restart.", "error")
+            flash("Could not determine class. Please restart.", "error")
             return redirect(url_for("main.index"))
 
-        # Store NG+ state before clearing session
-        # These survive into /start where _reset_run_session reads them
-        session["ng_plus"]               = new_ng_level
-        session["ng_plus_souls_carried"] = carried_souls
+        new_ng_level, carried_souls = _cap_and_store_souls(current_ng)
+        session["ng_plus_mode"] = "new_journey"
 
-        if discarded > 0:
-            flash(
-                f"🔥 Journey {new_ng_level + 1} begins. "
-                f"{carried_souls} souls carried. "
-                f"{discarded} souls faded beyond the threshold.",
-                "info"
-            )
-        else:
-            flash(
-                f"🔥 Journey {new_ng_level + 1} begins. "
-                f"{carried_souls} souls carried into the dark.",
-                "info"
-            )
-
-        # Redirect to /start with class pre-filled
-        # index.html should render a hidden form when ng_plus > 0 that
-        # auto-submits to /start with the char_class — or the player
-        # can re-select. Either way /start reads session['ng_plus'].
+        # Redirect to index — player selects (or re-confirms) their class
         return redirect(url_for("main.index"))
+
+    # ── New Game+ — Bearer's Legacy ────────────────────────────────────────────
+
+    @blueprint.route("/ng_plus_legacy", methods=["POST"])
+    def ng_plus_legacy():
+        """
+        Begin a Bearer's Legacy run.
+
+        Same class. All upgraded stats (attack, defense, max_hp, dodge etc)
+        are preserved from the completed run. shop_bought resets so upgrades
+        can be purchased again and stack across runs. Enemies scale up.
+        Souls capped and carried.
+
+        HP is reset to the inherited max_hp (which includes vessel upgrades).
+        MP, Estus, cooldowns, active effects, and chapter all reset to zero.
+
+        Redirects directly to /game (chapter 0) — no class select needed.
+        """
+        current_ng = session.get("ng_plus", 0)
+
+        char_class = session.get("character", {}).get("char_class", "")
+        if not char_class:
+            flash("Could not determine class. Please restart.", "error")
+            return redirect(url_for("main.index"))
+
+        new_ng_level, carried_souls = _cap_and_store_souls(current_ng)
+        session["ng_plus_mode"] = "legacy"
+
+        # Preserve the full character dict — all shop upgrades survive
+        # Just reset HP to current max_hp (which includes vessel upgrades)
+        inherited_max_hp = session["character"].get("max_hp", 100)
+
+        # Reset all combat/run state without touching session['character']
+        _reset_combat_state(souls=carried_souls, ng_level=new_ng_level)
+
+        # HP must be set after _reset_combat_state (which doesn't touch it)
+        session["hp"] = inherited_max_hp
+
+        # Gift carries over cosmetically but no bonus is re-applied
+        # (stats are already baked into the character dict)
+        session["gift"] = session.get("gift", "fading_soul")
+
+        session.pop("_flashes", None)
+        return redirect(url_for("main.game"))
+
+    # ── Main game loop ─────────────────────────────────────────────────────────
 
     @blueprint.route("/game", methods=["GET", "POST"])
     def game():
@@ -277,7 +360,6 @@ def register(blueprint):
                     bg_pool = BOSS_BATTLE_BGS if is_boss else NORMAL_BATTLE_BGS
                     session["battle_bg"] = random.choice(bg_pool)
 
-                # ── Pass ng_level to generate_enemy for NG+ scaling ───────────
                 ng_level = session.get("ng_plus", 0)
                 enemy    = battle_manager.generate_enemy(
                     boss=is_boss,
@@ -341,7 +423,7 @@ def register(blueprint):
 
         show_secret_map = is_eligible and chapter_id in secret_chapters
 
-        # ── New Game+ — show 'Begin Journey N' on ending chapters ─────────────
+        # ── NG+ buttons on ending chapters ────────────────────────────────────
         ng_level     = session.get("ng_plus", 0)
         show_ng_plus = chapter_id in ENDING_CHAPTERS
 
@@ -360,7 +442,6 @@ def register(blueprint):
 
     @blueprint.route("/enter_shadow_realm", methods=["POST"])
     def enter_shadow_realm():
-        """Store the return chapter and redirect to the Shadow Realm entry."""
         return_chapter = session.get("chapter", 0)
         session["secret_return_chapter"] = return_chapter
         session["chapter"] = 103
@@ -368,7 +449,6 @@ def register(blueprint):
 
     @blueprint.route("/leave_shadow_realm", methods=["POST"])
     def leave_shadow_realm():
-        """Return to the chapter the player was on when they found the map."""
         return_chapter = session.get("secret_return_chapter", 0)
         session["chapter"] = return_chapter
         return redirect(url_for("main.game"))
@@ -390,16 +470,13 @@ def register(blueprint):
 
     @blueprint.route("/status")
     def status():
-        """
-        Player status screen — reads live session values so all
-        shop upgrades, gift bonuses, and current HP/MP are reflected.
-        """
         character  = session.get("character", {})
         class_name = character.get("class_name", "")
         cls_def    = CLASSES.get(class_name, {})
         class_lore = cls_def.get("lore", "")
         class_icon = cls_def.get("icon", "fa-shield-halved")
         ng_level   = session.get("ng_plus", 0)
+        ng_mode    = session.get("ng_plus_mode", "new_journey")
 
         return render_template(
             "status.html",
@@ -415,6 +492,7 @@ def register(blueprint):
             gift=session.get("gift", "fading_soul"),
             classes=CLASSES,
             ng_level=ng_level,
+            ng_mode=ng_mode,
         )
 
     @blueprint.route("/restart", methods=["POST"])

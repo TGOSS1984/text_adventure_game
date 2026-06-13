@@ -148,20 +148,51 @@ Inline quit-confirm JS kept small here (page-specific DOM wiring only).
             <div class="center-links">
                 <a href="{{ url_for('main.index') }}">Return to Title</a>
             </div>
-
+ 
             {% if show_ng_plus %}
             <div class="ng-plus-container">
+ 
                 <p class="ng-plus-flavour">
                     The cycle does not end. It turns again — darker, hungrier, unyielding.
                 </p>
-                <form method="POST" action="{{ url_for('main.ng_plus') }}">
-                    <button type="submit" class="btn btn--ng-plus">
-                        🔥 Begin Journey {{ ng_level + 2 }}
-                        <span class="ng-plus-sub">New Game+ — enemies are stronger, souls carry over</span>
-                    </button>
-                </form>
-            </div>
+ 
+                <div class="ng-plus-modes">
+ 
+                    <!-- Mode A: New Journey — pick a new class, base stats -->
+                    <div class="ng-plus-mode-card">
+                        <p class="ng-plus-mode-title">🔥 New Journey</p>
+                        <p class="ng-plus-mode-desc">
+                            Choose a new class. Base stats. Souls carried (capped).
+                            Enemies are stronger.
+                        </p>
+                        <form method="POST" action="{{ url_for('main.ng_plus') }}">
+                            <button type="submit" class="btn btn--ng-plus">
+                                Begin Journey {{ ng_level + 2 }}
+                                <span class="ng-plus-sub">New class — fresh start</span>
+                            </button>
+                        </form>
+                    </div>
+ 
+                    <!-- Mode B: Bearer's Legacy — same class, inherited stats -->
+                    <div class="ng-plus-mode-card">
+                        <p class="ng-plus-mode-title">⚔ Bearer's Legacy</p>
+                        <p class="ng-plus-mode-desc">
+                            Continue as {{ character.class_name }}. Keep all upgraded
+                            stats. Souls carried (capped). Enemies are stronger.
+                        </p>
+                        <form method="POST" action="{{ url_for('main.ng_plus_legacy') }}">
+                            <button type="submit" class="btn btn--ng-plus btn--ng-plus-legacy">
+                                Continue as {{ character.class_name }}
+                                <span class="ng-plus-sub">Inherited stats — true NG+</span>
+                            </button>
+                        </form>
+                    </div>
+ 
+                </div><!-- /.ng-plus-modes -->
+ 
+            </div><!-- /.ng-plus-container -->
             {% endif %}
+ 
         {% endif %}
 
         <!-- Menu links -->
