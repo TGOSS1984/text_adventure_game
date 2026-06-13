@@ -10,49 +10,27 @@ NOTE: This is a flat-file save system suitable for single-player / development.
 For multi-user or production deployments, replace with a database-backed
 solution (e.g. SQLAlchemy SaveSlot model) in a future commit.
 
-Refactor additions:
-- SAVE_VERSION: integer bumped whenever session structure changes.
-  Loaded saves with an older version get missing keys backfilled with
-  SESSION_DEFAULTS so old saves never cause KeyErrors on new fields.
-- SESSION_DEFAULTS: canonical list of every session key and its default value.
-  When adding a new session key anywhere in the codebase, add it here too.
-  load_game() uses this to backfill missing keys from old saves.
-- Basic type/structure validation on load — rejects saves where core fields
-  are the wrong type to prevent corrupted data reaching route logic.
-
 Version history:
     1 — original session structure
     2 — dual specials, active effects (dot_damage, buff_stat, shield_pct etc)
-    3 — NG+ keys (ng_plus, ng_plus_mode, ng_plus_souls_carried)
-          shadow realm keys (secret_chapters, secret_return_chapter)
-          damage type keys (magic_attack, magic_defense on enemy/character)
-          Commit 3 will bump to 4 when run_stats is added.
+    3 — NG+ keys, shadow realm keys, damage type keys on enemy/character
+    4 — run_stats dict, last_counted_chapter (Commit 3)
 """
 
 import json
 import os
 
-# ── Save file location ────────────────────────────────────────────────────────
 _SAVES_DIR = os.path.join(os.path.dirname(__file__), '..', 'saves')
 _SAVE_PATH = os.path.join(_SAVES_DIR, 'savegame.json')
 
-# Keys that should never be persisted (Flask internals / security tokens)
 _SKIP_KEYS = {'_flashes', '_csrf_token'}
 
 # ── Versioning ────────────────────────────────────────────────────────────────
-# Bump this integer whenever the session structure changes (new keys, renamed
-# keys, changed types). Old saves will be backfilled with SESSION_DEFAULTS
-# for any missing keys rather than crashing.
-#
-# IMPORTANT: whenever you add a new session key anywhere in the codebase,
-# add it to SESSION_DEFAULTS below AND bump SAVE_VERSION.
-SAVE_VERSION = 3
+# Bump whenever session structure changes. Old saves are backfilled from
+# SESSION_DEFAULTS for any missing keys.
+SAVE_VERSION = 4
 
 # ── Session defaults ──────────────────────────────────────────────────────────
-# Canonical list of every session key used across the app and its safe default.
-# load_game() uses this to backfill keys missing from older saves.
-#
-# Organised by logical group to make additions easy to locate.
 SESSION_DEFAULTS = {
 
     # ── Character & run identity ───────────────────────────────────────────
@@ -83,7 +61,7 @@ SESSION_DEFAULTS = {
     "smoke_screen_active":  False,
     "shop_bought":          [],
 
-    # ── Active effects (dual specials — Commit 21 / refactor) ─────────────
+    # ── Active effects ─────────────────────────────────────────────────────
     "dot_damage":           0,
     "dot_turns":            0,
     "dot_label":            "",
@@ -95,23 +73,34 @@ SESSION_DEFAULTS = {
     "shield_turns":         0,
 
     # ── New Game+ (Commit 2) ───────────────────────────────────────────────
-    # ng_plus       — current NG+ depth (0 = first run, 1 = NG+, etc.)
-    # ng_plus_mode  — 'new_journey' or 'legacy' (set during NG+ entry)
-    # ng_plus_souls_carried — souls carried after cap (display only)
-    "ng_plus":              0,
-    "ng_plus_mode":         "new_journey",
+    "ng_plus":               0,
+    "ng_plus_mode":          "new_journey",
     "ng_plus_souls_carried": 0,
 
-    # ── Shadow realm (refactor) ────────────────────────────────────────────
-    "secret_chapters":        [],
-    "secret_return_chapter":  0,
+    # ── Shadow realm ──────────────────────────────────────────────────────
+    "secret_chapters":       [],
+    "secret_return_chapter": 0,
+
+    # ── Run stats (Commit 3) ───────────────────────────────────────────────
+    # Stored as a nested dict. Backfilled as an empty dict on old saves —
+    # the display templates handle missing sub-keys with .get() defaults.
+    "run_stats": {
+        "enemies_defeated": 0,
+        "bosses_defeated":  0,
+        "bosses_list":      [],
+        "damage_dealt":     0,
+        "damage_taken":     0,
+        "estus_used":       0,
+        "specials_fired":   0,
+        "souls_earned":     0,
+        "chapters_visited": 0,
+        "crits_landed":     0,
+    },
+    "last_counted_chapter":  -1,
 }
 
-# ── Basic type validation ─────────────────────────────────────────────────────
-# Maps key → expected Python type. Checked on load; mismatches are corrected
-# using SESSION_DEFAULTS rather than crashing.
+# ── Type validation ────────────────────────────────────────────────────────────
 _EXPECTED_TYPES = {
-    # Core
     "character":             dict,
     "chapter":               int,
     "hp":                    (int, float),
@@ -121,39 +110,31 @@ _EXPECTED_TYPES = {
     "souls":                 (int, float),
     "shop_bought":           list,
     "choices":               list,
-    # Combat
     "enemy":                 dict,
     "boss_phase":            int,
     "special_cooldown":      int,
     "chapter_after_battle":  int,
-    # Active effects
     "dot_damage":            (int, float),
     "dot_turns":             int,
     "buff_amount":           (int, float),
     "buff_turns":            int,
     "shield_pct":            float,
     "shield_turns":          int,
-    # NG+
     "ng_plus":               int,
     "ng_plus_souls_carried": (int, float),
-    # Shadow realm
     "secret_chapters":       list,
     "secret_return_chapter": int,
+    "run_stats":             dict,
+    "last_counted_chapter":  int,
 }
 
 
 def _ensure_saves_dir():
-    """Create the saves directory if it doesn't exist."""
     os.makedirs(_SAVES_DIR, exist_ok=True)
 
 
 def save_game(session):
-    """
-    Persist the current game state to disk.
-
-    Filters out Flask-internal session keys before writing.
-    Writes SAVE_VERSION so load_game() can detect and migrate old saves.
-    """
+    """Persist the current game state to disk."""
     _ensure_saves_dir()
     data = {k: v for k, v in dict(session).items() if k not in _SKIP_KEYS}
     data["_save_version"] = SAVE_VERSION
@@ -167,10 +148,8 @@ def save_game(session):
 def load_game(session):
     """
     Load a previously saved game state into the current session.
-
-    - Backfills any keys missing from old saves using SESSION_DEFAULTS.
-    - Corrects any keys whose values are the wrong type.
-    - Returns True if a save was found and loaded, False otherwise.
+    Backfills missing keys, validates types, clamps HP.
+    Returns True on success, False if no save or corrupt file.
     """
     try:
         with open(_SAVE_PATH, 'r', encoding='utf-8') as f:
@@ -184,16 +163,26 @@ def load_game(session):
     saved_version = data.pop("_save_version", 0)
     if saved_version < SAVE_VERSION:
         print(f"[INFO] Save version {saved_version} → {SAVE_VERSION}. "
-              f"Backfilling missing keys with defaults.")
+              f"Backfilling missing keys.")
 
-    # ── Backfill missing keys ──────────────────────────────────────────────
+    # Backfill missing top-level keys
     for key, default in SESSION_DEFAULTS.items():
         if key not in data:
             data[key] = default
             if saved_version < SAVE_VERSION:
-                print(f"[INFO]  backfilled '{key}' = {default!r}")
+                print(f"[INFO]  backfilled '{key}'")
 
-    # ── Type validation ────────────────────────────────────────────────────
+    # Backfill missing sub-keys inside run_stats
+    # (handles saves from before Commit 3 that have an empty run_stats dict)
+    default_stats = SESSION_DEFAULTS["run_stats"]
+    loaded_stats  = data.get("run_stats", {})
+    if isinstance(loaded_stats, dict):
+        for sub_key, sub_default in default_stats.items():
+            if sub_key not in loaded_stats:
+                loaded_stats[sub_key] = sub_default
+        data["run_stats"] = loaded_stats
+
+    # Type validation
     for key, expected in _EXPECTED_TYPES.items():
         val = data.get(key)
         if val is not None and not isinstance(val, expected):
@@ -202,10 +191,8 @@ def load_game(session):
                   f"got {type(val).__name__}. Resetting to default.")
             data[key] = default
 
-    # ── Legacy run HP guard ────────────────────────────────────────────────
-    # Bearer's Legacy runs may have max_hp higher than the class base.
-    # Ensure loaded hp never exceeds the saved character's max_hp.
-    char = data.get("character", {})
+    # HP clamp — Bearer's Legacy max_hp may differ from class base
+    char     = data.get("character", {})
     saved_hp = data.get("hp", 0)
     saved_max = char.get("max_hp", saved_hp)
     if saved_hp > saved_max:
@@ -217,12 +204,10 @@ def load_game(session):
 
 
 def has_save():
-    """Return True if a save file exists on disk."""
     return os.path.isfile(_SAVE_PATH)
 
 
 def delete_save():
-    """Remove the save file (used on New Game to avoid stale data)."""
     try:
         os.remove(_SAVE_PATH)
     except FileNotFoundError:

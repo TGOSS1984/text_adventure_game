@@ -1610,3 +1610,42 @@ details[open] > .codex-summary .codex-chevron { transform: rotate(180deg); }
 .ng-plus-indicator {
   color: #e74c3c;
 }
+
+.ng-plus-modes {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-top: 1rem;
+}
+ 
+.ng-plus-mode-card {
+    background: rgba(0, 0, 0, 0.45);
+    border: 1px solid rgba(201, 162, 39, 0.25);
+    border-radius: 6px;
+    padding: 1.25rem 1.5rem;
+    max-width: 260px;
+    text-align: center;
+}
+ 
+.ng-plus-mode-title {
+    font-size: 1rem;
+    font-weight: bold;
+    color: var(--clr-gold, #c9a227);
+    margin-bottom: 0.4rem;
+}
+ 
+.ng-plus-mode-desc {
+    font-size: 0.8rem;
+    color: rgba(255,255,255,0.65);
+    margin-bottom: 1rem;
+    line-height: 1.5;
+}
+ 
+.btn--ng-plus-legacy {
+    background: linear-gradient(135deg, #1a3a5c, #2471a3);
+}
+ 
+.btn--ng-plus-legacy:hover {
+    opacity: 0.85;
+}
