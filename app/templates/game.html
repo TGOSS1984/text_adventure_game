@@ -148,6 +148,20 @@ Inline quit-confirm JS kept small here (page-specific DOM wiring only).
             <div class="center-links">
                 <a href="{{ url_for('main.index') }}">Return to Title</a>
             </div>
+
+            {% if show_ng_plus %}
+            <div class="ng-plus-container">
+                <p class="ng-plus-flavour">
+                    The cycle does not end. It turns again — darker, hungrier, unyielding.
+                </p>
+                <form method="POST" action="{{ url_for('main.ng_plus') }}">
+                    <button type="submit" class="btn btn--ng-plus">
+                        🔥 Begin Journey {{ ng_level + 2 }}
+                        <span class="ng-plus-sub">New Game+ — enemies are stronger, souls carry over</span>
+                    </button>
+                </form>
+            </div>
+            {% endif %}
         {% endif %}
 
         <!-- Menu links -->

@@ -104,6 +104,15 @@ Lightbox addition:
         </div>
     </div>
 
+    {% if ng_level > 0 %}
+    <div style="text-align:center; margin-top: 0.5rem;">
+        <span class="ng-plus-badge">
+            ⚔ Journey {{ ng_level + 1 }}
+            <small style="opacity:0.7;">(NG+{{ ng_level }})</small>
+        </span>
+    </div>
+    {% endif %}
+
     <hr class="status-divider">
 
     <!-- HP & MP bars -->

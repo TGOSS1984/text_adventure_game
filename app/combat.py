@@ -47,6 +47,18 @@ Mixed damage type for players (Paladin):
 - Both attack and magic_attack stats are meaningful for Paladin:
   shop upgrades to either stat improve damage output
 - Same pattern as enemy mixed damage but from the player side
+
+Commit 2 — New Game+ scaling:
+- generate_enemy() accepts ng_level parameter (default 0).
+- When ng_level > 0, all enemy stats are scaled up using the % multipliers
+  defined in config.py (NG_PLUS_HP_SCALE, NG_PLUS_ATK_SCALE, etc.).
+- Formula: new_stat = int(round(base_stat * (1 + SCALE * ng_level)))
+- Applied to: hp, attack, magic_attack, defense, magic_defense, soul_reward.
+- soul_reward scales UP intentionally — harder fights should give more souls.
+- soul_reward is rounded to the nearest 5 to keep numbers clean.
+- The ng_level is read from the session in game_routes.py and passed here —
+  combat.py itself never touches the session (clean separation of concerns).
+- Adding a new NG+ level cap or changing the scale: edit config.py only.
 """
 
 import numpy as np
@@ -59,14 +71,49 @@ from .config import (
     PHASE2_DMG_MULT, PHASE2_HP_TRIGGER,
     PHASE1_WEIGHTS, PHASE2_WEIGHTS,
     DOT_TICK_MESSAGES, BUFF_EXPIRE_MESSAGES,
+    NG_PLUS_HP_SCALE, NG_PLUS_ATK_SCALE,
+    NG_PLUS_DEF_SCALE, NG_PLUS_SOUL_SCALE,
 )
+
+
+def _apply_ng_scaling(base_value, scale, ng_level):
+    """
+    Apply a single NG+ percentage scale to a base stat.
+
+    Formula: int(round(base * (1 + scale * level)))
+    Returns the original value unchanged when ng_level == 0.
+    """
+    if ng_level <= 0 or base_value <= 0:
+        return base_value
+    return int(round(base_value * (1 + scale * ng_level)))
+
+
+def _scale_soul_reward(base_value, ng_level):
+    """
+    Scale soul reward and round to nearest 5 for clean numbers.
+    """
+    if ng_level <= 0 or base_value <= 0:
+        return base_value
+    scaled = base_value * (1 + NG_PLUS_SOUL_SCALE * ng_level)
+    return round(scaled / 5) * 5
 
 
 class BattleManager:
 
     # ── Enemy generation ───────────────────────────────────────────────────────
 
-    def generate_enemy(self, boss=False, boss_name=None):
+    def generate_enemy(self, boss=False, boss_name=None, ng_level=0):
+        """
+        Generate an enemy or boss Enemy object.
+
+        ng_level — current New Game+ depth (0 = first run, 1 = NG+, etc.).
+        When ng_level > 0, all stats are scaled using the multipliers from
+        config.py. The base data in enemies.py is never modified — scaling
+        is applied here at runtime only.
+
+        To adjust NG+ difficulty: change the scale constants in config.py.
+        To add a new enemy: add it to enemies.py. No changes needed here.
+        """
         if boss:
             name = boss_name or 'Cindergloom'
             data = BOSSES.get(name)
@@ -74,32 +121,53 @@ class BattleManager:
                 print(f"[WARN] Boss '{name}' not found. Defaulting to Cindergloom.")
                 name = 'Cindergloom'
                 data = BOSSES[name]
+
             return Enemy(
                 name=name,
-                hp=data['hp'],
-                attack=data['attack'],
-                magic_attack=data.get('magic_attack', 0),
-                defense=data.get('defense', 0),
-                magic_defense=data.get('magic_defense', 0),
+                hp=_apply_ng_scaling(data['hp'], NG_PLUS_HP_SCALE, ng_level),
+                attack=_apply_ng_scaling(
+                    data['attack'], NG_PLUS_ATK_SCALE, ng_level
+                ),
+                magic_attack=_apply_ng_scaling(
+                    data.get('magic_attack', 0), NG_PLUS_ATK_SCALE, ng_level
+                ),
+                defense=_apply_ng_scaling(
+                    data.get('defense', 0), NG_PLUS_DEF_SCALE, ng_level
+                ),
+                magic_defense=_apply_ng_scaling(
+                    data.get('magic_defense', 0), NG_PLUS_DEF_SCALE, ng_level
+                ),
                 damage_type=data.get('damage_type', 'physical'),
                 image=data['image'],
                 lore=data['lore'],
                 is_boss=True,
-                soul_reward=data.get('soul_reward', 0),
+                soul_reward=_scale_soul_reward(
+                    data.get('soul_reward', 0), ng_level
+                ),
             )
         else:
             e = np.random.choice(ENEMIES)
             return Enemy(
                 name=e['name'],
-                hp=e['hp'],
-                attack=e['attack'],
-                magic_attack=e.get('magic_attack', 0),
-                defense=e.get('defense', 0),
-                magic_defense=e.get('magic_defense', 0),
+                hp=_apply_ng_scaling(e['hp'], NG_PLUS_HP_SCALE, ng_level),
+                attack=_apply_ng_scaling(
+                    e['attack'], NG_PLUS_ATK_SCALE, ng_level
+                ),
+                magic_attack=_apply_ng_scaling(
+                    e.get('magic_attack', 0), NG_PLUS_ATK_SCALE, ng_level
+                ),
+                defense=_apply_ng_scaling(
+                    e.get('defense', 0), NG_PLUS_DEF_SCALE, ng_level
+                ),
+                magic_defense=_apply_ng_scaling(
+                    e.get('magic_defense', 0), NG_PLUS_DEF_SCALE, ng_level
+                ),
                 damage_type=e.get('damage_type', 'physical'),
                 image=e['image'],
                 lore=e['lore'],
-                soul_reward=e.get('soul_reward', 0),
+                soul_reward=_scale_soul_reward(
+                    e.get('soul_reward', 0), ng_level
+                ),
             )
 
     # ── Player actions ─────────────────────────────────────────────────────────
@@ -127,18 +195,15 @@ class BattleManager:
             type_label = "magic"
 
         elif damage_type == 'mixed':
-            # Average of physical and magic attack stats
             phys_atk   = player.get('attack', 0)
             mag_atk    = player.get('magic_attack', 0)
             base_atk   = (phys_atk + mag_atk) / 2.0
-            # Average of physical defense (with pen) and magic defense
             phys_def   = int(enemy.defense * PHYS_PEN)
             mag_def    = enemy.magic_defense
             eff_def    = (phys_def + mag_def) / 2.0
             type_label = "holy"
 
         else:
-            # physical (default)
             base_atk   = player['attack']
             eff_def    = int(enemy.defense * PHYS_PEN)
             type_label = "physical"
@@ -149,7 +214,10 @@ class BattleManager:
         enemy.hp -= dmg
 
         if is_crit:
-            msg = f"💥 Critical hit! You strike the {enemy.name} for {dmg} {type_label} damage!"
+            msg = (
+                f"💥 Critical hit! You strike the {enemy.name} "
+                f"for {dmg} {type_label} damage!"
+            )
         else:
             msg = f"You strike the {enemy.name} for {dmg} {type_label} damage!"
 
@@ -182,9 +250,6 @@ class BattleManager:
 
         heal_amount is non-zero only for 'heal_stun' effect (Paladin).
         Routes must unpack all 7 values and apply heal_amount to player_hp.
-
-        Mixed damage_type specials (Paladin) use the same averaged stat logic
-        as attack() — multiplier applied to the average of both attack stats.
         """
         class_name = player.get('class_name', 'Knight')
 
@@ -195,7 +260,8 @@ class BattleManager:
             )
         if cooldown > 0:
             return (
-                f"Special move recharging — {cooldown} turn{'s' if cooldown != 1 else ''} remaining.",
+                f"Special move recharging — "
+                f"{cooldown} turn{'s' if cooldown != 1 else ''} remaining.",
                 enemy.hp, current_mp, cooldown, False, False, 0
             )
 
@@ -209,7 +275,6 @@ class BattleManager:
         new_mp       = current_mp - MP_COST
         new_cooldown = cls.get('special_cooldown', COOLDOWN_TURNS)
 
-        # ── Read special move definition from classes.py ───────────────────────
         multiplier    = cls.get('special_multiplier', 1.0)
         effect        = cls.get('special_effect', None)
         variance      = cls.get('special_variance', 0)
@@ -217,19 +282,19 @@ class BattleManager:
         damage_type   = cls.get('damage_type', 'physical')
         special_label = cls.get('special_label', '⚡ Special')
 
-        # ── Resolve effect flags ───────────────────────────────────────────────
         stun_enemy   = (effect in ('stun', 'heal_stun'))
         smoke_screen = (effect == 'smoke')
-        heal_amount  = int(player.get('max_hp', 100) * 0.40) if effect == 'heal_stun' else 0
+        heal_amount  = (
+            int(player.get('max_hp', 100) * 0.40) if effect == 'heal_stun' else 0
+        )
 
-        # ── Resolve damage ─────────────────────────────────────────────────────
+        dmg = 0
+        dmg_label = "sacred"
+
         if effect == 'heal_stun':
-            # Healing Light — no damage, heal only
-            dmg       = 0
-            dmg_label = "sacred"
+            pass  # healing only — no damage
 
         elif damage_type == 'mixed':
-            # Paladin special — averaged stats, same as attack()
             phys_atk  = player.get('attack', 0)
             mag_atk   = player.get('magic_attack', 0)
             base_atk  = (phys_atk + mag_atk) / 2.0
@@ -237,7 +302,6 @@ class BattleManager:
             mag_def   = enemy.magic_defense
             eff_def   = (phys_def + mag_def) / 2.0
             dmg_label = "holy"
-
             raw = int(round(base_atk * multiplier))
             if variance > 0:
                 raw -= np.random.randint(0, variance)
@@ -248,7 +312,6 @@ class BattleManager:
             base_atk  = player.get('magic_attack', 0)
             eff_def   = enemy.magic_defense
             dmg_label = "magic"
-
             raw = int(round(base_atk * multiplier))
             if variance > 0:
                 raw -= np.random.randint(0, variance)
@@ -256,18 +319,15 @@ class BattleManager:
             enemy.hp -= dmg
 
         else:
-            # physical
             base_atk  = player.get('attack', 0)
             eff_def   = int(enemy.defense * PHYS_PEN)
             dmg_label = "physical"
-
             raw = int(round(base_atk * multiplier))
             if variance > 0:
                 raw -= np.random.randint(0, variance)
             dmg = max(min_dmg, raw - eff_def)
             enemy.hp -= dmg
 
-        # ── Build battle log message ───────────────────────────────────────────
         if effect == 'heal_stun':
             msg = (
                 f"{special_label}! Sacred radiance floods your body, restoring "
@@ -318,7 +378,7 @@ class BattleManager:
             buff_attack  — raises player attack stat for N turns (via session)
             shield       — reduces incoming damage by a fraction for N turns
             stun         — deals damage and prevents enemy counter this turn
-            leech        — deals damage and heals player for 50% of damage dealt
+            leech        — deals damage and heals player for 150% of damage dealt
 
         Returns 9-tuple:
             msg, enemy.hp, new_mp, new_cooldown,
@@ -344,7 +404,8 @@ class BattleManager:
             )
         if cooldown > 0:
             return (
-                f"Special move recharging — {cooldown} turn{'s' if cooldown != 1 else ''} remaining.",
+                f"Special move recharging — "
+                f"{cooldown} turn{'s' if cooldown != 1 else ''} remaining.",
                 enemy.hp, current_mp, cooldown,
                 False, 0, 0, "", _no_effect
             )
@@ -358,9 +419,8 @@ class BattleManager:
             )
 
         new_mp       = current_mp - MP_COST_SECONDARY
-        new_cooldown = cls.get('special_cooldown', COOLDOWN_TURNS)  # shared cooldown
+        new_cooldown = cls.get('special_cooldown', COOLDOWN_TURNS)
 
-        # ── Read secondary special definition ─────────────────────────────────
         effect        = cls.get('special2_effect', None)
         multiplier    = cls.get('special2_multiplier', 0)
         dot_dmg       = cls.get('special2_dot_dmg', 0)
@@ -374,12 +434,11 @@ class BattleManager:
         shield_turns  = cls.get('special2_shield_turns', 0)
         special_label = cls.get('special2_label', '⚡ Special 2')
         damage_type   = cls.get('damage_type', 'physical')
-        min_dmg       = cls.get('special_min_dmg', 5)  # reuse primary floor
+        min_dmg       = cls.get('special_min_dmg', 5)
 
         stun_enemy  = (effect == 'stun')
         heal_amount = 0
 
-        # ── Resolve direct damage (if multiplier > 0) ─────────────────────────
         dmg = 0
         dmg_label = "physical"
         if multiplier > 0:
@@ -404,14 +463,11 @@ class BattleManager:
             dmg = max(min_dmg, int(round(raw - eff_def)))
             enemy.hp -= dmg
 
-        # ── Leech: heal 150% of damage dealt, with optional minimum ────────────
         if effect == 'leech' and dmg > 0:
             min_heal    = cls.get('special2_leech_min_heal', 0)
             heal_amount = max(min_heal, int(dmg * 1.5))
 
-        # ── Build battle log message ───────────────────────────────────────────
         if effect == 'dot':
-            dot_name = dot_label.title()
             if dmg > 0:
                 msg = (
                     f"{special_label}! You deal {dmg} {dmg_label} damage and the "
@@ -423,33 +479,33 @@ class BattleManager:
                     f"{special_label}! The {enemy.name} begins to {dot_label}! "
                     f"({dot_dmg} damage/turn for {dot_turns} turns)"
                 )
-
         elif effect == 'buff_attack':
             msg = (
                 f"{special_label}! Your battle cry echoes through the arena. "
                 f"Attack raised by {buff_amount} for {buff_turns} turns!"
             )
-
         elif effect == 'shield':
             msg = (
                 f"{special_label}! An arcane barrier surrounds you. "
-                f"Incoming damage reduced by {int(shield_pct * 100)}% for {shield_turns} turns!"
+                f"Incoming damage reduced by {int(shield_pct * 100)}% "
+                f"for {shield_turns} turns!"
             )
-
         elif effect == 'stun':
             msg = (
-                f"{special_label}! You strike the {enemy.name} for {dmg} {dmg_label} damage "
-                f"with sacred force — they are stunned and cannot counter!"
+                f"{special_label}! You strike the {enemy.name} for {dmg} "
+                f"{dmg_label} damage with sacred force — they are stunned "
+                f"and cannot counter!"
             )
-
         elif effect == 'leech':
             msg = (
                 f"{special_label}! Life drains from the {enemy.name} — "
                 f"{dmg} {dmg_label} damage dealt, {heal_amount} HP restored!"
             )
-
         else:
-            msg = f"{special_label}! {dmg} damage dealt." if dmg > 0 else f"{special_label}!"
+            msg = (
+                f"{special_label}! {dmg} damage dealt."
+                if dmg > 0 else f"{special_label}!"
+            )
 
         side_effects = {
             "buff_stat":    buff_stat    if effect == 'buff_attack' else None,
@@ -479,29 +535,17 @@ class BattleManager:
 
         Ticks damage-over-time on the enemy, decrements buff and shield
         durations, and returns updated values plus a log prefix message.
-
-        Returns:
-            effects_msg  — str to prepend to the turn's battle log (may be "")
-            enemy.hp     — updated after DoT tick
-            dot_dmg      — unchanged (tick amount stays the same)
-            dot_turns    — decremented; 0 when expired
-            buff_stat    — unchanged
-            buff_amount  — unchanged
-            buff_turns   — decremented; 0 when expired
-            buff_label   — unchanged
-            shield_pct   — unchanged
-            shield_turns — decremented; 0 when expired
         """
         parts = []
 
-        # ── Tick DoT ──────────────────────────────────────────────────────────
         if dot_turns > 0 and dot_dmg > 0:
             enemy.hp -= dot_dmg
-            tick_template = DOT_TICK_MESSAGES.get(dot_label, f"{dot_label} deals {{dmg}} damage!")
+            tick_template = DOT_TICK_MESSAGES.get(
+                dot_label, f"{dot_label} deals {{dmg}} damage!"
+            )
             parts.append(tick_template.format(dmg=dot_dmg))
             dot_turns -= 1
 
-        # ── Decrement buff ────────────────────────────────────────────────────
         if buff_turns > 0:
             buff_turns -= 1
             if buff_turns == 0 and buff_label:
@@ -509,7 +553,6 @@ class BattleManager:
                 if expire_msg:
                     parts.append(expire_msg)
 
-        # ── Decrement shield ──────────────────────────────────────────────────
         if shield_turns > 0:
             shield_turns -= 1
             if shield_turns == 0 and buff_label == "nullfield":
@@ -569,14 +612,14 @@ class BattleManager:
             single_hit = max(2, atk_stat // 3) + np.random.randint(6, 10)
             dmg        = hits * single_hit - int(eff_def * 1.0)
             dmg        = max(15, dmg)
-            msg        = f"The enemy unleashes a flurry of {hits} {dmg_label} strikes!"
-
+            msg        = (
+                f"The enemy unleashes a flurry of {hits} {dmg_label} strikes!"
+            )
         elif action == 'big_hit':
             dmg = atk_stat + np.random.randint(10, 20) - int(eff_def * 0.8)
             dmg = max(8, dmg)
             msg = f"A massive {dmg_label} attack is incoming!"
-
-        else:  # attack
+        else:
             dmg = atk_stat + np.random.randint(0, 10) - int(eff_def * 1.1)
             dmg = max(5, dmg)
             msg = f"A swift {dmg_label} strike!"
@@ -592,18 +635,17 @@ class BattleManager:
         Reads dodge_chance and block_multiplier from the live player session dict
         so any shop upgrades (e.g. Dodge Pendant) take effect immediately.
         Falls back to classes.py values if not present in session.
-
-        shield_pct — if > 0 (Mage Nullfield active), reduces incoming damage
-        by this fraction before dodge/block calculations. Applied multiplicatively.
         """
         class_name = player.get('class_name', 'Knight')
 
-        # ── Apply active shield before any other reduction ────────────────────
         if shield_pct > 0.0:
             dmg = max(1, int(round(dmg * (1.0 - shield_pct))))
 
         if smoke_screen_active:
-            return current_hp, "💨 The smoke screen works — the attack passes harmlessly through shadow!"
+            return (
+                current_hp,
+                "💨 The smoke screen works — the attack passes harmlessly through shadow!"
+            )
 
         if player_action == 'dodge':
             success_chance = player.get(
@@ -630,12 +672,9 @@ class BattleManager:
     # ── Prediction ─────────────────────────────────────────────────────────────
 
     def predict_enemy_move(self, player, boss_phase=1):
-        """
-        Predict the enemy's next move for the UI hint.
-        Uses the correct weight set for the current phase.
-        """
+        """Predict the enemy's next move for the UI hint."""
         weights = PHASE2_WEIGHTS if boss_phase == 2 else PHASE1_WEIGHTS
-        move = np.random.choice(['attack', 'big_hit', 'flurry'], p=weights)
+        move    = np.random.choice(['attack', 'big_hit', 'flurry'], p=weights)
         messages = {
             'flurry':  "The enemy is angered and preparing a flurry of strikes!",
             'big_hit': "The enemy is preparing a massive attack!",
@@ -646,9 +685,7 @@ class BattleManager:
     # ── Phase transition helper ────────────────────────────────────────────────
 
     def get_phase2_lore(self, boss_name):
-        """Return the phase 2 transition lore message for this boss.
-        Reads from the boss dict in enemies.py — no local dict needed.
-        """
+        """Return the phase 2 transition lore message for this boss."""
         boss = BOSSES.get(boss_name)
         if boss:
             return boss.get('phase2_lore', BOSS_PHASE2_LORE_DEFAULT)

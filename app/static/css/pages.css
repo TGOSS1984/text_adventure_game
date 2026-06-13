@@ -1554,3 +1554,59 @@ details[open] > .codex-summary .codex-chevron { transform: rotate(180deg); }
     .secret-map-fullimg { animation: none; }
     #secret-map-lightbox { transition: none; }
 }
+
+/* ── New Game+ UI ─────────────────────────────────────────── */
+.ng-plus-container {
+  margin-top: 2rem;
+  text-align: center;
+}
+
+.ng-plus-flavour {
+  font-style: italic;
+  color: var(--clr-text-muted, #aaa);
+  margin-bottom: 1rem;
+}
+
+.btn--ng-plus {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.9rem 2rem;
+  background: linear-gradient(135deg, #7b1c1c, #c0392b);
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.btn--ng-plus:hover {
+  opacity: 0.85;
+}
+
+.ng-plus-sub {
+  font-size: 0.72rem;
+  opacity: 0.75;
+  font-style: italic;
+}
+
+.ng-plus-banner {
+  background: rgba(120, 20, 20, 0.25);
+  border: 1px solid #c0392b;
+  border-radius: 4px;
+  padding: 0.75rem 1.25rem;
+  margin-bottom: 1.5rem;
+  text-align: center;
+}
+
+.ng-plus-badge {
+  font-size: 1.1rem;
+  font-weight: bold;
+  color: #e74c3c;
+}
+
+.ng-plus-indicator {
+  color: #e74c3c;
+}
