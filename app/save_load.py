@@ -19,6 +19,14 @@ Refactor additions:
   load_game() uses this to backfill missing keys from old saves.
 - Basic type/structure validation on load — rejects saves where core fields
   are the wrong type to prevent corrupted data reaching route logic.
+
+Version history:
+    1 — original session structure
+    2 — dual specials, active effects (dot_damage, buff_stat, shield_pct etc)
+    3 — NG+ keys (ng_plus, ng_plus_mode, ng_plus_souls_carried)
+          shadow realm keys (secret_chapters, secret_return_chapter)
+          damage type keys (magic_attack, magic_defense on enemy/character)
+          Commit 3 will bump to 4 when run_stats is added.
 """
 
 import json
@@ -35,52 +43,102 @@ _SKIP_KEYS = {'_flashes', '_csrf_token'}
 # Bump this integer whenever the session structure changes (new keys, renamed
 # keys, changed types). Old saves will be backfilled with SESSION_DEFAULTS
 # for any missing keys rather than crashing.
-SAVE_VERSION = 2
+#
+# IMPORTANT: whenever you add a new session key anywhere in the codebase,
+# add it to SESSION_DEFAULTS below AND bump SAVE_VERSION.
+SAVE_VERSION = 3
 
 # ── Session defaults ──────────────────────────────────────────────────────────
 # Canonical list of every session key used across the app and its safe default.
-# When you add a new session key anywhere: add it here too.
 # load_game() uses this to backfill keys missing from older saves.
+#
+# Organised by logical group to make additions easy to locate.
 SESSION_DEFAULTS = {
-    "character":           {},
-    "chapter":             0,
-    "hp":                  100,
-    "enemy":               {},
-    "enemy_is_boss":       False,
-    "estus":               5,
-    "estus_max":           5,
-    "mp":                  0,
-    "special_cooldown":    0,
-    "stunned":             False,
-    "smoke_screen_active": False,
-    "souls":               0,
-    "shop_bought":         [],
-    "boss_phase":          1,
-    "phase_changed":       False,
-    "predicted_move":      None,
-    "predicted_msg":       None,
-    "battle_bg":           "images/areas/undead_settlement.jpg",
+
+    # ── Character & run identity ───────────────────────────────────────────
+    "character":            {},
+    "gift":                 "fading_soul",
+    "chapter":              0,
+    "choices":              [],
+    "rested_here":          False,
+
+    # ── Vitals ────────────────────────────────────────────────────────────
+    "hp":                   100,
+    "estus":                5,
+    "estus_max":            5,
+    "mp":                   0,
+    "souls":                0,
+
+    # ── Combat state ──────────────────────────────────────────────────────
+    "enemy":                {},
+    "enemy_is_boss":        False,
     "chapter_after_battle": 0,
-    "gift":                "fading_soul",
-    "rested_here":         False,
-    "choices":             [],
+    "battle_bg":            "images/areas/undead_settlement.jpg",
+    "boss_phase":           1,
+    "phase_changed":        False,
+    "predicted_move":       None,
+    "predicted_msg":        None,
+    "special_cooldown":     0,
+    "stunned":              False,
+    "smoke_screen_active":  False,
+    "shop_bought":          [],
+
+    # ── Active effects (dual specials — Commit 21 / refactor) ─────────────
+    "dot_damage":           0,
+    "dot_turns":            0,
+    "dot_label":            "",
+    "buff_stat":            None,
+    "buff_amount":          0,
+    "buff_turns":           0,
+    "buff_label":           "",
+    "shield_pct":           0.0,
+    "shield_turns":         0,
+
+    # ── New Game+ (Commit 2) ───────────────────────────────────────────────
+    # ng_plus       — current NG+ depth (0 = first run, 1 = NG+, etc.)
+    # ng_plus_mode  — 'new_journey' or 'legacy' (set during NG+ entry)
+    # ng_plus_souls_carried — souls carried after cap (display only)
+    "ng_plus":              0,
+    "ng_plus_mode":         "new_journey",
+    "ng_plus_souls_carried": 0,
+
+    # ── Shadow realm (refactor) ────────────────────────────────────────────
+    "secret_chapters":        [],
+    "secret_return_chapter":  0,
 }
 
 # ── Basic type validation ─────────────────────────────────────────────────────
 # Maps key → expected Python type. Checked on load; mismatches are corrected
 # using SESSION_DEFAULTS rather than crashing.
 _EXPECTED_TYPES = {
-    "character":        dict,
-    "chapter":          int,
-    "hp":               (int, float),
-    "enemy":            dict,
-    "estus":            int,
-    "estus_max":        int,
-    "mp":               (int, float),
-    "special_cooldown": int,
-    "souls":            (int, float),
-    "shop_bought":      list,
-    "boss_phase":       int,
+    # Core
+    "character":             dict,
+    "chapter":               int,
+    "hp":                    (int, float),
+    "estus":                 int,
+    "estus_max":             int,
+    "mp":                    (int, float),
+    "souls":                 (int, float),
+    "shop_bought":           list,
+    "choices":               list,
+    # Combat
+    "enemy":                 dict,
+    "boss_phase":            int,
+    "special_cooldown":      int,
+    "chapter_after_battle":  int,
+    # Active effects
+    "dot_damage":            (int, float),
+    "dot_turns":             int,
+    "buff_amount":           (int, float),
+    "buff_turns":            int,
+    "shield_pct":            float,
+    "shield_turns":          int,
+    # NG+
+    "ng_plus":               int,
+    "ng_plus_souls_carried": (int, float),
+    # Shadow realm
+    "secret_chapters":       list,
+    "secret_return_chapter": int,
 }
 
 
@@ -125,17 +183,17 @@ def load_game(session):
 
     saved_version = data.pop("_save_version", 0)
     if saved_version < SAVE_VERSION:
-        print(f"[INFO] Save version {saved_version} < current {SAVE_VERSION}. "
+        print(f"[INFO] Save version {saved_version} → {SAVE_VERSION}. "
               f"Backfilling missing keys with defaults.")
 
-    # ── Backfill missing keys from SESSION_DEFAULTS ────────────────────────
+    # ── Backfill missing keys ──────────────────────────────────────────────
     for key, default in SESSION_DEFAULTS.items():
         if key not in data:
             data[key] = default
             if saved_version < SAVE_VERSION:
                 print(f"[INFO]  backfilled '{key}' = {default!r}")
 
-    # ── Type validation — correct wrong types rather than crashing ─────────
+    # ── Type validation ────────────────────────────────────────────────────
     for key, expected in _EXPECTED_TYPES.items():
         val = data.get(key)
         if val is not None and not isinstance(val, expected):
@@ -143,6 +201,16 @@ def load_game(session):
             print(f"[WARN] load_game: '{key}' expected {expected}, "
                   f"got {type(val).__name__}. Resetting to default.")
             data[key] = default
+
+    # ── Legacy run HP guard ────────────────────────────────────────────────
+    # Bearer's Legacy runs may have max_hp higher than the class base.
+    # Ensure loaded hp never exceeds the saved character's max_hp.
+    char = data.get("character", {})
+    saved_hp = data.get("hp", 0)
+    saved_max = char.get("max_hp", saved_hp)
+    if saved_hp > saved_max:
+        print(f"[WARN] load_game: hp ({saved_hp}) > max_hp ({saved_max}). Clamping.")
+        data["hp"] = saved_max
 
     session.update(data)
     return True
