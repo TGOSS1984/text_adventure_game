@@ -194,15 +194,15 @@ BOSS_PHASE2_LORE_DEFAULT = (
 
 BOSSES = {
     "Cindergloom": {
-        "hp":            250,
+        "hp":            380,
         "attack":        0,
-        "magic_attack":  26,
+        "magic_attack":  30,
         "defense":       6,
-        "magic_defense": 16,
+        "magic_defense": 20,
         "damage_type":   "magic",
         "image":         "cindergloom.png",
         "lore":          "The final Flame Lord, bound in cinders and regret. Born of divine fire and destined to consume the end of all things. Within the lightless halls of the Forgotten Citadel, his throne rises from a lake of slow-burning ash, each ember a whisper of worlds already claimed. His flesh is a tapestry of charred fissures, glowing faintly with the molten pulse beneath. Horns wreathed in fire arc from his brow like the spires of a dying sun, and his talons drip molten gold that hisses against the blackened stones",
-        "soul_reward":   350,
+        "soul_reward":   454,
         "phase2_lore": (
             "🔥 SECOND PHASE — The Flame Lord's wounds crack open, "
             "spilling rivers of molten gold. The air itself ignites. "
@@ -242,15 +242,15 @@ BOSSES = {
         ),
     },
     "Pale Drake": {
-        "hp":            250,
+        "hp":            290,
         "attack":        0,
-        "magic_attack":  24,
+        "magic_attack":  27,
         "defense":       5,
-        "magic_defense": 15,
+        "magic_defense": 18,
         "damage_type":   "magic",
         "image":         "pale_drake.png",
         "lore":          "In the wind-scoured depths of the Forgotten Valley, where frost clings even to the bones of the mountains, the Pale Drake slumbers beneath a sky that remembers no sun. His scales, the color of moonlit marble, shimmer with the faint light of dying stars.",
-        "soul_reward":   340,
+        "soul_reward":   367,
         "phase2_lore": (
             "❄️ SECOND PHASE — The Pale Drake rears back and shatters the ice "
             "shelf beneath you. His eyes, once clouded, blaze white. "
@@ -274,15 +274,15 @@ BOSSES = {
         ),
     },
     "The Ember Tyrant": {
-        "hp":            320,
+        "hp":            360,
         "attack":        0,
-        "magic_attack":  24,
+        "magic_attack":  27,
         "defense":       6,
-        "magic_defense": 14,
+        "magic_defense": 16,
         "damage_type":   "magic",
         "image":         "the_ember_tyrant.png",
         "lore":          "The Ember Tyrant towers above the blackened earth, his skin a tapestry of cracked obsidian and veins of molten fire. Chains, long since fused to his flesh, drag behind him like the echoes of a broken throne.",
-        "soul_reward":   430,
+        "soul_reward":   423,
         "phase2_lore": (
             "🌋 SECOND PHASE — The Ember Tyrant tears the fused chains "
             "free from his own flesh, roaring as obsidian skin splits. "
@@ -322,15 +322,15 @@ BOSSES = {
         ),
     },
     "The Abyss Watcher": {
-        "hp":            230,
-        "attack":        26,
-        "magic_attack":  18,
-        "defense":       10,
-        "magic_defense": 9,
+        "hp":            280,
+        "attack":        28,
+        "magic_attack":  20,
+        "defense":       12,
+        "magic_defense": 11,
         "damage_type":   "mixed",
         "image":         "the_abyss_watcher.png",
         "lore":          "At the brink of the world where the Abyss swallows all light, the Abyss Watcher stands sentinel. Cloaked in tattered black, his form is both man and beast — a knight's frame twisted by the long years in darkness.",
-        "soul_reward":   346,
+        "soul_reward":   364,
         "phase2_lore": (
             "🌑 SECOND PHASE — The Abyss Watcher drives his own sword "
             "through his chest and pulls it free glowing red. "
@@ -340,9 +340,9 @@ BOSSES = {
     "The Thorn Matriarch": {
         "hp":            240,
         "attack":        0,
-        "magic_attack":  25,
+        "magic_attack":  28,
         "defense":       6,
-        "magic_defense": 13,
+        "magic_defense": 16,
         "damage_type":   "magic",
         "image":         "the_thorn_matriarch.png",
         "lore":          "In the heart of the Chapel of Thorns, where rose and briar drink alike from bloodied soil, the Thorn Matriarch waits. Her armor blooms with living barbs, each petal forged from the steel of fallen pilgrims. Long strands of crimson hair drift like banners in the still, suffocating air. She moves with the elegance of a saint and the certainty of a blade, her every step sowing thorns that pierce flesh and spirit alike",
@@ -354,15 +354,15 @@ BOSSES = {
         ),
     },
     "The Blacksteel Sentinel": {
-        "hp":            250,
-        "attack":        23,
+        "hp":            280,
+        "attack":        25,
         "magic_attack":  0,
-        "defense":       11,
+        "defense":       13,
         "magic_defense": 4,
         "damage_type":   "physical",
         "image":         "the_blacksteel_sentinel.png",
         "lore":          "Within the furnace-lit shadow of the Iron Bastion, the Blacksteel Sentinel waits astride the wreckage of a thousand sieges. His armor is hammered from the very walls he has defended, blackened by the soot of endless forges and scarred by the weapons of would-be conquerors.",
-        "soul_reward":   355,
+        "soul_reward":   349,
         "phase2_lore": (
             "⚒️ SECOND PHASE — The Blacksteel Sentinel drives both fists "
             "into the forge-floor. The entire bastion shudders. His armour "
@@ -371,11 +371,11 @@ BOSSES = {
     },
 
     "Vaelhis, the Unmourned King": {
-        "hp":            260,
+        "hp":            300,
         "attack":        0,
-        "magic_attack":  22,
+        "magic_attack":  25,
         "defense":       8,
-        "magic_defense": 18,
+        "magic_defense": 20,
         "damage_type":   "magic",
         "image":         "vaelhis.png",
         "lore": (
@@ -386,7 +386,7 @@ BOSSES = {
             "frozen in the moment of their ending. He is not mourning them. He is mourning itself, "
             "given form and given patience."
         ),
-        "soul_reward":   368,
+        "soul_reward":   365,
         "phase2_lore": (
             "❄️ SECOND PHASE — Vaelhis raises his crown and the faces within it open their frozen eyes. "
             "The temperature drops beyond bearing. "
@@ -394,11 +394,11 @@ BOSSES = {
         ),
     },
     "The Drowned Sovereign": {
-        "hp":            280,
-        "attack":        24,
-        "magic_attack":  20,
-        "defense":       12,
-        "magic_defense": 14,
+        "hp":            330,
+        "attack":        27,
+        "magic_attack":  22,
+        "defense":       14,
+        "magic_defense": 16,
         "damage_type":   "mixed",
         "image":         "drowned_sovereign.png",
         "lore": (
@@ -408,7 +408,7 @@ BOSSES = {
             "simply by existing. Its amber light pulses with a rhythm that matches every living "
             "heartbeat nearby. It has been tracking yours since you stepped off the mechanism."
         ),
-        "soul_reward":   392,
+        "soul_reward":   399,
         "phase2_lore": (
             "🌊 SECOND PHASE — The Drowned Sovereign's amber light turns deep red. "
             "The dried seabed cracks and ancient water begins to seep upward. "
@@ -417,11 +417,11 @@ BOSSES = {
     },
 
     "The Starbound Colossus": {
-        "hp":            300,
-        "attack":        28,
+        "hp":            340,
+        "attack":        30,
         "magic_attack":  0,
-        "defense":       14,
-        "magic_defense": 8,
+        "defense":       15,
+        "magic_defense": 10,
         "damage_type":   "physical",
         "image":         "starbound_colossus.png",
         "lore": (
@@ -430,7 +430,7 @@ BOSSES = {
             "into the Shadow Realm and have been waiting there ever since — "
             "a constellation arranged around a defeat, still hoping for a rematch."
         ),
-        "soul_reward":   420,
+        "soul_reward":   422,
         "phase2_lore": (
             "🌟 SECOND PHASE — The Starbound Colossus slams his chain-sword into the pit floor. "
             "The stars in orbit collapse inward, fusing to his armour. "
@@ -438,11 +438,11 @@ BOSSES = {
         ),
     },
     "The Gilded Predator": {
-        "hp":            270,
-        "attack":        22,
-        "magic_attack":  22,
-        "defense":       10,
-        "magic_defense": 12,
+        "hp":            310,
+        "attack":        25,
+        "magic_attack":  25,
+        "defense":       12,
+        "magic_defense": 14,
         "damage_type":   "mixed",
         "image":         "gilded_predator.png",
         "lore": (
@@ -451,7 +451,7 @@ BOSSES = {
             "Its true form is motion itself — and motion, when given teeth and will, "
             "is the most dangerous predator that exists."
         ),
-        "soul_reward":   395,
+        "soul_reward":   373,
         "phase2_lore": (
             "✨ SECOND PHASE — The Gilded Predator abandons all pretence of form. "
             "It becomes light and motion and hunger, cycling through shapes faster than the eye can track. "
@@ -459,11 +459,11 @@ BOSSES = {
         ),
     },
     "The Saintess of Rot": {
-        "hp":            255,
+        "hp":            295,
         "attack":        0,
-        "magic_attack":  24,
+        "magic_attack":  27,
         "defense":       8,
-        "magic_defense": 16,
+        "magic_defense": 18,
         "damage_type":   "magic",
         "image":         "saintess_of_rot.png",
         "lore": (
@@ -472,7 +472,7 @@ BOSSES = {
             "Her faith is the conclusion she reached after long contemplation. "
             "She does not see rot as corruption. She sees it as completion."
         ),
-        "soul_reward":   385,
+        "soul_reward":   371,
         "phase2_lore": (
             "🌸 SECOND PHASE — The Saintess of Rot opens her arms and the garden responds. "
             "Scarlet blooms erupt from the ground around her, filling the air with spores "
@@ -480,11 +480,11 @@ BOSSES = {
         ),
     },
     "The Moon-Sworn Blade": {
-        "hp":            280,
-        "attack":        26,
-        "magic_attack":  18,
-        "defense":       12,
-        "magic_defense": 14,
+        "hp":            320,
+        "attack":        28,
+        "magic_attack":  20,
+        "defense":       13,
+        "magic_defense": 15,
         "damage_type":   "mixed",
         "image":         "moon_sworn_blade.png",
         "lore": (
@@ -494,7 +494,7 @@ BOSSES = {
             "she did not believe to be true. She is uncertain what to believe about you. "
             "The uncertainty is, itself, a form of respect."
         ),
-        "soul_reward":   405,
+        "soul_reward":   396,
         "phase2_lore": (
             "🌙 SECOND PHASE — The Moon-Sworn Blade sheathes her weapon. "
             "When she draws it again, it carries the moon's full weight — "
@@ -503,11 +503,11 @@ BOSSES = {
         ),
     },
     "Mesmereth, the Serpent Prince": {
-        "hp":            350,
-        "attack":        26,
-        "magic_attack":  28,
-        "defense":       16,
-        "magic_defense": 20,
+        "hp":            420,
+        "attack":        28,
+        "magic_attack":  30,
+        "defense":       18,
+        "magic_defense": 22,
         "damage_type":   "mixed",
         "image":         "mesmereth.png",
         "lore": (
@@ -519,7 +519,7 @@ BOSSES = {
             "His cold flame does not burn. It illuminates. Each strike reveals a truth "
             "the struck has been avoiding. He is the last of his kind. He chose to be."
         ),
-        "soul_reward":   500,
+        "soul_reward":   476,
         "phase2_lore": (
             "🐍 SECOND PHASE — Mesmereth, the Serpent Prince sheds his contained form entirely. "
             "The sanctum fills with cold flame — every surface, the air itself, burning "

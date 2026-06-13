@@ -88,7 +88,7 @@ CLASSES = {
         "crit_chance":      0.30,
         "crit_multiplier":  1.5,
         "dodge_chance":     0.60,
-        "block_multiplier": 0.50,
+        "block_multiplier": 0.60,
         "damage_type":      "magic",
         # ── Assets ────────────────────────────────────────────────────────────
         "image":            "classes/mage.png",
@@ -280,15 +280,15 @@ CLASSES = {
         # ── Core stats ────────────────────────────────────────────────────────
         "attack":           0,
         "magic_attack":     24,
-        "defense":          9,
+        "defense":          10,
         "magic_defense":    22,
         "max_hp":           100,
         "mp_max":           130,
         # ── Combat modifiers ──────────────────────────────────────────────────
-        "crit_chance":      0.20,
+        "crit_chance":      0.25,
         "crit_multiplier":  1.5,
         "dodge_chance":     0.55,
-        "block_multiplier": 0.60,
+        "block_multiplier": 0.50,
         "damage_type":      "magic",
         # ── Assets ────────────────────────────────────────────────────────────
         "image":            "classes/necromancer.png",
@@ -306,7 +306,7 @@ CLASSES = {
         # ── Secondary special ─────────────────────────────────────────────────
         "special2_name":         "Soul Leech",
         "special2_label":        "💉 Soul Leech",
-        "special2_desc":         "Drain life from the enemy — 1.5× magic damage, heal for 100% of damage dealt (minimum 15 HP).",
+        "special2_desc":         "Drain life from the enemy — 1.5× magic damage, heal for 150% of damage dealt (minimum 15 HP).",
         "special2_cost":         35,
         "special2_effect":       "leech",
         "special2_multiplier":   1.5,

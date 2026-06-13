@@ -23,6 +23,16 @@ Commit 12 addition:
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 </head>
 <body>
+    <video
+        id="story-bg-video"
+        autoplay muted loop playsinline
+        preload="auto"
+        aria-hidden="true"
+        poster="{{ url_for('static', filename='images/areas/bonfire.jpg') }}"
+    >
+        <source src="{{ url_for('static', filename='videos/dark-souls-bonfire.mp4') }}" type="video/mp4">
+    </video>
+
     <div class="bonfire-bg">
         <h1 class="you-died" style="color: crimson; font-size: 3rem;">YOU DIED</h1>
         <p class="battle-info" style="font-style: italic; margin-bottom: 20px;">The flames fade... but your will endures.</p>
@@ -43,7 +53,15 @@ Commit 12 addition:
 
     <script src="{{ url_for('static', filename='js/audio_manager.js') }}"></script>
     <script src="{{ url_for('static', filename='js/settings.js') }}"></script>
-    <script>sessionStorage.setItem('elden_fast', '1');</script>
+    <script>
+    sessionStorage.setItem('elden_fast', '1');
+    // Fade in background video once ready
+    const vid = document.getElementById('story-bg-video');
+    if (vid) {
+        if (vid.readyState >= 3) { vid.classList.add('loaded'); }
+        else { vid.addEventListener('canplaythrough', () => vid.classList.add('loaded'), { once: true }); }
+    }
+    </script>
 
 </body>
 </html>
