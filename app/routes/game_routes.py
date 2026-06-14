@@ -46,6 +46,31 @@ Commit 3 — Run stats tracking:
 
     run_stats is passed to death.html and game.html (ending chapters) so
     Commits 4 and 5 can display it without any further route changes.
+
+Commit 8 — New class unlock system:
+    player_record.py manages persistent cross-run unlock data in
+    saves/player_record.json. Unlike savegame.json this file is NEVER
+    deleted by /restart — unlocks survive across playthroughs.
+
+    unlocked_names is loaded on every /index request and passed to the
+    template so locked class cards can be rendered correctly.
+
+    /start validates the chosen class is unlocked (guard against form tampering).
+
+    Unlock triggers:
+        Barbarian — fires in /game GET when an ending chapter (100/101/102)
+                    is reached. unlock_class() is a no-op if already unlocked
+                    so visiting the ending multiple times is safe.
+        Samurai   — fires in battle_routes.py when Mesmereth is defeated.
+        Wretch    — unlocked_by_default=True, always available.
+
+    _reset_combat_state() gains four new keys:
+        hot_dmg, hot_turns         — Barbarian Berserker Rage HoT
+        parry_turns, parry_counter_pct — Samurai Iron Stance parry counter
+
+    Note on Heroku: saves/player_record.json uses the filesystem, which is
+    ephemeral on Heroku's free/eco tier. Unlocks persist within a dyno
+    session but reset on dyno restart. Same limitation as savegame.json.
 """
 
 from flask import render_template, request, redirect, url_for, session, flash
@@ -60,6 +85,7 @@ from ..classes import CLASSES
 from ..save_load import save_game, load_game, has_save, delete_save
 from ..enemies import ENEMIES, BOSSES
 from ..story.story_engine import Story
+from ..player_record import get_unlocked_names, unlock_class, increment_total_runs
 
 # ── Ending chapter IDs — show NG+ buttons on these ───────────────────────────
 ENDING_CHAPTERS = {100, 101, 102}
@@ -128,6 +154,9 @@ def _reset_combat_state(souls=0, ng_level=0):
 
     Commit 3: run_stats and last_counted_chapter initialised here so they
     reset on every new run regardless of mode (fresh, New Journey, Legacy).
+
+    Commit 8: hot_dmg, hot_turns, parry_turns, parry_counter_pct added for
+    new class special effect session state.
     """
     session["chapter"]               = 0
     session["enemy"]                 = {}
@@ -152,6 +181,11 @@ def _reset_combat_state(souls=0, ng_level=0):
     session["buff_label"]            = ""
     session["shield_pct"]            = 0.0
     session["shield_turns"]          = 0
+    # Commit 8: new active effect state for Barbarian HoT and Samurai parry
+    session["hot_dmg"]               = 0
+    session["hot_turns"]             = 0
+    session["parry_turns"]           = 0
+    session["parry_counter_pct"]     = 0.0
     # ── Shadow realm state ────────────────────────────────────────────────────
     session["secret_chapters"]       = []
     # ── Run stats (Commit 3) ──────────────────────────────────────────────────
@@ -198,7 +232,14 @@ def register(blueprint):
 
     @blueprint.route("/")
     def index():
-        return render_template("index.html", classes=CLASSES, has_save=has_save())
+        # Commit 8: load unlocked class names for carousel filtering
+        unlocked_names = get_unlocked_names()
+        return render_template(
+            "index.html",
+            classes=CLASSES,
+            unlocked_names=unlocked_names,
+            has_save=has_save(),
+        )
 
     @blueprint.route("/start", methods=["POST"])
     def start():
@@ -212,12 +253,26 @@ def register(blueprint):
             )
             return redirect(url_for("main.index"))
 
+        # Commit 8: guard against form tampering — verify class is unlocked
+        unlocked_names = get_unlocked_names()
+        if char_class not in unlocked_names:
+            flash(
+                f"{char_class} is not yet unlocked. "
+                f"Complete the required conditions first.",
+                "error"
+            )
+            return redirect(url_for("main.index"))
+
+        # ── For NG+ re-entry: class is pre-filled, ng_level already set ───────
+        # Read before _reset_run_session clears the session.
         ng_level      = session.get("ng_plus", 0)
         carried_souls = session.get("ng_plus_souls_carried", 0)
         ng_mode       = session.get("ng_plus_mode", "new_journey")
 
         delete_save()
 
+        # Legacy mode bypasses /start entirely (redirects to /game directly),
+        # but guard here in case someone navigates back to /start manually.
         if ng_level > 0 and ng_mode == "legacy":
             session["hp"] = session["character"].get("max_hp", 100)
             session.pop("ng_plus_souls_carried", None)
@@ -235,6 +290,7 @@ def register(blueprint):
             flash("Invalid character class.", "error")
             return redirect(url_for("main.index"))
 
+        # ── Apply starting gift (first run only) ───────────────────────────────
         gift = (request.form.get("gift") or "fading_soul").strip()
         if ng_level == 0:
             session["gift"] = gift
@@ -261,6 +317,7 @@ def register(blueprint):
                     current = session["character"].get(stat, 0)
                     session["character"][stat] = round(current + amount, 4)
         else:
+            # NG+ run — clear the carried_souls flag now that it's been applied
             session["gift"] = "fading_soul"
             session.pop("ng_plus_souls_carried", None)
             session.pop("ng_plus_mode", None)
@@ -268,10 +325,19 @@ def register(blueprint):
         session.pop("_flashes", None)
         return redirect(url_for("main.game"))
 
+    # ── New Game+ — New Journey ────────────────────────────────────────────────
+
     @blueprint.route("/ng_plus", methods=["POST"])
     def ng_plus():
-        """New Journey — reset to base class stats, player picks class."""
+        """
+        Begin a New Journey run.
+
+        Player chooses a new class on the index screen. Character resets to
+        base stats for that class. Enemies scale up. Souls capped and carried.
+        No gift applied on NG+ runs.
+        """
         current_ng = session.get("ng_plus", 0)
+
         char_class = session.get("character", {}).get("char_class", "")
         if not char_class:
             flash("Could not determine class. Please restart.", "error")
@@ -281,10 +347,19 @@ def register(blueprint):
         session["ng_plus_mode"] = "new_journey"
         return redirect(url_for("main.index"))
 
+    # ── New Game+ — Bearer's Legacy ────────────────────────────────────────────
+
     @blueprint.route("/ng_plus_legacy", methods=["POST"])
     def ng_plus_legacy():
-        """Bearer's Legacy — keep upgraded character stats, reset run state."""
+        """
+        Begin a Bearer's Legacy run.
+
+        Same class. All upgraded stats preserved. shop_bought resets.
+        Enemies scale up. Souls capped and carried.
+        Redirects directly to /game — no class select needed.
+        """
         current_ng = session.get("ng_plus", 0)
+
         char_class = session.get("character", {}).get("char_class", "")
         if not char_class:
             flash("Could not determine class. Please restart.", "error")
@@ -300,6 +375,8 @@ def register(blueprint):
 
         session.pop("_flashes", None)
         return redirect(url_for("main.game"))
+
+    # ── Main game loop ─────────────────────────────────────────────────────────
 
     @blueprint.route("/game", methods=["GET", "POST"])
     def game():
@@ -371,8 +448,8 @@ def register(blueprint):
         if chapter_id != last_counted:
             stats = session.get("run_stats", _blank_run_stats())
             stats["chapters_visited"] = stats.get("chapters_visited", 0) + 1
-            session["run_stats"]             = stats
-            session["last_counted_chapter"]  = chapter_id
+            session["run_stats"]            = stats
+            session["last_counted_chapter"] = chapter_id
 
         # ── Secret map icon ───────────────────────────────────────────────────
         is_eligible = (
@@ -396,7 +473,16 @@ def register(blueprint):
         ng_level     = session.get("ng_plus", 0)
         show_ng_plus = chapter_id in ENDING_CHAPTERS
 
-        # Build completion data for the ending screen (Commit 4 will display it)
+        # ── Commit 8: Barbarian unlock on game completion ──────────────────────
+        # unlock_class() is a no-op if already unlocked, so repeated visits
+        # to ending chapters are safe. increment_total_runs() always fires.
+        if chapter_id in ENDING_CHAPTERS:
+            newly_unlocked = unlock_class("Barbarian")
+            if newly_unlocked:
+                flash("💢 The Barbarian class has been unlocked!", "info")
+            increment_total_runs()
+
+        # Build completion data for the ending/status screens
         run_stats      = session.get("run_stats", _blank_run_stats())
         bosses_missed  = [
             b for b in ALL_BOSS_NAMES
@@ -425,6 +511,7 @@ def register(blueprint):
 
     @blueprint.route("/enter_shadow_realm", methods=["POST"])
     def enter_shadow_realm():
+        """Store the return chapter and redirect to the Shadow Realm entry."""
         return_chapter = session.get("chapter", 0)
         session["secret_return_chapter"] = return_chapter
         session["chapter"] = 103
@@ -432,6 +519,7 @@ def register(blueprint):
 
     @blueprint.route("/leave_shadow_realm", methods=["POST"])
     def leave_shadow_realm():
+        """Return to the chapter the player was on when they found the map."""
         return_chapter = session.get("secret_return_chapter", 0)
         session["chapter"] = return_chapter
         return redirect(url_for("main.game"))
@@ -458,8 +546,15 @@ def register(blueprint):
 
     @blueprint.route("/status")
     def status():
+        """
+        Player status screen — reads live session values so all
+        shop upgrades, gift bonuses, and current HP/MP are reflected.
+        Adding a new stat: pass it here and display it in status.html.
+        """
         character  = session.get("character", {})
         class_name = character.get("class_name", "")
+
+        # Pull class lore and icon from CLASSES — single source of truth
         cls_def    = CLASSES.get(class_name, {})
         class_lore = cls_def.get("lore", "")
         class_icon = cls_def.get("icon", "fa-shield-halved")

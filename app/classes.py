@@ -25,6 +25,8 @@ Secondary special fields (35 MP, same shared cooldown):
     special2_buff_label — key into BUFF_EXPIRE_MESSAGES in config.py
     special2_shield_pct — fraction of incoming damage absorbed (0.0–1.0)
     special2_shield_turns — duration in turns
+    special2_parry_counter_pct — fraction of player attack auto-countered each
+                          turn while parry is active (parry effect only)
 
 Unlock flags (Commit 8):
     unlocked_by_default — True = always available on the class select screen
@@ -36,18 +38,22 @@ New effect types added in Commit 7 (handled in combat.py Commit 8):
     combo_buff_hot  — Barbarian Berserker Rage: +6 atk buff 3t + 8 HP/turn HoT 3t
     double_hit      — Samurai Iaijutsu: two hits at 1.0x physical attack each
     random_hit      — Wretch Desperate Strike: random damage 5–60, no stat scaling
-    parry           — Samurai Iron Stance: 50% shield 3t (reuses shield mechanism)
+    parry           — Samurai Iron Stance: 50% damage shield for 3 turns AND
+                      auto-counter at special2_parry_counter_pct × player attack
+                      on each turn an enemy hit lands while parry is active.
+                      Session keys: parry_turns, parry_counter_pct (Commit 8).
     gamble_heal     — Wretch Fortune's Favour: 50/50 large heal or small heal + atk buff
 
-DOT/BUFF config keys added in Commit 8 (config.py):
-    'berserker_rage' — BUFF_EXPIRE_MESSAGES key for Barbarian atk buff
-    'iron_stance'    — BUFF_EXPIRE_MESSAGES key for Samurai parry shield
+DOT/BUFF/EXPIRE config keys to add in Commit 8 (config.py):
+    'berserker_rage' — BUFF_EXPIRE_MESSAGES: Barbarian atk buff expiry
+    'iron_stance'    — BUFF_EXPIRE_MESSAGES: Samurai parry shield expiry
+    'wretch_fury'    — BUFF_EXPIRE_MESSAGES: Wretch consolation atk buff expiry
 """
 
 CLASSES = {
     "Knight": {
         # ── Core stats ────────────────────────────────────────────────────────
-        "attack":           17,
+        "attack":           170,
         "magic_attack":     0,
         "defense":          15,
         "magic_defense":    10,
@@ -76,21 +82,22 @@ CLASSES = {
         "special_variance":   4,
         "special_min_dmg":    5,
         # ── Secondary special ─────────────────────────────────────────────────
-        "special2_name":         "War Cry",
-        "special2_label":        "⚔ War Cry",
-        "special2_desc":         "Raise your weapon and bellow. Attack +5 for 3 turns.",
-        "special2_cost":         35,
-        "special2_effect":       "buff_attack",
-        "special2_multiplier":   0,
-        "special2_dot_dmg":      0,
-        "special2_dot_turns":    0,
-        "special2_dot_label":    "",
-        "special2_buff_stat":    "attack",
-        "special2_buff_amount":  5,
-        "special2_buff_turns":   3,
-        "special2_buff_label":   "war_cry",
-        "special2_shield_pct":   0.0,
-        "special2_shield_turns": 0,
+        "special2_name":              "War Cry",
+        "special2_label":             "⚔ War Cry",
+        "special2_desc":              "Raise your weapon and bellow. Attack +5 for 3 turns.",
+        "special2_cost":              35,
+        "special2_effect":            "buff_attack",
+        "special2_multiplier":        0,
+        "special2_dot_dmg":           0,
+        "special2_dot_turns":         0,
+        "special2_dot_label":         "",
+        "special2_buff_stat":         "attack",
+        "special2_buff_amount":       5,
+        "special2_buff_turns":        3,
+        "special2_buff_label":        "war_cry",
+        "special2_shield_pct":        0.0,
+        "special2_shield_turns":      0,
+        "special2_parry_counter_pct": 0.0,
         # ── Flavour ───────────────────────────────────────────────────────────
         "lore": (
             "Once a sentinel of the Sunken Citadel, their oath was not broken "
@@ -129,21 +136,22 @@ CLASSES = {
         "special_variance":   0,
         "special_min_dmg":    10,
         # ── Secondary special ─────────────────────────────────────────────────
-        "special2_name":         "Nullfield",
-        "special2_label":        "🔮 Nullfield",
-        "special2_desc":         "Weave a barrier of arcane force. Incoming damage halved for 2 turns.",
-        "special2_cost":         35,
-        "special2_effect":       "shield",
-        "special2_multiplier":   0,
-        "special2_dot_dmg":      0,
-        "special2_dot_turns":    0,
-        "special2_dot_label":    "",
-        "special2_buff_stat":    None,
-        "special2_buff_amount":  0,
-        "special2_buff_turns":   0,
-        "special2_buff_label":   "nullfield",
-        "special2_shield_pct":   0.50,
-        "special2_shield_turns": 3,
+        "special2_name":              "Nullfield",
+        "special2_label":             "🔮 Nullfield",
+        "special2_desc":              "Weave a barrier of arcane force. Incoming damage halved for 2 turns.",
+        "special2_cost":              35,
+        "special2_effect":            "shield",
+        "special2_multiplier":        0,
+        "special2_dot_dmg":           0,
+        "special2_dot_turns":         0,
+        "special2_dot_label":         "",
+        "special2_buff_stat":         None,
+        "special2_buff_amount":       0,
+        "special2_buff_turns":        0,
+        "special2_buff_label":        "nullfield",
+        "special2_shield_pct":        0.50,
+        "special2_shield_turns":      3,
+        "special2_parry_counter_pct": 0.0,
         # ── Flavour ───────────────────────────────────────────────────────────
         "lore": (
             "Bearer of forbidden glintfire, the Mage whispers truths carved in starlight. "
@@ -182,21 +190,22 @@ CLASSES = {
         "special_variance":   0,
         "special_min_dmg":    5,
         # ── Secondary special ─────────────────────────────────────────────────
-        "special2_name":         "Backstab",
-        "special2_label":        "🗡 Backstab",
-        "special2_desc":         "Strike a critical spot — the enemy bleeds for 8 damage per turn for 4 turns.",
-        "special2_cost":         35,
-        "special2_effect":       "dot",
-        "special2_multiplier":   0.5,
-        "special2_dot_dmg":      8,
-        "special2_dot_turns":    4,
-        "special2_dot_label":    "bleed",
-        "special2_buff_stat":    None,
-        "special2_buff_amount":  0,
-        "special2_buff_turns":   0,
-        "special2_buff_label":   "",
-        "special2_shield_pct":   0.0,
-        "special2_shield_turns": 0,
+        "special2_name":              "Backstab",
+        "special2_label":             "🗡 Backstab",
+        "special2_desc":              "Strike a critical spot — the enemy bleeds for 8 damage per turn for 4 turns.",
+        "special2_cost":              35,
+        "special2_effect":            "dot",
+        "special2_multiplier":        0.5,
+        "special2_dot_dmg":           8,
+        "special2_dot_turns":         4,
+        "special2_dot_label":         "bleed",
+        "special2_buff_stat":         None,
+        "special2_buff_amount":       0,
+        "special2_buff_turns":        0,
+        "special2_buff_label":        "",
+        "special2_shield_pct":        0.0,
+        "special2_shield_turns":      0,
+        "special2_parry_counter_pct": 0.0,
         # ── Flavour ───────────────────────────────────────────────────────────
         "lore": (
             "Born in the shadow of the Ashen Spires, the Rogue strikes like regret "
@@ -235,21 +244,22 @@ CLASSES = {
         "special_variance":   0,
         "special_min_dmg":    5,
         # ── Secondary special ─────────────────────────────────────────────────
-        "special2_name":         "Poison Arrow",
-        "special2_label":        "🏹 Poison Arrow",
-        "special2_desc":         "Loose a barbed arrow laced with venom. 7 poison damage per turn for 5 turns.",
-        "special2_cost":         35,
-        "special2_effect":       "dot",
-        "special2_multiplier":   0,
-        "special2_dot_dmg":      7,
-        "special2_dot_turns":    5,
-        "special2_dot_label":    "poison",
-        "special2_buff_stat":    None,
-        "special2_buff_amount":  0,
-        "special2_buff_turns":   0,
-        "special2_buff_label":   "",
-        "special2_shield_pct":   0.0,
-        "special2_shield_turns": 0,
+        "special2_name":              "Poison Arrow",
+        "special2_label":             "🏹 Poison Arrow",
+        "special2_desc":              "Loose a barbed arrow laced with venom. 7 poison damage per turn for 5 turns.",
+        "special2_cost":              35,
+        "special2_effect":            "dot",
+        "special2_multiplier":        0,
+        "special2_dot_dmg":           7,
+        "special2_dot_turns":         5,
+        "special2_dot_label":         "poison",
+        "special2_buff_stat":         None,
+        "special2_buff_amount":       0,
+        "special2_buff_turns":        0,
+        "special2_buff_label":        "",
+        "special2_shield_pct":        0.0,
+        "special2_shield_turns":      0,
+        "special2_parry_counter_pct": 0.0,
         # ── Flavour ───────────────────────────────────────────────────────────
         "lore": (
             "From the ruins of Eldergrove they come, eyes hollow with distant wars. "
@@ -288,21 +298,22 @@ CLASSES = {
         "special_variance":   0,
         "special_min_dmg":    0,
         # ── Secondary special ─────────────────────────────────────────────────
-        "special2_name":         "Hammer of Justice",
-        "special2_label":        "🔨 Hammer of Justice",
-        "special2_desc":         "1.5× mixed damage strike. Sacred force stuns — the enemy cannot counter.",
-        "special2_cost":         35,
-        "special2_effect":       "stun",
-        "special2_multiplier":   1.5,
-        "special2_dot_dmg":      0,
-        "special2_dot_turns":    0,
-        "special2_dot_label":    "",
-        "special2_buff_stat":    None,
-        "special2_buff_amount":  0,
-        "special2_buff_turns":   0,
-        "special2_buff_label":   "",
-        "special2_shield_pct":   0.0,
-        "special2_shield_turns": 0,
+        "special2_name":              "Hammer of Justice",
+        "special2_label":             "🔨 Hammer of Justice",
+        "special2_desc":              "1.5× mixed damage strike. Sacred force stuns — the enemy cannot counter.",
+        "special2_cost":              35,
+        "special2_effect":            "stun",
+        "special2_multiplier":        1.5,
+        "special2_dot_dmg":           0,
+        "special2_dot_turns":         0,
+        "special2_dot_label":         "",
+        "special2_buff_stat":         None,
+        "special2_buff_amount":       0,
+        "special2_buff_turns":        0,
+        "special2_buff_label":        "",
+        "special2_shield_pct":        0.0,
+        "special2_shield_turns":      0,
+        "special2_parry_counter_pct": 0.0,
         # ── Flavour ───────────────────────────────────────────────────────────
         "lore": (
             "Oathbound to a god who no longer answers, the Paladin carries faith "
@@ -341,22 +352,23 @@ CLASSES = {
         "special_variance":   8,
         "special_min_dmg":    12,
         # ── Secondary special ─────────────────────────────────────────────────
-        "special2_name":         "Soul Leech",
-        "special2_label":        "💉 Soul Leech",
-        "special2_desc":         "Drain life — 1.5× magic damage, heal for 150% of damage dealt (min 15 HP).",
-        "special2_cost":         35,
-        "special2_effect":       "leech",
-        "special2_multiplier":   1.5,
-        "special2_leech_min_heal": 15,
-        "special2_dot_dmg":      0,
-        "special2_dot_turns":    0,
-        "special2_dot_label":    "",
-        "special2_buff_stat":    None,
-        "special2_buff_amount":  0,
-        "special2_buff_turns":   0,
-        "special2_buff_label":   "",
-        "special2_shield_pct":   0.0,
-        "special2_shield_turns": 0,
+        "special2_name":              "Soul Leech",
+        "special2_label":             "💉 Soul Leech",
+        "special2_desc":              "Drain life — 1.5× magic damage, heal for 150% of damage dealt (min 15 HP).",
+        "special2_cost":              35,
+        "special2_effect":            "leech",
+        "special2_multiplier":        1.5,
+        "special2_leech_min_heal":    15,
+        "special2_dot_dmg":           0,
+        "special2_dot_turns":         0,
+        "special2_dot_label":         "",
+        "special2_buff_stat":         None,
+        "special2_buff_amount":       0,
+        "special2_buff_turns":        0,
+        "special2_buff_label":        "",
+        "special2_shield_pct":        0.0,
+        "special2_shield_turns":      0,
+        "special2_parry_counter_pct": 0.0,
         # ── Flavour ───────────────────────────────────────────────────────────
         "lore": (
             "They do not fear death. They have spoken to it, bargained with it, "
@@ -373,7 +385,7 @@ CLASSES = {
     "Barbarian": {
         # ── Core stats ────────────────────────────────────────────────────────
         # High HP and attack, low defenses and magic resistance.
-        # Survives by killing quickly and healing off Berserker Rage.
+        # Survives by killing quickly and healing off Berserker Rage HoT.
         # Differentiated from Knight: Knight endures, Barbarian overwhelms.
         "attack":           24,
         "magic_attack":     0,
@@ -385,7 +397,7 @@ CLASSES = {
         "crit_chance":      0.25,
         "crit_multiplier":  1.5,
         "dodge_chance":     0.25,
-        "block_multiplier": 0.45,   # 55% damage reduced — decent but not Knight-tier
+        "block_multiplier": 0.45,
         "damage_type":      "physical",
         # ── Assets ────────────────────────────────────────────────────────────
         "image":            "classes/barbarian.png",
@@ -395,43 +407,40 @@ CLASSES = {
         "unlock_condition":    "Complete the main story (any ending).",
         # ── Primary special — combo_buff_hot ──────────────────────────────────
         # Berserker Rage: +6 attack for 3 turns AND heal 8 HP per turn for 3 turns.
-        # The HoT (heal-over-time) is a new session mechanism added in Commit 8.
-        # combat.py Commit 8: effect == 'combo_buff_hot' sets both buff and HoT state.
+        # combat.py Commit 8: effect == 'combo_buff_hot' sets buff AND hot state.
         "special_name":       "Berserker Rage",
         "special_label":      "💢 Berserker Rage",
         "special_desc":       "Blood rises. Attack +6 for 3 turns, recover 8 HP per turn for 3 turns.",
         "special_cost":       50,
         "special_cooldown":   5,
-        "special_multiplier": 0,        # no direct damage — pure buff + HoT
+        "special_multiplier": 0,
         "special_effect":     "combo_buff_hot",
         "special_variance":   0,
         "special_min_dmg":    0,
-        # Combo-specific fields (read by combat.py Commit 8):
         "special_buff_stat":    "attack",
         "special_buff_amount":  6,
         "special_buff_turns":   3,
         "special_buff_label":   "berserker_rage",
-        "special_hot_dmg":      8,      # HP healed per turn (HoT)
+        "special_hot_dmg":      8,
         "special_hot_turns":    3,
         # ── Secondary special — Feel No Pain ──────────────────────────────────
-        # Full damage immunity for 2 turns. Uses existing shield mechanism at 100%.
-        # Low magic defense means the Barbarian still struggles against magic enemies —
-        # Feel No Pain blocks everything but the enemy can wait it out.
-        "special2_name":         "Feel No Pain",
-        "special2_label":        "🩸 Feel No Pain",
-        "special2_desc":         "The pain does not register. All incoming damage blocked for 2 turns.",
-        "special2_cost":         35,
-        "special2_effect":       "shield",
-        "special2_multiplier":   0,
-        "special2_dot_dmg":      0,
-        "special2_dot_turns":    0,
-        "special2_dot_label":    "",
-        "special2_buff_stat":    None,
-        "special2_buff_amount":  0,
-        "special2_buff_turns":   0,
-        "special2_buff_label":   "",
-        "special2_shield_pct":   1.0,   # 100% block — full immunity
-        "special2_shield_turns": 2,
+        # 100% shield for 2 turns — full damage immunity.
+        "special2_name":              "Feel No Pain",
+        "special2_label":             "🩸 Feel No Pain",
+        "special2_desc":              "The pain does not register. All incoming damage blocked for 2 turns.",
+        "special2_cost":              35,
+        "special2_effect":            "shield",
+        "special2_multiplier":        0,
+        "special2_dot_dmg":           0,
+        "special2_dot_turns":         0,
+        "special2_dot_label":         "",
+        "special2_buff_stat":         None,
+        "special2_buff_amount":       0,
+        "special2_buff_turns":        0,
+        "special2_buff_label":        "",
+        "special2_shield_pct":        1.0,
+        "special2_shield_turns":      2,
+        "special2_parry_counter_pct": 0.0,
         # ── Flavour ───────────────────────────────────────────────────────────
         "lore": (
             "There are no tactics in the Barbarian's eyes — only the arithmetic of force. "
@@ -465,37 +474,40 @@ CLASSES = {
         "unlock_condition":    "Defeat Mesmereth in the Shadow Realm.",
         # ── Primary special — double_hit ──────────────────────────────────────
         # Iaijutsu: two rapid strikes, each at 1.0× attack.
-        # Total damage slightly lower than a 2× crit but more consistent.
         # combat.py Commit 8: effect == 'double_hit' calls attack() twice.
         "special_name":       "Iaijutsu",
         "special_label":      "⚔ Iaijutsu",
         "special_desc":       "A lightning draw. Two strikes, each at full attack power.",
         "special_cost":       50,
         "special_cooldown":   4,
-        "special_multiplier": 1.0,      # applied to each hit individually
+        "special_multiplier": 1.0,
         "special_effect":     "double_hit",
         "special_variance":   3,
         "special_min_dmg":    5,
         # ── Secondary special — Iron Stance (parry) ───────────────────────────
-        # 50% damage shield for 3 turns.
-        # Uses existing shield mechanism — no new session state needed.
-        # The parry flavour comes from the lore/label; mechanical effect is shield.
-        # Full auto-counter (Commit 8+ optional enhancement) can be added later.
-        "special2_name":         "Iron Stance",
-        "special2_label":        "🛡 Iron Stance",
-        "special2_desc":         "Blade raised, breath steady. Parry incoming attacks — damage halved for 3 turns.",
-        "special2_cost":         35,
-        "special2_effect":       "shield",
-        "special2_multiplier":   0,
-        "special2_dot_dmg":      0,
-        "special2_dot_turns":    0,
-        "special2_dot_label":    "",
-        "special2_buff_stat":    None,
-        "special2_buff_amount":  0,
-        "special2_buff_turns":   0,
-        "special2_buff_label":   "iron_stance",
-        "special2_shield_pct":   0.50,
-        "special2_shield_turns": 3,
+        # 50% incoming damage shield for 3 turns AND auto-counter at 50% player
+        # attack on each turn an enemy hit lands while parry is active.
+        # special2_effect = 'parry' — distinct from 'shield' so combat.py can
+        # set both shield_pct/shield_turns AND parry_turns/parry_counter_pct.
+        # Session keys added in Commit 8: parry_turns, parry_counter_pct.
+        # Counter fires in battle_routes Step 4 after resolve_player_action()
+        # if damage landed (not dodged, not smoked) and parry_turns > 0.
+        "special2_name":              "Iron Stance",
+        "special2_label":             "🛡 Iron Stance",
+        "special2_desc":              "Blade raised, breath steady. Incoming damage halved for 3 turns — and you counter each blow for 50% attack.",
+        "special2_cost":              35,
+        "special2_effect":            "parry",
+        "special2_multiplier":        0,
+        "special2_dot_dmg":           0,
+        "special2_dot_turns":         0,
+        "special2_dot_label":         "",
+        "special2_buff_stat":         None,
+        "special2_buff_amount":       0,
+        "special2_buff_turns":        0,
+        "special2_buff_label":        "iron_stance",
+        "special2_shield_pct":        0.50,   # damage reduction while parrying
+        "special2_shield_turns":      3,       # also used as parry duration
+        "special2_parry_counter_pct": 0.50,   # counter at 50% of player attack
         # ── Flavour ───────────────────────────────────────────────────────────
         "lore": (
             "They do not seek battle. Battle finds them, as it always has, "
@@ -520,48 +532,49 @@ CLASSES = {
         "crit_chance":      0.30,
         "crit_multiplier":  1.5,
         "dodge_chance":     0.45,
-        "block_multiplier": 0.50,   # 50% damage reduced — average
+        "block_multiplier": 0.50,
         "damage_type":      "physical",
         # ── Assets ────────────────────────────────────────────────────────────
         "image":            "classes/wretch.png",
         "icon":             "fa-person-drowning",
         # ── Unlock ────────────────────────────────────────────────────────────
-        "unlocked_by_default": True,   # always available — the masochist pick
+        "unlocked_by_default": True,
         "unlock_condition":    "",
         # ── Primary special — random_hit ──────────────────────────────────────
         # Desperate Strike: pure chaos. Damage is a random roll 5–60 with no
-        # stat scaling whatsoever. Could scratch, could devastate.
+        # stat scaling whatsoever.
         # combat.py Commit 8: effect == 'random_hit' uses randint(5, 60).
         "special_name":       "Desperate Strike",
         "special_label":      "🎲 Desperate Strike",
         "special_desc":       "Fortune favours no one. A wild blow — anywhere from 5 to 60 damage. No guarantees.",
         "special_cost":       50,
         "special_cooldown":   4,
-        "special_multiplier": 0,        # ignored — damage is pure random
+        "special_multiplier": 0,
         "special_effect":     "random_hit",
         "special_variance":   0,
         "special_min_dmg":    5,
         # ── Secondary special — gamble_heal ───────────────────────────────────
         # Fortune's Favour: 50/50 roll.
-        # Win (50%): heal 50% max HP — a dramatic recovery.
-        # Lose (50%): heal only 8% max HP + +3 attack buff for 2 turns (consolation).
-        # combat.py Commit 8: effect == 'gamble_heal' rolls the dice and returns
-        # the appropriate heal_amount + optional buff in side_effects.
-        "special2_name":         "Fortune's Favour",
-        "special2_label":        "🪙 Fortune's Favour",
-        "special2_desc":         "Flip the coin. 50% chance: restore 50% HP. 50% chance: restore a little and gain fury.",
-        "special2_cost":         35,
-        "special2_effect":       "gamble_heal",
-        "special2_multiplier":   0,
-        "special2_dot_dmg":      0,
-        "special2_dot_turns":    0,
-        "special2_dot_label":    "",
-        "special2_buff_stat":    "attack",    # used on the consolation branch
-        "special2_buff_amount":  3,
-        "special2_buff_turns":   2,
-        "special2_buff_label":   "wretch_fury",
-        "special2_shield_pct":   0.0,
-        "special2_shield_turns": 0,
+        # Win (50%): heal 50% max HP.
+        # Lose (50%): heal 8% max HP + +3 attack buff for 2 turns (consolation).
+        # combat.py Commit 8: effect == 'gamble_heal' rolls and returns
+        # appropriate heal_amount + optional buff in side_effects.
+        "special2_name":              "Fortune's Favour",
+        "special2_label":             "🪙 Fortune's Favour",
+        "special2_desc":              "Flip the coin. 50% chance: restore 50% HP. 50% chance: restore a little and gain fury.",
+        "special2_cost":              35,
+        "special2_effect":            "gamble_heal",
+        "special2_multiplier":        0,
+        "special2_dot_dmg":           0,
+        "special2_dot_turns":         0,
+        "special2_dot_label":         "",
+        "special2_buff_stat":         "attack",
+        "special2_buff_amount":       3,
+        "special2_buff_turns":        2,
+        "special2_buff_label":        "wretch_fury",
+        "special2_shield_pct":        0.0,
+        "special2_shield_turns":      0,
+        "special2_parry_counter_pct": 0.0,
         # ── Flavour ───────────────────────────────────────────────────────────
         "lore": (
             "They arrived at the Ashen Ruins with nothing — no name, no weapon, no plan. "

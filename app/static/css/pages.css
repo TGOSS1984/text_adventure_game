@@ -1902,3 +1902,57 @@ details[open] > .codex-summary .codex-chevron { transform: rotate(180deg); }
     border:        1px solid rgba(39, 174, 96, 0.30);
     color:         #7dcea0;
 }
+
+/* ── Locked class cards ────────────────────────────────────────── */
+
+/* Locked card wrapper — dims the whole card */
+.class-option--locked {
+    opacity: 0.55;
+    cursor:  not-allowed;
+}
+
+.class-option--locked label {
+    cursor: not-allowed;
+    pointer-events: none;
+}
+
+/* Greyscale the portrait image */
+.class-img--locked {
+    filter: grayscale(100%) brightness(0.6);
+}
+
+/* Lock overlay — sits above the image */
+.class-locked-overlay {
+    position:        absolute;
+    top:             0;
+    left:            0;
+    right:           0;
+    display:         flex;
+    flex-direction:  column;
+    align-items:     center;
+    justify-content: center;
+    gap:             0.4rem;
+    padding:         0.5rem;
+    background:      rgba(0, 0, 0, 0.55);
+    z-index:         2;
+    border-radius:   4px 4px 0 0;
+}
+
+/* The .class-option needs position:relative for the overlay to anchor */
+.class-option {
+    position: relative;
+}
+
+.class-locked-icon {
+    font-size: 1.6rem;
+    color:     rgba(201, 162, 39, 0.80);
+}
+
+.class-locked-hint {
+    font-size:   0.70rem;
+    color:       rgba(255, 255, 255, 0.70);
+    text-align:  center;
+    font-style:  italic;
+    line-height: 1.3;
+    max-width:   200px;
+}

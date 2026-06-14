@@ -46,6 +46,16 @@ NG_PLUS_SOUL_CAP:
 SHOP_ITEM prices increased ~15% on permanent upgrade items (Estus Refill unchanged).
     Reasoning: shop was too cheap relative to soul income. With boss rewards reduced
     40%, prices needed a modest increase to keep each purchase feeling like a decision.
+
+─── Commit 8 — New class buff/expire messages ───────────────────────────────────
+BUFF_EXPIRE_MESSAGES gains three new keys:
+    'berserker_rage' — Barbarian Berserker Rage attack buff expiry
+    'iron_stance'    — Samurai Iron Stance parry shield expiry
+    'wretch_fury'    — Wretch Fortune's Favour consolation attack buff expiry
+
+New format string constants:
+    HOT_TICK_MESSAGE  — heal-over-time tick message (Barbarian Berserker Rage)
+    PARRY_COUNTER_MSG — parry auto-counter message (Samurai Iron Stance)
 ──────────────────────────────────────────────────────────────────────────────────
 """
 
@@ -64,10 +74,22 @@ DOT_TICK_MESSAGES = {
 }
 
 # Shown in the battle log when a buff or shield expires naturally.
+# Commit 8: added berserker_rage, iron_stance, wretch_fury.
 BUFF_EXPIRE_MESSAGES = {
-    "war_cry":   "⚔️ War Cry fades — attack returns to normal.",
-    "nullfield": "🔮 Nullfield dissipates — you are exposed once more.",
+    "war_cry":        "⚔️ War Cry fades — attack returns to normal.",
+    "nullfield":      "🔮 Nullfield dissipates — you are exposed once more.",
+    "berserker_rage": "💢 Berserker Rage subsides — attack returns to normal.",
+    "iron_stance":    "🛡 Iron Stance breaks — the parry window has closed.",
+    "wretch_fury":    "🪙 Fortune's Fury fades — attack returns to normal.",
 }
+
+# ── Commit 8: heal-over-time message (Barbarian Berserker Rage) ───────────────
+# {hp} substituted at runtime in apply_active_effects().
+HOT_TICK_MESSAGE = "💢 Berserker Rage heals {hp} HP!"
+
+# ── Commit 8: parry counter message (Samurai Iron Stance) ─────────────────────
+# {dmg} substituted at runtime in battle_routes.py Step 4.
+PARRY_COUNTER_MSG = "⚔ Iron Stance counter — {dmg} damage!"
 
 # ── Estus heal amount ──────────────────────────────────────────────────────────
 ESTUS_HEAL_PCT = 0.70  # fraction of max_hp restored per flask

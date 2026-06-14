@@ -85,12 +85,23 @@ Carousel upgrade:
                 </button>
 
                 <!-- Scroll track -->
-                <div class="class-options-wrapper carousel-track" id="class-track">
+                 <div class="class-options-wrapper carousel-track" id="class-track">
                     {% for class_name, cls in classes.items() %}
-                    <div class="class-option carousel-item">
+                    {% set is_locked = class_name not in unlocked_names %}
+                    <div class="class-option carousel-item {% if is_locked %}class-option--locked{% endif %}">
                         <label>
-                            <input type="radio" name="class" value="{{ class_name }}" {% if loop.first %}required{% endif %}>
-                            <img src="{{ url_for('static', filename='images/' + cls.image) }}" alt="{{ class_name }}">
+                            <input type="radio" name="class" value="{{ class_name }}"
+                                {% if loop.first and not is_locked %}required{% endif %}
+                                {% if is_locked %}disabled{% endif %}>
+                            {% if is_locked %}
+                            <div class="class-locked-overlay" aria-hidden="true">
+                                <i class="fas fa-lock class-locked-icon"></i>
+                                <span class="class-locked-hint">{{ cls.unlock_condition }}</span>
+                            </div>
+                            {% endif %}
+                            <img src="{{ url_for('static', filename='images/' + cls.image) }}"
+                                 alt="{{ class_name }}"
+                                 class="{% if is_locked %}class-img--locked{% endif %}">
                             <span><i class="fas {{ cls.icon }}"></i> {{ class_name }}</span>
                             <div class="class-stats">
                                 {% if cls.damage_type == 'magic' %}
@@ -127,6 +138,7 @@ Carousel upgrade:
                     </div>
                     {% endfor %}
                 </div><!-- /.carousel-track -->
+                
 
                 <!-- Right arrow -->
                 <button type="button" class="carousel-arrow carousel-arrow--right" id="class-arrow-right" aria-label="Next class">

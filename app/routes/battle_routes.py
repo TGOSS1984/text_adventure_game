@@ -5,52 +5,28 @@ Battle route:
     /battle  — GET: initial battle render
                POST: process player action, enemy counter, phase transition
 
-Dual specials (secondary):
-    action == "special2" fires use_special2() instead of use_special().
-    Both share the same special_cooldown so only one can be used per cycle.
+Commit 8 additions:
+    New session keys read/written: hot_dmg, hot_turns, parry_turns, parry_counter_pct.
+    parry_counter_pct_active stored in active_character dict so combat.py can read it
+    in fire_parry_counter() without touching the session directly.
 
-Active effects (DoT, buff, shield):
-    apply_active_effects() ticks at the start of every POST turn.
-    Session keys: dot_damage, dot_turns, dot_label,
-                  buff_stat, buff_amount, buff_turns, buff_label,
-                  shield_pct, shield_turns
+    use_special() now returns 8-tuple — 8th value is primary_side_fx dict.
+    action == 'special' unpacks primary_side_fx and applies buff + HoT session keys.
 
-Commit 3 — Run stats tracking:
-    session['run_stats'] is updated at the following points each POST turn:
+    apply_active_effects() signature extended — passes hot/parry state, receives
+    extended 15-tuple return.
 
-    damage_dealt   — incremented by the HP delta on the enemy object before
-                     and after each damaging player action. Using the HP delta
-                     (enemy_hp_before - enemy.hp) rather than a raw damage
-                     variable avoids changing any combat.py return signatures.
+    Step 4 (enemy counter): after resolve_player_action(), if damage landed and
+    parry_turns > 0, fire_parry_counter() is called and counter damage dealt to enemy.
 
-    damage_taken   — incremented by the HP delta on the player before and
-                     after resolve_player_action(). Captures real received
-                     damage after dodge/block/shield reductions are applied.
-                     Tracked for both the main counter-attack and the estus
-                     counter (two separate enemy attack calls per turn).
+    Step 5 (victory): hot_dmg, hot_turns, parry_turns, parry_counter_pct cleared.
+    Step 6 (session write): new keys persisted.
 
-    estus_used     — incremented only when estus_count > 0 before the call
-                     (use_estus() already guards against empty flasks, but
-                     we guard here too so the counter stays honest).
-
-    specials_fired — incremented for both primary (special) and secondary
-                     (special2) actions, but only when the special actually
-                     fires (MP and cooldown checks pass). Detected by
-                     comparing mp before and after — if mp decreased, a
-                     special fired successfully.
-
-    enemies_defeated / bosses_defeated / bosses_list / souls_earned —
-                     all updated in Step 5 (battle outcome) when enemy.hp
-                     drops to 0. souls_earned tracks the final reward
-                     including the boss bonus.
-
-    crits_landed   — detected by checking for the '💥 Critical' prefix in
-                     the battle log message returned from attack(). Avoids
-                     touching combat.py.
-
-    All increments use a helper _update_run_stat() that reads the current
-    session dict, modifies it, and writes it back. Flask sessions require
-    explicit reassignment of mutable values to trigger the modified flag.
+    Unlock triggers:
+    - Mesmereth defeated: unlock_class('Samurai') called
+    - Any ending chapter reached via game_routes /game — handled there, not here
+      (battle_routes doesn't know chapter IDs)
+    - Barbarian unlock: triggered in game_routes when ending chapter is reached
 """
 
 from flask import render_template, request, redirect, url_for, session, flash, Response
@@ -63,8 +39,12 @@ from ..config import (
 )
 from ..models import Enemy
 from ..classes import CLASSES
+from ..player_record import unlock_class
 
 battle_manager = BattleManager()
+
+# Boss name that triggers Samurai unlock
+_SAMURAI_UNLOCK_BOSS = "Mesmereth, the Serpent Prince"
 
 
 def _is_htmx():
@@ -76,35 +56,21 @@ def _htmx_redirect(location):
 
 
 def _update_run_stat(key, delta):
-    """
-    Increment a single integer key inside session['run_stats'] by delta.
-
-    Flask sessions require the dict to be reassigned (not just mutated)
-    to mark the session as modified. This helper handles that correctly.
-
-    key   — string key inside run_stats (e.g. 'damage_dealt')
-    delta — integer to add (always positive)
-    """
     stats = session.get("run_stats", {})
     stats[key] = stats.get(key, 0) + delta
     session["run_stats"] = stats
 
 
 def _append_run_stat_list(key, value):
-    """
-    Append a value to a list key inside session['run_stats'].
-    Used for bosses_list.
-    """
     stats = session.get("run_stats", {})
     lst   = stats.get(key, [])
-    if value not in lst:   # no duplicates — same boss can't be killed twice
+    if value not in lst:
         lst.append(value)
     stats[key] = lst
     session["run_stats"] = stats
 
 
 def register(blueprint):
-    """Attach battle routes to the given blueprint."""
 
     @blueprint.route("/battle", methods=["GET", "POST"])
     def battle():
@@ -143,15 +109,20 @@ def register(blueprint):
         phase_changed = session.get("phase_changed", False)
 
         # ── Active effect state ────────────────────────────────────────────────
-        dot_dmg      = session.get("dot_damage", 0)
-        dot_turns    = session.get("dot_turns", 0)
-        dot_label    = session.get("dot_label", "")
-        buff_stat    = session.get("buff_stat", None)
-        buff_amount  = session.get("buff_amount", 0)
-        buff_turns   = session.get("buff_turns", 0)
-        buff_label   = session.get("buff_label", "")
-        shield_pct   = session.get("shield_pct", 0.0)
-        shield_turns = session.get("shield_turns", 0)
+        dot_dmg           = session.get("dot_damage", 0)
+        dot_turns         = session.get("dot_turns", 0)
+        dot_label         = session.get("dot_label", "")
+        buff_stat         = session.get("buff_stat", None)
+        buff_amount       = session.get("buff_amount", 0)
+        buff_turns        = session.get("buff_turns", 0)
+        buff_label        = session.get("buff_label", "")
+        shield_pct        = session.get("shield_pct", 0.0)
+        shield_turns      = session.get("shield_turns", 0)
+        # Commit 8: new active effect state
+        hot_dmg           = session.get("hot_dmg", 0)
+        hot_turns         = session.get("hot_turns", 0)
+        parry_turns       = session.get("parry_turns", 0)
+        parry_counter_pct = session.get("parry_counter_pct", 0.0)
 
         message = ""
 
@@ -189,6 +160,9 @@ def register(blueprint):
                 buff_turns=buff_turns,
                 shield_pct=shield_pct,
                 shield_turns=shield_turns,
+                hot_dmg=hot_dmg,
+                hot_turns=hot_turns,
+                parry_turns=parry_turns,
             )
 
         # ── POST ───────────────────────────────────────────────────────────────
@@ -200,13 +174,15 @@ def register(blueprint):
         session["phase_changed"] = False
         cooldown = max(0, cooldown - 1)
 
-        # ── Step 1: Tick active effects at turn start ──────────────────────────
+        # ── Step 1: Tick active effects ────────────────────────────────────────
         (
             effects_msg,
-            enemy.hp,
+            enemy.hp, player_hp,
             dot_dmg, dot_turns, dot_label,
             buff_stat, buff_amount, buff_turns, buff_label,
             shield_pct, shield_turns,
+            hot_dmg, hot_turns,
+            parry_turns,
         ) = battle_manager.apply_active_effects(
             enemy=enemy,
             player_hp=player_hp,
@@ -220,17 +196,21 @@ def register(blueprint):
             buff_label=buff_label,
             shield_pct=shield_pct,
             shield_turns=shield_turns,
+            hot_dmg=hot_dmg,
+            hot_turns=hot_turns,
+            parry_turns=parry_turns,
+            parry_counter_pct=parry_counter_pct,
         )
 
-        # Apply any attack buff to the character dict for this turn's damage calc
+        # Build active_character — includes buff and parry_counter_pct for combat.py
         active_character = dict(character)
         if buff_stat and buff_turns > 0 and buff_amount > 0:
             current_val = active_character.get(buff_stat, 0)
             active_character[buff_stat] = current_val + buff_amount
+        # Pass parry_counter_pct so fire_parry_counter() can read it
+        active_character['parry_counter_pct_active'] = parry_counter_pct
 
         # ── Step 2: Player action ──────────────────────────────────────────────
-        # Track enemy HP before each damaging action so we can derive
-        # actual damage dealt from the delta (avoids changing combat.py).
         enemy_hp_before_action = enemy.hp
         mp_before_action       = mp
 
@@ -238,23 +218,34 @@ def register(blueprint):
             result, enemy.hp = battle_manager.attack(active_character, enemy)
             message = result
             mp      = min(mp + MP_REGEN_ATTACK, mp_max)
-            # Track damage dealt and crits
-            dealt = max(0, enemy_hp_before_action - enemy.hp)
+            dealt   = max(0, enemy_hp_before_action - enemy.hp)
             if dealt > 0:
                 _update_run_stat("damage_dealt", dealt)
             if "💥 Critical" in result:
                 _update_run_stat("crits_landed", 1)
 
         elif action == "special":
-            msg, enemy.hp, mp, cooldown, stun_enemy, smoke, heal_amt = (
+            # 8-tuple return — unpack primary_side_fx
+            msg, enemy.hp, mp, cooldown, stun_enemy, smoke, heal_amt, primary_sfx = (
                 battle_manager.use_special(active_character, enemy, mp, cooldown)
             )
             message             = msg
             stunned             = stun_enemy
             smoke_screen_active = smoke
+
             if heal_amt > 0:
                 player_hp = min(player_hp + heal_amt, character["max_hp"])
-            # Track special fired (mp decreased = special succeeded)
+
+            # Apply combo_buff_hot side effects (Barbarian)
+            if primary_sfx.get("buff_stat") and primary_sfx.get("buff_turns", 0) > 0:
+                buff_stat   = primary_sfx["buff_stat"]
+                buff_amount = primary_sfx["buff_amount"]
+                buff_turns  = primary_sfx["buff_turns"]
+                buff_label  = primary_sfx["buff_label"]
+            if primary_sfx.get("hot_turns", 0) > 0:
+                hot_dmg   = primary_sfx["hot_dmg"]
+                hot_turns = primary_sfx["hot_turns"]
+
             if mp < mp_before_action:
                 _update_run_stat("specials_fired", 1)
             dealt = max(0, enemy_hp_before_action - enemy.hp)
@@ -286,12 +277,14 @@ def register(blueprint):
                 shield_pct   = side_fx["shield_pct"]
                 shield_turns = side_fx["shield_turns"]
 
-            if side_fx["heal_amount"] > 0:
-                player_hp = min(
-                    player_hp + side_fx["heal_amount"], character["max_hp"]
-                )
+            # Commit 8: parry effect sets both shield and parry state
+            if side_fx.get("parry_turns", 0) > 0:
+                parry_turns       = side_fx["parry_turns"]
+                parry_counter_pct = side_fx["parry_counter_pct"]
 
-            # Track special fired and damage dealt
+            if side_fx["heal_amount"] > 0:
+                player_hp = min(player_hp + side_fx["heal_amount"], character["max_hp"])
+
             if mp < mp_before_action:
                 _update_run_stat("specials_fired", 1)
             dealt = max(0, enemy_hp_before_action - enemy.hp)
@@ -302,7 +295,6 @@ def register(blueprint):
             message = ""
 
         elif action == "estus":
-            # Only count as used if flasks were available
             if estus_count > 0:
                 _update_run_stat("estus_used", 1)
             player_hp, estus_count, message = battle_manager.use_estus(
@@ -319,7 +311,7 @@ def register(blueprint):
                 shield_pct=shield_pct,
             )
             message = "⏰ You hesitated! " + warn_msg + " " + result
-            taken = max(0, hp_before_timeout - player_hp)
+            taken   = max(0, hp_before_timeout - player_hp)
             if taken > 0:
                 _update_run_stat("damage_taken", taken)
 
@@ -338,6 +330,8 @@ def register(blueprint):
             message = phase_lore + (" — " + message if message else "")
 
         # ── Step 4: Enemy counter-attack ───────────────────────────────────────
+        damage_landed = False   # track whether a hit actually connected
+
         if enemy.hp > 0 and not stunned and action not in ("timeout", "estus"):
             _, warn_msg, dmg = battle_manager.enemy_attack(
                 character, enemy, action=predicted_move, boss_phase=boss_phase
@@ -353,10 +347,20 @@ def register(blueprint):
                 shield_pct=shield_pct,
             )
             message = (message + " " + warn_msg + " " + counter_result).strip()
-            # Track real damage taken after dodge/block/shield reductions
-            taken = max(0, hp_before_counter - player_hp)
+            taken   = max(0, hp_before_counter - player_hp)
             if taken > 0:
                 _update_run_stat("damage_taken", taken)
+                damage_landed = True
+
+            # ── Commit 8: Samurai parry auto-counter ───────────────────────────
+            # Fires only if damage landed (not dodged/smoked) and parry is active
+            if damage_landed and parry_turns > 0:
+                counter_msg, enemy.hp, counter_dmg = battle_manager.fire_parry_counter(
+                    active_character, enemy
+                )
+                message = (message + " " + counter_msg).strip()
+                if counter_dmg > 0:
+                    _update_run_stat("damage_dealt", counter_dmg)
 
         if action == "estus" and enemy.hp > 0:
             _, warn_msg, dmg = battle_manager.enemy_attack(
@@ -368,17 +372,11 @@ def register(blueprint):
                 shield_pct=shield_pct,
             )
             message = (message + " " + warn_msg + " " + counter_result).strip()
-            taken = max(0, hp_before_estus_counter - player_hp)
+            taken   = max(0, hp_before_estus_counter - player_hp)
             if taken > 0:
                 _update_run_stat("damage_taken", taken)
 
-        # Also track DoT damage dealt (ticked in Step 1 before player action)
-        # DoT hits enemy — calculate from effects_msg presence and dot_dmg value
-        # Simpler: track at tick time — dot_dmg was applied if dot_turns was > 0
-        # before apply_active_effects ran. We already have the original values
-        # from the session read at the top of POST — check if dot ticked.
-        # dot_turns read from session at top = original; after apply it decrements.
-        # If original dot_turns > 0, a tick happened.
+        # Track DoT damage dealt (ticked in Step 1)
         original_dot_turns = session.get("dot_turns", 0)
         if original_dot_turns > 0 and session.get("dot_damage", 0) > 0:
             _update_run_stat("damage_dealt", session.get("dot_damage", 0))
@@ -391,38 +389,42 @@ def register(blueprint):
 
         # ── Step 5: Battle outcome ─────────────────────────────────────────────
         if enemy.hp <= 0:
-            # Clear active effects on victory
-            session["dot_damage"]   = 0
-            session["dot_turns"]    = 0
-            session["dot_label"]    = ""
-            session["buff_stat"]    = None
-            session["buff_amount"]  = 0
-            session["buff_turns"]   = 0
-            session["buff_label"]   = ""
-            session["shield_pct"]   = 0.0
-            session["shield_turns"] = 0
+            # Clear all active effects
+            session["dot_damage"]       = 0
+            session["dot_turns"]        = 0
+            session["dot_label"]        = ""
+            session["buff_stat"]        = None
+            session["buff_amount"]      = 0
+            session["buff_turns"]       = 0
+            session["buff_label"]       = ""
+            session["shield_pct"]       = 0.0
+            session["shield_turns"]     = 0
+            session["hot_dmg"]          = 0
+            session["hot_turns"]        = 0
+            session["parry_turns"]      = 0
+            session["parry_counter_pct"] = 0.0
 
             reward = enemy.soul_reward
             if session.get("enemy_is_boss", False):
                 bonus  = round(reward * BOSS_SOUL_BONUS / 5) * 5
                 reward = reward + bonus
-                flash(
-                    f"⚔️ Boss slain! You gain {reward} souls ({bonus} bonus).",
-                    "info"
-                )
-                # ── Track boss defeat ──────────────────────────────────────────
+                flash(f"⚔️ Boss slain! You gain {reward} souls ({bonus} bonus).", "info")
                 _update_run_stat("bosses_defeated", 1)
                 _append_run_stat_list("bosses_list", enemy.name)
+
+                # ── Commit 8: unlock triggers ──────────────────────────────────
+                if enemy.name == _SAMURAI_UNLOCK_BOSS:
+                    newly_unlocked = unlock_class("Samurai")
+                    if newly_unlocked:
+                        flash("⚔ The Samurai class has been unlocked!", "info")
             else:
                 flash(f"💀 Enemy defeated. You gain {reward} souls.", "info")
-                # ── Track regular enemy defeat ─────────────────────────────────
                 _update_run_stat("enemies_defeated", 1)
 
-            # ── Track souls earned (post-bonus) ───────────────────────────────
             _update_run_stat("souls_earned", reward)
-
             session["souls"]   = session.get("souls", 0) + reward
             session["chapter"] = session.get("chapter_after_battle", 0)
+
             victory_url = url_for("main.game")
             if _is_htmx():
                 return _htmx_redirect(victory_url)
@@ -435,22 +437,25 @@ def register(blueprint):
             return redirect(death_url)
 
         # ── Step 6: Write session state ────────────────────────────────────────
-        session["enemy"]["hp"]      = enemy.hp
-        session["hp"]               = player_hp
-        session["estus"]            = estus_count
-        session["mp"]               = mp
-        session["special_cooldown"] = cooldown
-        session["phase_changed"]    = phase_changed
-        # Active effects
-        session["dot_damage"]       = dot_dmg
-        session["dot_turns"]        = dot_turns
-        session["dot_label"]        = dot_label
-        session["buff_stat"]        = buff_stat
-        session["buff_amount"]      = buff_amount
-        session["buff_turns"]       = buff_turns
-        session["buff_label"]       = buff_label
-        session["shield_pct"]       = shield_pct
-        session["shield_turns"]     = shield_turns
+        session["enemy"]["hp"]       = enemy.hp
+        session["hp"]                = player_hp
+        session["estus"]             = estus_count
+        session["mp"]                = mp
+        session["special_cooldown"]  = cooldown
+        session["phase_changed"]     = phase_changed
+        session["dot_damage"]        = dot_dmg
+        session["dot_turns"]         = dot_turns
+        session["dot_label"]         = dot_label
+        session["buff_stat"]         = buff_stat
+        session["buff_amount"]       = buff_amount
+        session["buff_turns"]        = buff_turns
+        session["buff_label"]        = buff_label
+        session["shield_pct"]        = shield_pct
+        session["shield_turns"]      = shield_turns
+        session["hot_dmg"]           = hot_dmg
+        session["hot_turns"]         = hot_turns
+        session["parry_turns"]       = parry_turns
+        session["parry_counter_pct"] = parry_counter_pct
 
         next_move, next_msg, _ = battle_manager.predict_enemy_move(
             character, boss_phase=boss_phase
@@ -485,6 +490,9 @@ def register(blueprint):
             buff_turns=buff_turns,
             shield_pct=shield_pct,
             shield_turns=shield_turns,
+            hot_dmg=hot_dmg,
+            hot_turns=hot_turns,
+            parry_turns=parry_turns,
         )
 
         if _is_htmx():

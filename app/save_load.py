@@ -15,6 +15,7 @@ Version history:
     2 — dual specials, active effects (dot_damage, buff_stat, shield_pct etc)
     3 — NG+ keys, shadow realm keys, damage type keys on enemy/character
     4 — run_stats dict, last_counted_chapter (Commit 3)
+    5 — hot_dmg, hot_turns, parry_turns, parry_counter_pct (Commit 8)
 """
 
 import json
@@ -28,7 +29,7 @@ _SKIP_KEYS = {'_flashes', '_csrf_token'}
 # ── Versioning ────────────────────────────────────────────────────────────────
 # Bump whenever session structure changes. Old saves are backfilled from
 # SESSION_DEFAULTS for any missing keys.
-SAVE_VERSION = 4
+SAVE_VERSION = 5
 
 # ── Session defaults ──────────────────────────────────────────────────────────
 SESSION_DEFAULTS = {
@@ -71,6 +72,14 @@ SESSION_DEFAULTS = {
     "buff_label":           "",
     "shield_pct":           0.0,
     "shield_turns":         0,
+
+    # ── Commit 8: new active effects ───────────────────────────────────────
+    # hot_dmg / hot_turns — Barbarian Berserker Rage heal-over-time
+    # parry_turns / parry_counter_pct — Samurai Iron Stance auto-counter
+    "hot_dmg":              0,
+    "hot_turns":            0,
+    "parry_turns":          0,
+    "parry_counter_pct":    0.0,
 
     # ── New Game+ (Commit 2) ───────────────────────────────────────────────
     "ng_plus":               0,
@@ -120,6 +129,11 @@ _EXPECTED_TYPES = {
     "buff_turns":            int,
     "shield_pct":            float,
     "shield_turns":          int,
+    # Commit 8: new active effect types
+    "hot_dmg":               (int, float),
+    "hot_turns":             int,
+    "parry_turns":           int,
+    "parry_counter_pct":     float,
     "ng_plus":               int,
     "ng_plus_souls_carried": (int, float),
     "secret_chapters":       list,
