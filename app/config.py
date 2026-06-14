@@ -56,6 +56,24 @@ BUFF_EXPIRE_MESSAGES gains three new keys:
 New format string constants:
     HOT_TICK_MESSAGE  — heal-over-time tick message (Barbarian Berserker Rage)
     PARRY_COUNTER_MSG — parry auto-counter message (Samurai Iron Stance)
+
+─── NG+ Dodge / Block caps ──────────────────────────────────────────────────────
+DODGE_BONUS_CAP / BLOCK_BONUS_CAP:
+    Because shop_bought resets each NG+ run, dodge_pendant (+5%) and
+    block_talisman (-5%) stack indefinitely across playthroughs. Without a cap
+    every class converges to near-identical evasion/block profiles by NG+3.
+
+    Cap = base stat ± 0.15 (15 percentage points above/below each class's
+    original base). This preserves class differentiation at all NG+ levels:
+    Knight caps at 35% dodge / 90% block; Rogue caps at 85% dodge / 65% block.
+    The cap is reached after 3 NG+ runs (+5% × 3 = +15%) — a natural progression
+    reward rather than an instant unlock.
+
+    These constants are the maximum BONUS above/below base. The actual cap per
+    class is computed at purchase time in shop_routes.py using the class base
+    stat looked up from classes.py via session["character"]["char_class"].
+
+    Adjust here only — enforced in shop_routes.py /buy.
 ──────────────────────────────────────────────────────────────────────────────────
 """
 
@@ -134,6 +152,23 @@ NG_PLUS_ATK_SCALE  = 0.20   # +20% per NG+ level — applied to both attack AND 
 NG_PLUS_DEF_SCALE  = 0.15   # +15% per NG+ level — applied to both defense AND magic_defense
 NG_PLUS_SOUL_SCALE = 0.25   # +25% soul reward per NG+ level
 
+# ── NG+ dodge / block lifetime caps ───────────────────────────────────────────
+# shop_bought resets each NG+ run so dodge_pendant and block_talisman stack
+# across playthroughs. These caps prevent every class converging to the same
+# near-invincible profile in later NG+ runs.
+#
+# DODGE_BONUS_CAP: maximum dodge_chance increase above a class's original base.
+#   e.g. Rogue base 70% → cap 85%. Knight base 20% → cap 35%.
+#
+# BLOCK_BONUS_CAP: maximum block_multiplier reduction below a class's original base.
+#   (block_multiplier is damage pass-through; lower = more damage blocked.)
+#   e.g. Knight base 0.25 → floor 0.10 (blocks 90%). Mage base 0.60 → floor 0.45 (blocks 55%).
+#
+# Both caps are reached after 3 NG+ runs with the current +5% shop items.
+# To change the cap, adjust these two constants only.
+DODGE_BONUS_CAP = 0.15   # +15% above class base dodge_chance
+BLOCK_BONUS_CAP = 0.15   # -15% below class base block_multiplier (i.e. 15pp more blocked)
+
 # ── Battle backgrounds ─────────────────────────────────────────────────────────
 NORMAL_BATTLE_BGS = [
     "images/areas/undead_settlement.jpg",
@@ -193,6 +228,11 @@ REST_BGS = [
 #   Sharpened Crit Stone:    225 -> 260
 #   Executioner's Lens:      275 -> 325
 #   Estus Refill: unchanged at 150 (consumable, not a permanent upgrade)
+#
+# NG+ cap update: dodge_pendant reduced from +10% to +5% per run.
+#                 block_talisman reduced from -10% to -5% per run.
+#                 crit_stone reduced from +10% to +5% per run.
+#                 Lifetime caps enforced in shop_routes.py /buy.
 SHOP_ITEMS = {
     "estus_refill": {
         "name":        "Estus Refill",
@@ -231,21 +271,21 @@ SHOP_ITEMS = {
     },
     "dodge_pendant": {
         "name":        "Wraith-Step Pendant",
-        "description": "Move like shadow. Dodge chance +10% (permanent).",
+        "description": "Move like shadow. Dodge chance +5% (permanent, max +15% above your class base).",
         "cost":        260,
         "icon":        "fas fa-person-running",
         "repeatable":  False,
     },
     "block_talisman": {
         "name":        "Ironwall Talisman",
-        "description": "Brace against the storm. Blocked damage reduced by a further 10% (permanent).",
+        "description": "Brace against the storm. Blocked damage reduced by a further 5% (permanent, max +15% above your class base).",
         "cost":        225,
         "icon":        "fas fa-shield",
         "repeatable":  False,
     },
     "crit_stone": {
         "name":        "Sharpened Crit Stone",
-        "description": "Find the gap between breath and bone. Crit chance +10% (permanent).",
+        "description": "Find the gap between breath and bone. Crit chance +5% (permanent).",
         "cost":        260,
         "icon":        "fas fa-crosshairs",
         "repeatable":  False,

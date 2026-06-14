@@ -4,10 +4,49 @@ routes/shop_routes.py
 Shop routes:
     /shop  — GET: display purchasable items
     /buy   — POST: process a purchase and apply stat effect to session
+
+NG+ dodge / block caps (added alongside DODGE_BONUS_CAP / BLOCK_BONUS_CAP in config.py):
+    dodge_pendant and block_talisman reset with shop_bought each NG+ run, so
+    they stack indefinitely across playthroughs. The cap is enforced here at
+    purchase time by comparing the current session stat against the class's
+    original base stat (looked up from classes.py via char_class).
+
+    If the cap has already been reached — because the player bought the item in
+    previous NG+ runs — the item shows as already_bought in the shop and the
+    /buy route rejects the purchase with a clear message.
 """
 
 from flask import render_template, request, redirect, url_for, session, flash
-from ..config import SHOP_ITEMS, DEFAULT_ESTUS
+from ..config import SHOP_ITEMS, DEFAULT_ESTUS, DODGE_BONUS_CAP, BLOCK_BONUS_CAP
+from ..classes import get_class
+
+
+def _dodge_at_cap(character: dict) -> bool:
+    """
+    Return True if this character's dodge_chance has already reached the
+    lifetime cap (class base + DODGE_BONUS_CAP). Looks up the original base
+    stat from classes.py so accumulated NG+ bonuses don't skew the check.
+    """
+    base_cls = get_class(character.get("char_class", ""))
+    if not base_cls:
+        return False
+    base_dodge = base_cls["dodge_chance"]
+    current    = character.get("dodge_chance", base_dodge)
+    return round(current - base_dodge, 6) >= DODGE_BONUS_CAP
+
+
+def _block_at_cap(character: dict) -> bool:
+    """
+    Return True if this character's block_multiplier has already reached the
+    lifetime floor (class base - BLOCK_BONUS_CAP). Lower block_multiplier
+    means more damage blocked, so the cap is a minimum, not a maximum.
+    """
+    base_cls = get_class(character.get("char_class", ""))
+    if not base_cls:
+        return False
+    base_block = base_cls["block_multiplier"]
+    current    = character.get("block_multiplier", base_block)
+    return round(base_block - current, 6) >= BLOCK_BONUS_CAP
 
 
 def register(blueprint):
@@ -25,8 +64,17 @@ def register(blueprint):
         for key, item in SHOP_ITEMS.items():
             can_buy        = souls >= item["cost"]
             already_bought = (not item["repeatable"]) and (key in bought)
+
             if key == "estus_refill" and estus >= estus_max:
                 already_bought = True
+
+            # Treat dodge/block as already_bought when the lifetime cap is
+            # reached — even if shop_bought was reset for this NG+ run.
+            if key == "dodge_pendant" and _dodge_at_cap(character):
+                already_bought = True
+            if key == "block_talisman" and _block_at_cap(character):
+                already_bought = True
+
             items.append({
                 "key":            key,
                 "name":           item["name"],
@@ -56,6 +104,7 @@ def register(blueprint):
         item      = SHOP_ITEMS[item_key]
         souls     = session.get("souls", 0)
         bought    = session.get("shop_bought", [])
+        character = session.get("character", {})
         estus     = session.get("estus", 0)
         estus_max = session.get("estus_max", DEFAULT_ESTUS)
 
@@ -65,6 +114,17 @@ def register(blueprint):
 
         if item_key == "estus_refill" and estus >= estus_max:
             flash("Your Estus Flasks are already full.", "error")
+            return redirect(url_for("main.shop"))
+
+        # ── NG+ lifetime cap guards ────────────────────────────────────────────
+        # These fire when shop_bought has been reset for a new NG+ run but the
+        # player has already hit their cap from previous playthroughs.
+        if item_key == "dodge_pendant" and _dodge_at_cap(character):
+            flash("Your footwork has reached its limit — dodge cannot improve further.", "error")
+            return redirect(url_for("main.shop"))
+
+        if item_key == "block_talisman" and _block_at_cap(character):
+            flash("Your guard is already as strong as your body allows — block cannot improve further.", "error")
             return redirect(url_for("main.shop"))
 
         if souls < item["cost"]:
@@ -108,22 +168,30 @@ def register(blueprint):
             flash(f"❤️ Max HP increased by 30. ({item['cost']} souls spent)", "info")
 
         elif item_key == "dodge_pendant":
-            current = session["character"].get("dodge_chance", 0)
-            session["character"]["dodge_chance"] = round(min(current + 0.10, 0.95), 4)
+            base_cls   = get_class(character.get("char_class", ""))
+            base_dodge = base_cls["dodge_chance"] if base_cls else 0
+            current    = character.get("dodge_chance", base_dodge)
+            # Clamp so floating-point drift can never sneak past the cap
+            new_dodge  = round(min(current + 0.05, base_dodge + DODGE_BONUS_CAP), 4)
+            session["character"]["dodge_chance"] = new_dodge
             session["shop_bought"] = bought + [item_key]
-            flash(f"💨 Dodge chance increased by 10%. ({item['cost']} souls spent)", "info")
+            flash(f"💨 Dodge chance increased by 5%. ({item['cost']} souls spent)", "info")
 
         elif item_key == "block_talisman":
-            current = session["character"].get("block_multiplier", 0.5)
-            session["character"]["block_multiplier"] = round(max(current - 0.10, 0.05), 4)
+            base_cls   = get_class(character.get("char_class", ""))
+            base_block = base_cls["block_multiplier"] if base_cls else 0.5
+            current    = character.get("block_multiplier", base_block)
+            # Clamp so floating-point drift can never sneak below the floor
+            new_block  = round(max(current - 0.05, base_block - BLOCK_BONUS_CAP), 4)
+            session["character"]["block_multiplier"] = new_block
             session["shop_bought"] = bought + [item_key]
-            flash(f"🛡️ Block damage reduction improved by 10%. ({item['cost']} souls spent)", "info")
+            flash(f"🛡️ Block damage reduction improved by 5%. ({item['cost']} souls spent)", "info")
 
         elif item_key == "crit_stone":
             current = session["character"].get("crit_chance", 0)
-            session["character"]["crit_chance"] = round(min(current + 0.10, 0.95), 4)
+            session["character"]["crit_chance"] = round(min(current + 0.05, 0.95), 4)
             session["shop_bought"] = bought + [item_key]
-            flash(f"🎯 Crit chance increased by 10%. ({item['cost']} souls spent)", "info")
+            flash(f"🎯 Crit chance increased by 5%. ({item['cost']} souls spent)", "info")
 
         elif item_key == "crit_lens":
             current = session["character"].get("crit_multiplier", 1.5)
