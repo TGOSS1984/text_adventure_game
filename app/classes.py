@@ -53,7 +53,7 @@ DOT/BUFF/EXPIRE config keys to add in Commit 8 (config.py):
 CLASSES = {
     "Knight": {
         # ── Core stats ────────────────────────────────────────────────────────
-        "attack":           170,
+        "attack":           17,
         "magic_attack":     0,
         "defense":          15,
         "magic_defense":    10,

@@ -188,6 +188,7 @@ def _reset_combat_state(souls=0, ng_level=0):
     session["parry_counter_pct"]     = 0.0
     # ── Shadow realm state ────────────────────────────────────────────────────
     session["secret_chapters"]       = []
+    session["shadow_realm_completed"]     = False
     # ── Run stats (Commit 3) ──────────────────────────────────────────────────
     session["run_stats"]             = _blank_run_stats()
     session["last_counted_chapter"]  = -1   # sentinel — no chapter counted yet
@@ -456,7 +457,8 @@ def register(blueprint):
             not data.get("battle") and
             not data.get("boss") and
             not data.get("rest") and
-            chapter_id not in [0, 100, 101, 102]
+            chapter_id not in [0, 100, 101, 102] and
+            not session.get("shadow_realm_completed", False)
         )
         secret_chapters = session.get("secret_chapters", [])
         if not secret_chapters and is_eligible:

@@ -417,6 +417,7 @@ def register(blueprint):
                     newly_unlocked = unlock_class("Samurai")
                     if newly_unlocked:
                         flash("⚔ The Samurai class has been unlocked!", "info")
+                    session["shadow_realm_completed"] = True
             else:
                 flash(f"💀 Enemy defeated. You gain {reward} souls.", "info")
                 _update_run_stat("enemies_defeated", 1)

@@ -16,6 +16,7 @@ Version history:
     3 — NG+ keys, shadow realm keys, damage type keys on enemy/character
     4 — run_stats dict, last_counted_chapter (Commit 3)
     5 — hot_dmg, hot_turns, parry_turns, parry_counter_pct (Commit 8)
+    6 — shadow_realm_completed (Commit 9)
 """
 
 import json
@@ -29,7 +30,7 @@ _SKIP_KEYS = {'_flashes', '_csrf_token'}
 # ── Versioning ────────────────────────────────────────────────────────────────
 # Bump whenever session structure changes. Old saves are backfilled from
 # SESSION_DEFAULTS for any missing keys.
-SAVE_VERSION = 5
+SAVE_VERSION = 6
 
 # ── Session defaults ──────────────────────────────────────────────────────────
 SESSION_DEFAULTS = {
@@ -89,6 +90,7 @@ SESSION_DEFAULTS = {
     # ── Shadow realm ──────────────────────────────────────────────────────
     "secret_chapters":       [],
     "secret_return_chapter": 0,
+    "shadow_realm_completed":   False,
 
     # ── Run stats (Commit 3) ───────────────────────────────────────────────
     # Stored as a nested dict. Backfilled as an empty dict on old saves —
@@ -138,6 +140,7 @@ _EXPECTED_TYPES = {
     "ng_plus_souls_carried": (int, float),
     "secret_chapters":       list,
     "secret_return_chapter": int,
+    "shadow_realm_completed":   bool,
     "run_stats":             dict,
     "last_counted_chapter":  int,
 }
