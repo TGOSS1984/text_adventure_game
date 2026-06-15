@@ -321,12 +321,22 @@ Inline quit-confirm JS kept small here (page-specific DOM wiring only).
 
         <!-- Menu links -->
         <div class="menu">
-            <a href="{{ url_for('main.save') }}">Save</a> |
-            <a href="{{ url_for('main.load') }}">Load</a> |
-            <a href="{{ url_for('main.bestiary') }}"><i class="fas fa-book-skull"></i> Bestiary</a> |
-            <a href="{{ url_for('main.status') }}"><i class="fas fa-scroll"></i> Status</a> |
-            <a href="{{ url_for('main.shop') }}"><i class="fas fa-shop"></i> Merchant</a> |
-            <a href="#" id="quit-link" aria-haspopup="dialog">
+            <a href="{{ url_for('main.save') }}" class="menu-btn menu-btn--gold">
+                <i class="fas fa-floppy-disk"></i> Save
+            </a>
+            <a href="{{ url_for('main.load') }}" class="menu-btn menu-btn--gold">
+                <i class="fas fa-upload"></i> Load
+            </a>
+            <a href="{{ url_for('main.bestiary') }}" class="menu-btn menu-btn--gold">
+                <i class="fas fa-book-skull"></i> Bestiary
+            </a>
+            <a href="{{ url_for('main.status') }}" class="menu-btn menu-btn--gold">
+                <i class="fas fa-scroll"></i> Status
+            </a>
+            <a href="{{ url_for('main.shop') }}" class="menu-btn menu-btn--gold">
+                <i class="fas fa-shop"></i> Merchant
+            </a>
+            <a href="#" id="quit-link" class="menu-btn menu-btn--danger" aria-haspopup="dialog">
                 <i class="fas fa-door-open"></i> Return to Title
             </a>
         </div>

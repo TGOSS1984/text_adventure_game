@@ -16,13 +16,16 @@ Secondary special fields (35 MP, same shared cooldown):
     special2_effect     — 'dot', 'buff_attack', 'shield', 'stun', 'leech',
                           'parry', 'gamble_heal'
     special2_multiplier — damage multiplier on the hit itself (0 = no direct hit)
-    special2_dot_dmg    — damage per turn (dot only)
+    special2_dot_dmg    — flat damage per turn (dot only; 0 if using pct)
+    special2_dot_pct     — % of enemy max HP per turn (dot only; 0 if using flat dmg)
     special2_dot_turns  — duration in turns (dot only)
     special2_dot_label  — key into DOT_TICK_MESSAGES in config.py ('bleed'/'poison')
     special2_buff_stat  — session character key to boost ('attack'/'magic_attack')
     special2_buff_amount— flat amount added to buff_stat
     special2_buff_turns — duration in turns
     special2_buff_label — key into BUFF_EXPIRE_MESSAGES in config.py
+    special2_buff_stat2 — optional second stat to buff simultaneously (e.g. 'defense')
+    special2_buff_pct2  — % of that stat to add as buff amount
     special2_shield_pct — fraction of incoming damage absorbed (0.0–1.0)
     special2_shield_turns — duration in turns
     special2_parry_counter_pct — fraction of player attack auto-countered each
@@ -84,7 +87,7 @@ CLASSES = {
         # ── Secondary special ─────────────────────────────────────────────────
         "special2_name":              "War Cry",
         "special2_label":             "⚔ War Cry",
-        "special2_desc":              "Raise your weapon and bellow. Attack +5 for 3 turns.",
+        "special2_desc":              "Raise your weapon and bellow. Attack +25% and Defense +20% for 3 turns.",
         "special2_cost":              35,
         "special2_effect":            "buff_attack",
         "special2_multiplier":        0,
@@ -92,7 +95,10 @@ CLASSES = {
         "special2_dot_turns":         0,
         "special2_dot_label":         "",
         "special2_buff_stat":         "attack",
-        "special2_buff_amount":       5,
+        "special2_buff_amount":       0,
+        "special2_buff_pct":          0.25,
+        "special2_buff_stat2":        "defense",
+        "special2_buff_pct2":         0.20,
         "special2_buff_turns":        3,
         "special2_buff_label":        "war_cry",
         "special2_shield_pct":        0.0,
@@ -192,11 +198,12 @@ CLASSES = {
         # ── Secondary special ─────────────────────────────────────────────────
         "special2_name":              "Backstab",
         "special2_label":             "🗡 Backstab",
-        "special2_desc":              "Strike a critical spot — the enemy bleeds for 8 damage per turn for 4 turns.",
+        "special2_desc":              "Strike a critical spot — the enemy bleeds for 3.5% of their max HP per turn for 4 turns.",
         "special2_cost":              35,
         "special2_effect":            "dot",
         "special2_multiplier":        0.5,
-        "special2_dot_dmg":           8,
+        "special2_dot_dmg":           0,
+        "special2_dot_pct":           0.035,
         "special2_dot_turns":         4,
         "special2_dot_label":         "bleed",
         "special2_buff_stat":         None,
@@ -246,11 +253,12 @@ CLASSES = {
         # ── Secondary special ─────────────────────────────────────────────────
         "special2_name":              "Poison Arrow",
         "special2_label":             "🏹 Poison Arrow",
-        "special2_desc":              "Loose a barbed arrow laced with venom. 7 poison damage per turn for 5 turns.",
+        "special2_desc":              "Loose a barbed arrow laced with venom. 3% of the enemy's max HP in poison damage per turn for 5 turns.",
         "special2_cost":              35,
         "special2_effect":            "dot",
         "special2_multiplier":        0,
-        "special2_dot_dmg":           7,
+        "special2_dot_dmg":           0,
+        "special2_dot_pct":           0.030,
         "special2_dot_turns":         5,
         "special2_dot_label":         "poison",
         "special2_buff_stat":         None,
@@ -354,11 +362,12 @@ CLASSES = {
         # ── Secondary special ─────────────────────────────────────────────────
         "special2_name":              "Soul Leech",
         "special2_label":             "💉 Soul Leech",
-        "special2_desc":              "Drain life — 1.5× magic damage, heal for 150% of damage dealt (min 15 HP).",
+        "special2_desc":              "Drain life — 1.5× magic damage, heal for 150% of damage dealt (min 12% of your max HP).",
         "special2_cost":              35,
         "special2_effect":            "leech",
         "special2_multiplier":        1.5,
-        "special2_leech_min_heal":    15,
+        "special2_leech_min_heal":    0,
+        "special2_leech_min_pct":     0.12,
         "special2_dot_dmg":           0,
         "special2_dot_turns":         0,
         "special2_dot_label":         "",
@@ -410,7 +419,7 @@ CLASSES = {
         # combat.py Commit 8: effect == 'combo_buff_hot' sets buff AND hot state.
         "special_name":       "Berserker Rage",
         "special_label":      "💢 Berserker Rage",
-        "special_desc":       "Blood rises. Attack +6 for 3 turns, recover 8 HP per turn for 3 turns.",
+        "special_desc":       "Blood rises. Attack +25% for 3 turns, recover 5% max HP per turn for 3 turns.",
         "special_cost":       50,
         "special_cooldown":   5,
         "special_multiplier": 0,
@@ -418,10 +427,12 @@ CLASSES = {
         "special_variance":   0,
         "special_min_dmg":    0,
         "special_buff_stat":    "attack",
-        "special_buff_amount":  6,
+        "special_buff_amount":  0,
+        "special_buff_pct":     0.25,
         "special_buff_turns":   3,
         "special_buff_label":   "berserker_rage",
-        "special_hot_dmg":      8,
+        "special_hot_dmg":      0,
+        "special_hot_pct":      0.05,
         "special_hot_turns":    3,
         # ── Secondary special — Feel No Pain ──────────────────────────────────
         # 100% shield for 2 turns — full damage immunity.
@@ -552,7 +563,7 @@ CLASSES = {
         "special_multiplier": 0,
         "special_effect":     "random_hit",
         "special_variance":   0,
-        "special_min_dmg":    5,
+        "special_min_dmg":    15,
         # ── Secondary special — gamble_heal ───────────────────────────────────
         # Fortune's Favour: 50/50 roll.
         # Win (50%): heal 50% max HP.
@@ -561,7 +572,7 @@ CLASSES = {
         # appropriate heal_amount + optional buff in side_effects.
         "special2_name":              "Fortune's Favour",
         "special2_label":             "🪙 Fortune's Favour",
-        "special2_desc":              "Flip the coin. 50% chance: restore 50% HP. 50% chance: restore a little and gain fury.",
+        "special2_desc":              "Flip the coin. 50% chance: restore 50% HP. 50% chance: restore a little and gain fury (+20% attack).",
         "special2_cost":              35,
         "special2_effect":            "gamble_heal",
         "special2_multiplier":        0,
@@ -569,7 +580,8 @@ CLASSES = {
         "special2_dot_turns":         0,
         "special2_dot_label":         "",
         "special2_buff_stat":         "attack",
-        "special2_buff_amount":       3,
+        "special2_buff_amount":       0,
+        "special2_buff_pct":          0.20,
         "special2_buff_turns":        2,
         "special2_buff_label":        "wretch_fury",
         "special2_shield_pct":        0.0,
@@ -582,6 +594,74 @@ CLASSES = {
             "Neither have they."
         ),
     },
+    "Hunter": {
+        # ── Core stats ────────────────────────────────────────────────────────
+        # Rogue/Archer hybrid inspired by the Bloodborne Hunter.
+        # Second highest dodge in the roster (65% → 60% after balance pass).
+        # Sustains through Hunter's Mark leech rather than shields or healing.
+        # Lowest block % of any physical class — built to avoid hits, not tank them.
+        "attack":           21,
+        "magic_attack":     0,
+        "defense":          9,
+        "magic_defense":    7,
+        "max_hp":           125,
+        "mp_max":           100,
+        # ── Combat modifiers ──────────────────────────────────────────────────
+        "crit_chance":      0.45,
+        "crit_multiplier":  1.5,
+        "dodge_chance":     0.60,
+        "block_multiplier": 0.60,   # only 40% damage blocked — lowest physical class
+        "damage_type":      "physical",
+        # ── Assets ────────────────────────────────────────────────────────────
+        "image":            "classes/hunter.png",
+        "icon":             "fa-gun",
+        # ── Unlock ────────────────────────────────────────────────────────────
+        "unlocked_by_default": False,
+        "unlock_condition":    "Complete a New Game+ run (any mode, any ending).",
+        # ── Primary special — Trick Weapon ────────────────────────────────────
+        # The cleaver transforms into a two-handed axe-cleaver.
+        # Highest single-hit multiplier in the physical roster (2.5×) + stun.
+        "special_name":       "Trick Weapon",
+        "special_label":      "🪓 Trick Weapon",
+        "special_desc":       "The cleaver cracks open into its true form. 2.5× attack — the enemy staggers and cannot counter.",
+        "special_cost":       50,
+        "special_cooldown":   5,
+        "special_multiplier": 2.5,
+        "special_effect":     "stun",
+        "special_variance":   8,
+        "special_min_dmg":    10,
+        # ── Secondary special — Hunter's Mark ─────────────────────────────────
+        # Bloodborne rally mechanic: strike back and drain life from the wound.
+        # 1.5× physical attack, heal for 150% of damage dealt.
+        # Min heal floor: 10% of player max HP (scales with NG+ HP gains).
+        "special2_name":              "Hunter's Mark",
+        "special2_label":             "🩸 Hunter's Mark",
+        "special2_desc":              "Press the hunt. 1.5× attack — drain life from the wound and recover HP equal to damage dealt.",
+        "special2_cost":              35,
+        "special2_effect":            "leech",
+        "special2_multiplier":        1.5,
+        "special2_leech_min_heal":    0,
+        "special2_leech_min_pct":     0.10,
+        "special2_dot_dmg":           0,
+        "special2_dot_pct":           0.0,
+        "special2_dot_turns":         0,
+        "special2_dot_label":         "",
+        "special2_buff_stat":         None,
+        "special2_buff_amount":       0,
+        "special2_buff_pct":          0.0,
+        "special2_buff_turns":        0,
+        "special2_buff_label":        "",
+        "special2_shield_pct":        0.0,
+        "special2_shield_turns":      0,
+        "special2_parry_counter_pct": 0.0,
+        # ── Flavour ───────────────────────────────────────────────────────────
+        "lore": (
+            "From the fog-choked streets of a city that no longer exists, the Hunter "
+            "carries a weapon that remembers every kill it has ever made. The cleaver "
+            "folds. The blunderbuss clicks. The hunt does not end — it only changes shape."
+        ),
+    },
+
 }
 
 

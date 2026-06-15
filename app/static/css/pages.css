@@ -916,6 +916,74 @@ body.status-page {
 .status-btn--quit { background: transparent; border: 1px solid rgba(192, 57, 43, 0.60); color: rgba(220, 100, 80, 0.90); }
 .status-btn--quit:hover { background: rgba(192, 57, 43, 0.20); color: #ff8070; text-decoration: none; }
 
+/* ── Game nav menu buttons ────────────────────────────────────────────────────
+   Replaces the plain pipe-separated <a> links in game.html .menu.
+   Uses the same base shape as .status-btn so the two screens feel consistent.
+   Three modifier variants:
+     --gold   : gold border, fills gold on hover (Save/Load/Bestiary/Status/Merchant)
+     --danger : crimson border, darkens on hover (Return to Title)
+     --muted  : dim border, brightens on hover (Play/Pause audio)
+   .menu wrapper switched to flex so buttons flow in a wrapping row.
+──────────────────────────────────────────────────────────────────────────────*/
+.menu {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.5rem;
+    margin-top: 1.25rem;
+}
+
+.menu-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    padding: 0.55rem 1.2rem;
+    border-radius: var(--radius-md);
+    font-family: inherit;
+    font-size: 0.82rem;
+    font-weight: 700;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    text-decoration: none;
+    cursor: pointer;
+    background: rgba(0, 0, 0, 0.65);
+    background-image: none !important;
+    transition: background var(--transition-fast),
+                color     var(--transition-fast),
+                box-shadow var(--transition-fast);
+}
+
+.menu-btn--gold {
+    border: 1px solid var(--clr-gold);
+    color: var(--clr-gold);
+}
+.menu-btn--gold:hover {
+    background: var(--clr-gold);
+    color: #111;
+    box-shadow: 0 0 14px rgba(201, 168, 76, 0.40);
+    text-decoration: none;
+}
+
+.menu-btn--danger {
+    border: 1px solid rgba(192, 57, 43, 0.60);
+    color: rgba(220, 100, 80, 0.90);
+}
+.menu-btn--danger:hover {
+    background: rgba(192, 57, 43, 0.20);
+    color: #ff8070;
+    text-decoration: none;
+}
+
+.menu-btn--muted {
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    color: rgba(210, 195, 160, 0.55);
+}
+.menu-btn--muted:hover {
+    border-color: rgba(255, 255, 255, 0.35);
+    color: rgba(210, 195, 160, 0.90);
+    text-decoration: none;
+}
+
 /* Secondary special on status screen — teal accent */
 .status-special--secondary {
     background: rgba(93, 173, 226, 0.06);

@@ -211,18 +211,26 @@ class BattleManager:
 
         if effect == 'combo_buff_hot':
             # Barbarian Berserker Rage — no damage, buff + HoT
+            # Resolve pct-based buff and HoT to flat values at cast time
+            _barb_base_atk  = player.get('attack', 0)
+            _barb_buff_pct  = cls.get('special_buff_pct', 0.0)
+            _barb_buff_flat = cls.get('special_buff_amount', 0)
+            resolved_buff   = max(1, int(round(_barb_base_atk * _barb_buff_pct))) if _barb_buff_pct > 0 else _barb_buff_flat
+            _barb_hot_pct   = cls.get('special_hot_pct', 0.0)
+            _barb_hot_flat  = cls.get('special_hot_dmg', 0)
+            resolved_hot    = max(1, int(round(player.get('max_hp', 100) * _barb_hot_pct))) if _barb_hot_pct > 0 else _barb_hot_flat
             primary_sfx = {
                 "buff_stat":   cls.get('special_buff_stat', 'attack'),
-                "buff_amount": cls.get('special_buff_amount', 0),
+                "buff_amount": resolved_buff,
                 "buff_turns":  cls.get('special_buff_turns', 0),
                 "buff_label":  cls.get('special_buff_label', ''),
-                "hot_dmg":     cls.get('special_hot_dmg', 0),
+                "hot_dmg":     resolved_hot,
                 "hot_turns":   cls.get('special_hot_turns', 0),
             }
             msg = (
                 f"{label}! Rage floods through your veins. "
-                f"Attack +{primary_sfx['buff_amount']} for {primary_sfx['buff_turns']} turns, "
-                f"regenerating {primary_sfx['hot_dmg']} HP per turn!"
+                f"Attack +{resolved_buff} for {primary_sfx['buff_turns']} turns, "
+                f"regenerating {resolved_hot} HP per turn!"
             )
             return msg, enemy.hp, new_mp, new_cooldown, False, False, 0, primary_sfx
 
@@ -335,11 +343,12 @@ class BattleManager:
 
         _no_effect = {
             "buff_stat": None, "buff_amount": 0, "buff_turns": 0, "buff_label": "",
+            "buff_stat2": None, "buff_amount2": 0,
             "shield_pct": 0.0, "shield_turns": 0, "heal_amount": 0,
             "parry_counter_pct": 0.0, "parry_turns": 0,
         }
 
-        _fail = lambda msg: (msg, enemy.hp, current_mp, cooldown, False, 0, 0, "", _no_effect)
+        _fail = lambda msg: (msg, enemy.hp, current_mp, cooldown, False, 0, 0, "", 0.0, _no_effect)
 
         if current_mp < MP_COST_SECONDARY:
             return _fail(f"Not enough MP! ({current_mp}/{MP_COST_SECONDARY} needed)")
@@ -355,12 +364,28 @@ class BattleManager:
         effect       = cls.get('special2_effect', None)
         multiplier   = cls.get('special2_multiplier', 0)
         dot_dmg      = cls.get('special2_dot_dmg', 0)
+        dot_pct      = cls.get('special2_dot_pct', 0.0)
         dot_turns    = cls.get('special2_dot_turns', 0)
         dot_label    = cls.get('special2_dot_label', '')
         buff_stat    = cls.get('special2_buff_stat', None)
-        buff_amount  = cls.get('special2_buff_amount', 0)
+        _buff_pct    = cls.get('special2_buff_pct', 0.0)
+        _buff_flat   = cls.get('special2_buff_amount', 0)
+        # Resolve pct-based buff to flat at cast time so the buff is meaningful at any NG+ level
+        if _buff_pct > 0.0 and buff_stat:
+            _base_stat   = player.get(buff_stat, player.get('attack', 0))
+            buff_amount  = max(1, int(round(_base_stat * _buff_pct)))
+        else:
+            buff_amount  = _buff_flat
         buff_turns   = cls.get('special2_buff_turns', 0)
         buff_label   = cls.get('special2_buff_label', '')
+        # Optional second buff stat (e.g. Knight War Cry: attack + defense)
+        buff_stat2   = cls.get('special2_buff_stat2', None)
+        _buff_pct2   = cls.get('special2_buff_pct2', 0.0)
+        if _buff_pct2 > 0.0 and buff_stat2:
+            _base_stat2  = player.get(buff_stat2, player.get('defense', 0))
+            buff_amount2 = max(1, int(round(_base_stat2 * _buff_pct2)))
+        else:
+            buff_amount2 = 0
         shield_pct   = cls.get('special2_shield_pct', 0.0)
         shield_turns = cls.get('special2_shield_turns', 0)
         label        = cls.get('special2_label', '⚡ Special 2')
@@ -392,8 +417,10 @@ class BattleManager:
             enemy.hp -= dmg
 
         if effect == 'leech' and dmg > 0:
-            min_heal    = cls.get('special2_leech_min_heal', 0)
-            heal_amount = max(min_heal, int(dmg * 1.5))
+            _leech_min_pct  = cls.get('special2_leech_min_pct', 0.0)
+            _leech_min_flat = cls.get('special2_leech_min_heal', 0)
+            min_heal        = max(1, int(round(player.get('max_hp', 100) * _leech_min_pct))) if _leech_min_pct > 0 else _leech_min_flat
+            heal_amount     = max(min_heal, int(dmg * 1.5))
 
         # ── New Commit 8 effects ───────────────────────────────────────────────
 
@@ -419,7 +446,7 @@ class BattleManager:
             }
             return (
                 msg, enemy.hp, new_mp, new_cooldown,
-                False, 0, 0, "",
+                False, 0, 0, "", 0.0,
                 side_effects,
             )
 
@@ -441,7 +468,10 @@ class BattleManager:
             else:
                 heal_amount  = int(max_hp * 0.08)
                 gamble_buff_stat   = cls.get('special2_buff_stat', 'attack')
-                gamble_buff_amount = cls.get('special2_buff_amount', 3)
+                _g_pct             = cls.get('special2_buff_pct', 0.0)
+                _g_flat            = cls.get('special2_buff_amount', 0)
+                _g_base            = player.get(gamble_buff_stat, player.get('attack', 0)) if gamble_buff_stat else 0
+                gamble_buff_amount = max(1, int(round(_g_base * _g_pct))) if _g_pct > 0 else _g_flat
                 gamble_buff_turns  = cls.get('special2_buff_turns', 2)
                 gamble_buff_label  = cls.get('special2_buff_label', 'wretch_fury')
                 msg = (
@@ -463,7 +493,7 @@ class BattleManager:
             }
             return (
                 msg, enemy.hp, new_mp, new_cooldown,
-                False, 0, 0, "",
+                False, 0, 0, "", 0.0,
                 side_effects,
             )
 
@@ -479,10 +509,16 @@ class BattleManager:
                 f"({dot_dmg} damage/turn for {dot_turns} turns)"
             )
         elif effect == 'buff_attack':
-            msg = (
-                f"{label}! Your battle cry echoes through the arena. "
-                f"Attack raised by {buff_amount} for {buff_turns} turns!"
-            )
+            if buff_stat2 and buff_amount2 > 0:
+                msg = (
+                    f"{label}! Your battle cry echoes through the arena. "
+                    f"Attack +{buff_amount} and Defense +{buff_amount2} for {buff_turns} turns!"
+                )
+            else:
+                msg = (
+                    f"{label}! Your battle cry echoes through the arena. "
+                    f"Attack raised by {buff_amount} for {buff_turns} turns!"
+                )
         elif effect == 'shield':
             msg = (
                 f"{label}! An arcane barrier surrounds you. "
@@ -507,6 +543,8 @@ class BattleManager:
             "buff_amount":       buff_amount  if effect == 'buff_attack' else 0,
             "buff_turns":        buff_turns   if effect == 'buff_attack' else 0,
             "buff_label":        buff_label   if effect == 'buff_attack' else "",
+            "buff_stat2":        buff_stat2   if effect == 'buff_attack' else None,
+            "buff_amount2":      buff_amount2 if effect == 'buff_attack' else 0,
             "shield_pct":        shield_pct   if effect == 'shield' else 0.0,
             "shield_turns":      shield_turns if effect == 'shield' else 0,
             "heal_amount":       heal_amount,
@@ -520,6 +558,7 @@ class BattleManager:
             dot_dmg if effect == 'dot' else 0,
             dot_turns if effect == 'dot' else 0,
             dot_label if effect == 'dot' else "",
+            dot_pct if effect == 'dot' else 0.0,
             side_effects,
         )
 
@@ -528,7 +567,9 @@ class BattleManager:
                               buff_stat, buff_amount, buff_turns, buff_label,
                               shield_pct, shield_turns,
                               hot_dmg=0, hot_turns=0,
-                              parry_turns=0, parry_counter_pct=0.0):
+                              parry_turns=0, parry_counter_pct=0.0,
+                              dot_pct=0.0, hot_pct=0.0,
+                              buff_stat2=None, buff_amount2=0):
         """
         Called at the start of each POST turn before the player action.
 
@@ -536,38 +577,56 @@ class BattleManager:
             hot_dmg, hot_turns      — Barbarian HoT heals player each turn
             parry_turns             — Samurai parry duration counter
             parry_counter_pct       — passed through unchanged (used in battle_routes)
+            dot_pct                 — % of enemy max HP per turn (Rogue/Archer DoT)
+            hot_pct                 — % of player max HP per turn (Barbarian HoT)
 
-        Returns extended 15-tuple:
+        Returns extended 17-tuple:
             effects_msg,
             enemy.hp, player_hp,
             dot_dmg, dot_turns, dot_label,
             buff_stat, buff_amount, buff_turns, buff_label,
             shield_pct, shield_turns,
             hot_dmg, hot_turns,
-            parry_turns
+            parry_turns,
+            dot_pct, hot_pct
         """
         parts = []
 
         # ── Tick DoT ──────────────────────────────────────────────────────────
-        if dot_turns > 0 and dot_dmg > 0:
-            enemy.hp -= dot_dmg
-            tick_template = DOT_TICK_MESSAGES.get(dot_label, f"{dot_label} deals {{dmg}} damage!")
-            parts.append(tick_template.format(dmg=dot_dmg))
+        if dot_turns > 0:
+            # Resolve actual damage: pct-based takes priority over flat
+            if dot_pct > 0.0:
+                enemy_max_hp = getattr(enemy, 'max_hp', enemy.hp)
+                actual_dot = max(1, int(round(enemy_max_hp * dot_pct)))
+            else:
+                actual_dot = dot_dmg
+            if actual_dot > 0:
+                enemy.hp -= actual_dot
+                tick_template = DOT_TICK_MESSAGES.get(dot_label, f"{dot_label} deals {{dmg}} damage!")
+                parts.append(tick_template.format(dmg=actual_dot))
             dot_turns -= 1
 
         # ── Tick HoT (heal-over-time) ──────────────────────────────────────────
-        if hot_turns > 0 and hot_dmg > 0:
-            player_hp = min(player_hp + hot_dmg, char_max_hp)
-            parts.append(HOT_TICK_MESSAGE.format(hp=hot_dmg))
+        if hot_turns > 0:
+            # Resolve actual heal: pct-based takes priority over flat
+            if hot_pct > 0.0:
+                actual_hot = max(1, int(round(char_max_hp * hot_pct)))
+            else:
+                actual_hot = hot_dmg
+            if actual_hot > 0:
+                player_hp = min(player_hp + actual_hot, char_max_hp)
+                parts.append(HOT_TICK_MESSAGE.format(hp=actual_hot))
             hot_turns -= 1
 
         # ── Decrement attack buff ──────────────────────────────────────────────
         if buff_turns > 0:
             buff_turns -= 1
-            if buff_turns == 0 and buff_label:
-                expire_msg = BUFF_EXPIRE_MESSAGES.get(buff_label, "")
-                if expire_msg:
-                    parts.append(expire_msg)
+            if buff_turns == 0:
+                buff_amount2 = 0  # clear secondary buff alongside primary
+                if buff_label:
+                    expire_msg = BUFF_EXPIRE_MESSAGES.get(buff_label, "")
+                    if expire_msg:
+                        parts.append(expire_msg)
 
         # ── Decrement shield ───────────────────────────────────────────────────
         if shield_turns > 0:
@@ -591,9 +650,11 @@ class BattleManager:
             enemy.hp, player_hp,
             dot_dmg, dot_turns, dot_label,
             buff_stat, buff_amount, buff_turns, buff_label,
+            buff_stat2, buff_amount2,
             shield_pct, shield_turns,
             hot_dmg, hot_turns,
             parry_turns,
+            dot_pct, hot_pct,
         )
 
     # ── Enemy actions ──────────────────────────────────────────────────────────

@@ -110,16 +110,20 @@ def register(blueprint):
 
         # ── Active effect state ────────────────────────────────────────────────
         dot_dmg           = session.get("dot_damage", 0)
+        dot_pct           = session.get("dot_pct", 0.0)
         dot_turns         = session.get("dot_turns", 0)
         dot_label         = session.get("dot_label", "")
         buff_stat         = session.get("buff_stat", None)
         buff_amount       = session.get("buff_amount", 0)
+        buff_stat2        = session.get("buff_stat2", None)
+        buff_amount2      = session.get("buff_amount2", 0)
         buff_turns        = session.get("buff_turns", 0)
         buff_label        = session.get("buff_label", "")
         shield_pct        = session.get("shield_pct", 0.0)
         shield_turns      = session.get("shield_turns", 0)
         # Commit 8: new active effect state
         hot_dmg           = session.get("hot_dmg", 0)
+        hot_pct           = session.get("hot_pct", 0.0)
         hot_turns         = session.get("hot_turns", 0)
         parry_turns       = session.get("parry_turns", 0)
         parry_counter_pct = session.get("parry_counter_pct", 0.0)
@@ -180,9 +184,11 @@ def register(blueprint):
             enemy.hp, player_hp,
             dot_dmg, dot_turns, dot_label,
             buff_stat, buff_amount, buff_turns, buff_label,
+            buff_stat2, buff_amount2,
             shield_pct, shield_turns,
             hot_dmg, hot_turns,
             parry_turns,
+            dot_pct, hot_pct,
         ) = battle_manager.apply_active_effects(
             enemy=enemy,
             player_hp=player_hp,
@@ -194,12 +200,16 @@ def register(blueprint):
             buff_amount=buff_amount,
             buff_turns=buff_turns,
             buff_label=buff_label,
+            buff_stat2=buff_stat2,
+            buff_amount2=buff_amount2,
             shield_pct=shield_pct,
             shield_turns=shield_turns,
             hot_dmg=hot_dmg,
             hot_turns=hot_turns,
             parry_turns=parry_turns,
             parry_counter_pct=parry_counter_pct,
+            dot_pct=dot_pct,
+            hot_pct=hot_pct,
         )
 
         # Build active_character — includes buff and parry_counter_pct for combat.py
@@ -207,6 +217,9 @@ def register(blueprint):
         if buff_stat and buff_turns > 0 and buff_amount > 0:
             current_val = active_character.get(buff_stat, 0)
             active_character[buff_stat] = current_val + buff_amount
+        if buff_stat2 and buff_turns > 0 and buff_amount2 > 0:
+            current_val2 = active_character.get(buff_stat2, 0)
+            active_character[buff_stat2] = current_val2 + buff_amount2
         # Pass parry_counter_pct so fire_parry_counter() can read it
         active_character['parry_counter_pct_active'] = parry_counter_pct
 
@@ -257,6 +270,7 @@ def register(blueprint):
                 msg, enemy.hp, mp, cooldown,
                 stun_enemy,
                 new_dot_dmg, new_dot_turns, new_dot_label,
+                new_dot_pct,
                 side_fx,
             ) = battle_manager.use_special2(active_character, enemy, mp, cooldown)
             message = msg
@@ -264,14 +278,17 @@ def register(blueprint):
 
             if new_dot_turns > 0:
                 dot_dmg   = new_dot_dmg
+                dot_pct   = new_dot_pct
                 dot_turns = new_dot_turns
                 dot_label = new_dot_label
 
             if side_fx["buff_stat"] and side_fx["buff_turns"] > 0:
-                buff_stat   = side_fx["buff_stat"]
-                buff_amount = side_fx["buff_amount"]
-                buff_turns  = side_fx["buff_turns"]
-                buff_label  = side_fx["buff_label"]
+                buff_stat    = side_fx["buff_stat"]
+                buff_amount  = side_fx["buff_amount"]
+                buff_turns   = side_fx["buff_turns"]
+                buff_label   = side_fx["buff_label"]
+                buff_stat2   = side_fx.get("buff_stat2", None)
+                buff_amount2 = side_fx.get("buff_amount2", 0)
 
             if side_fx["shield_turns"] > 0:
                 shield_pct   = side_fx["shield_pct"]
@@ -353,8 +370,9 @@ def register(blueprint):
                 damage_landed = True
 
             # ── Commit 8: Samurai parry auto-counter ───────────────────────────
-            # Fires only if damage landed (not dodged/smoked) and parry is active
-            if damage_landed and parry_turns > 0:
+            # Fires whenever parry is active and the enemy attacked (including
+            # on dodge turns — the Samurai reads the attack and counters regardless).
+            if parry_turns > 0:
                 counter_msg, enemy.hp, counter_dmg = battle_manager.fire_parry_counter(
                     active_character, enemy
                 )
@@ -375,6 +393,14 @@ def register(blueprint):
             taken   = max(0, hp_before_estus_counter - player_hp)
             if taken > 0:
                 _update_run_stat("damage_taken", taken)
+            # Iron Stance counters even on estus turns — boss still attacked
+            if parry_turns > 0:
+                counter_msg, enemy.hp, counter_dmg = battle_manager.fire_parry_counter(
+                    active_character, enemy
+                )
+                message = (message + " " + counter_msg).strip()
+                if counter_dmg > 0:
+                    _update_run_stat("damage_dealt", counter_dmg)
 
         # Track DoT damage dealt (ticked in Step 1)
         original_dot_turns = session.get("dot_turns", 0)
@@ -395,6 +421,8 @@ def register(blueprint):
             session["dot_label"]        = ""
             session["buff_stat"]        = None
             session["buff_amount"]      = 0
+            session["buff_stat2"]       = None
+            session["buff_amount2"]     = 0
             session["buff_turns"]       = 0
             session["buff_label"]       = ""
             session["shield_pct"]       = 0.0
@@ -445,15 +473,19 @@ def register(blueprint):
         session["special_cooldown"]  = cooldown
         session["phase_changed"]     = phase_changed
         session["dot_damage"]        = dot_dmg
+        session["dot_pct"]           = dot_pct
         session["dot_turns"]         = dot_turns
         session["dot_label"]         = dot_label
         session["buff_stat"]         = buff_stat
         session["buff_amount"]       = buff_amount
+        session["buff_stat2"]        = buff_stat2
+        session["buff_amount2"]      = buff_amount2
         session["buff_turns"]        = buff_turns
         session["buff_label"]        = buff_label
         session["shield_pct"]        = shield_pct
         session["shield_turns"]      = shield_turns
         session["hot_dmg"]           = hot_dmg
+        session["hot_pct"]           = hot_pct
         session["hot_turns"]         = hot_turns
         session["parry_turns"]       = parry_turns
         session["parry_counter_pct"] = parry_counter_pct
