@@ -227,14 +227,14 @@ BOSSES = {
             "\"You dare fan the dying flame? Then burn with it!\""
         ),
     },
-    "Lothric and Lorian": {
+    "Twin Princes": {
         "hp":            200,
         "attack":        22,
         "magic_attack":  18,
         "defense":       10,
         "magic_defense": 10,
         "damage_type":   "mixed",
-        "image":         "lothric_lorian.png",
+        "image":         "twin_princes.png",
         "lore":          "Twin princes of fading flame. One silent and seething, the other bound to a cursed destiny of rekindling.",
         "soul_reward":   160,   # was 270
         "phase2_lore": (

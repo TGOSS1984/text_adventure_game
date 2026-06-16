@@ -475,13 +475,21 @@ def register(blueprint):
         ng_level     = session.get("ng_plus", 0)
         show_ng_plus = chapter_id in ENDING_CHAPTERS
 
-        # ── Commit 8: Barbarian unlock on game completion ──────────────────────
+        # ── Barbarian + Hunter unlock on game completion ──────────────────────
         # unlock_class() is a no-op if already unlocked, so repeated visits
         # to ending chapters are safe. increment_total_runs() always fires.
+        # Barbarian: unlocked on any story completion (base game or NG+).
+        # Hunter: unlocked on completing a NG+ run (ng_level > 0).
         if chapter_id in ENDING_CHAPTERS:
-            newly_unlocked = unlock_class("Barbarian")
-            if newly_unlocked:
+            newly_unlocked_barb = unlock_class("Barbarian")
+            if newly_unlocked_barb:
                 flash("💢 The Barbarian class has been unlocked!", "info")
+
+            if ng_level > 0:
+                newly_unlocked_hunter = unlock_class("Hunter")
+                if newly_unlocked_hunter:
+                    flash("🩸 The Hunter class has been unlocked!", "info")
+
             increment_total_runs()
 
         # Build completion data for the ending/status screens
