@@ -372,14 +372,25 @@ function bindBattleButtons() {
                    ? 'special-' + playerClass
                    : 'attack-' + playerClass;
           break;
-        // ── Secondary special — teal flash, same SFX fallback ─────────────
+        // ── Secondary special — teal flash, dedicated special2 SFX ─────────
         case 'special2':
-          playSpecialSound(playerClass);   // reuse primary SFX until dedicated files added
+          // Look for special2-<class> first; fall back to special-<class>,
+          // then attack-<class>. Add a special2-<class> audio element in
+          // battle.html to give any class its own secondary special sound.
+          (function() {
+            const s2el = document.getElementById('special2-' + playerClass);
+            if (s2el && s2el.src && s2el.src !== window.location.href) {
+              AudioManager.playSfx('special2-' + playerClass);
+              sfxId = 'special2-' + playerClass;
+            } else {
+              playSpecialSound(playerClass);
+              sfxId = (document.getElementById('special-' + playerClass)?.src &&
+                       document.getElementById('special-' + playerClass).src !== window.location.href)
+                       ? 'special-' + playerClass
+                       : 'attack-' + playerClass;
+            }
+          })();
           triggerSpecial2Flash();
-          sfxId = (document.getElementById('special-' + playerClass)?.src &&
-                   document.getElementById('special-' + playerClass).src !== window.location.href)
-                   ? 'special-' + playerClass
-                   : 'attack-' + playerClass;
           break;
         // ─────────────────────────────────────────────────────────────────
       }
@@ -451,6 +462,9 @@ document.addEventListener('DOMContentLoaded', () => {
     if (victoryPending) return;
     victoryPending = true;
 
+    // Stop the battle timer immediately — enemy is dead, no more turns
+    BattleTimer.stop();
+
     // Show overlay
     const overlay = document.getElementById('victory-overlay');
     if (overlay) overlay.classList.add('victory-visible');
@@ -458,11 +472,11 @@ document.addEventListener('DOMContentLoaded', () => {
     // Play victory SFX in sync with the overlay
     AudioManager.playSfx('sfx-victory');
 
-    // Navigate after 2.8s
+    // Navigate after 8.5s — allows victory.mp3 (8s) to finish before redirecting
     setTimeout(() => {
       victoryPending = false;
       window.location.href = redirect;
-    }, 6000);
+    }, 8500);
   });
 
   document.body.addEventListener('htmx:afterSwap', e => {

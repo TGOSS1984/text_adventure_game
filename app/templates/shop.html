@@ -74,7 +74,7 @@ Inline <style> removed — all styles live in pages.css (section 3).
                             {% endif %}
                         </div>
                     {% else %}
-                        <form method="POST" action="{{ url_for('main.buy') }}">
+                        <form method="POST" action="{{ url_for('main.buy') }}" class="buy-form">
                             <input type="hidden" name="item_key" value="{{ item.key }}">
                             <button
                                 type="submit"
@@ -104,9 +104,26 @@ Inline <style> removed — all styles live in pages.css (section 3).
 
 <div id="bonfire-pulse" class="bonfire-pulse"></div>
 
+<audio id="sfx-purchase" src="{{ url_for('static', filename='sounds/sound_effects/purchase.mp3') }}" preload="auto"></audio>
+
 <script src="{{ url_for('static', filename='js/audio_manager.js') }}"></script>
 <script src="{{ url_for('static', filename='js/settings.js') }}"></script>
 <script src="{{ url_for('static', filename='js/sound.js') }}"></script>
+
+<script>
+// Play purchase SFX before the buy form submits.
+// The sound fires immediately on click; the short delay lets it play
+// before the POST navigates away. Disabled buttons are ignored.
+document.querySelectorAll('.buy-form').forEach(form => {
+    form.addEventListener('submit', function (e) {
+        const btn = form.querySelector('button[type="submit"]');
+        if (btn && btn.disabled) return;  // shouldn't reach here, but guard anyway
+        e.preventDefault();
+        AudioManager.playSfx('sfx-purchase');
+        setTimeout(() => form.submit(), 1200);
+    });
+});
+</script>
 
 </body>
 </html>

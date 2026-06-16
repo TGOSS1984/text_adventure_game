@@ -25,7 +25,14 @@ Inline quit-confirm JS kept small here (page-specific DOM wiring only).
     'Knight': 'fa-chess-knight',
     'Mage':   'fa-wand-magic-sparkles',
     'Rogue':  'fa-skull-crossbones',
-    'Archer': 'fa-feather'
+    'Archer': 'fa-feather',
+    'Paladin': 'fa-cross',
+    'Necromancer': 'fa-skull',
+    'Barbarian': 'fa-fist',
+    'Samurai': 'fa-person-falling-burst',
+    'Wretch': 'fa-person-drowning',
+    'Hunter': 'fa-gun',
+
 } %}
 {% set class_icon = class_icons.get(character.class_name, 'fa-shield-halved') %}
 
@@ -341,14 +348,10 @@ Inline quit-confirm JS kept small here (page-specific DOM wiring only).
             </a>
         </div>
 
-        <!-- Music controls -->
+        <!-- Music controls — original emoji style, unstyled -->
         <div class="audio-controls" aria-label="Background music controls">
-            <button id="playMusic"  class="menu-btn menu-btn--muted" aria-label="Play music">
-                <i class="fas fa-volume-high"></i> Play
-            </button>
-            <button id="pauseMusic" class="menu-btn menu-btn--muted" aria-label="Pause music">
-                <i class="fas fa-pause"></i> Pause
-            </button>
+            <button id="playMusic"  aria-label="Play music">&#128266; Play</button>
+            <button id="pauseMusic" aria-label="Pause music">&#128263; Pause</button>
         </div>
 
     </div><!-- /.bonfire-bg -->

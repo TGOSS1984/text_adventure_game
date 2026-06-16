@@ -137,6 +137,26 @@ Lightbox addition:
                     <span class="mechanic-label">Necromancer</span>
                     <span class="mechanic-desc"><strong>Raise the Dead</strong> — 2.5× magic attack with high variance. Undead assault tears through armour. 50 MP · 5-turn cooldown.</span>
                 </div>
+                <div class="mechanic-row">
+                    <i class="fas fa-hand-fist"></i>
+                    <span class="mechanic-label">Barbarian</span>
+                    <span class="mechanic-desc"><strong>Berserker Rage</strong> — No direct damage. Attack +25% for 3 turns and recover 5% max HP per turn for 3 turns. Combine the buff with Feel No Pain for sustained pressure without taking damage. 50 MP · 5-turn cooldown. <em>Unlock: complete the main story.</em></span>
+                </div>
+                <div class="mechanic-row">
+                    <i class="fas fa-person-falling-burst"></i>
+                    <span class="mechanic-label">Samurai</span>
+                    <span class="mechanic-desc"><strong>Iaijutsu</strong> — Two rapid strikes, each at full attack power. Highest physical DPS of any primary special — especially strong when crits land on both hits. 50 MP · 4-turn cooldown. <em>Unlock: defeat Mesmereth in the Shadow Realm.</em></span>
+                </div>
+                <div class="mechanic-row">
+                    <i class="fas fa-person-drowning"></i>
+                    <span class="mechanic-label">Wretch</span>
+                    <span class="mechanic-desc"><strong>Desperate Strike</strong> — Pure chaos. Deals a random 15–60 damage with no stat scaling whatsoever. Can outperform any class at its peak or embarrass you at its floor. The risk is the mechanic. 50 MP · 4-turn cooldown.</span>
+                </div>
+                <div class="mechanic-row">
+                    <i class="fas fa-gun"></i>
+                    <span class="mechanic-label">Hunter</span>
+                    <span class="mechanic-desc"><strong>Trick Weapon</strong> — 2.5× attack + stun. The cleaver transforms — the enemy staggers and cannot counter. Highest single-hit multiplier in the physical roster. 50 MP · 5-turn cooldown. <em>Unlock: complete a New Game+ run.</em></span>
+                </div>
 
                 <hr class="bestiary-divider">
 
@@ -145,7 +165,7 @@ Lightbox addition:
                 <div class="mechanic-row">
                     <i class="fas fa-chess-knight"></i>
                     <span class="mechanic-label">Knight</span>
-                    <span class="mechanic-desc"><strong>War Cry</strong> — No direct damage. Raises attack by +5 for 3 turns. Best when you have multiple attacks ahead and want sustained pressure.</span>
+                    <span class="mechanic-desc"><strong>War Cry</strong> — No direct damage. Raises attack by +25% and defense by +20% for 3 turns. A dual buff — increases your damage output while hardening your guard.</span>
                 </div>
                 <div class="mechanic-row">
                     <i class="fas fa-wand-magic-sparkles"></i>
@@ -155,12 +175,12 @@ Lightbox addition:
                 <div class="mechanic-row">
                     <i class="fas fa-skull-crossbones"></i>
                     <span class="mechanic-label">Rogue</span>
-                    <span class="mechanic-desc"><strong>Backstab</strong> — 0.5× hit + bleed for 8 damage per turn for 4 turns (32 bleed total). Distinct from Smoke Screen — sets up sustained damage while you dodge safely.</span>
+                    <span class="mechanic-desc"><strong>Backstab</strong> — 0.5× hit + bleed for 3.5% of the enemy's max HP per turn for 4 turns. Scales with enemy HP so it stays relevant in NG+. Distinct from Smoke Screen — sustained damage while you dodge safely.</span>
                 </div>
                 <div class="mechanic-row">
                     <i class="fas fa-feather"></i>
                     <span class="mechanic-label">Archer</span>
-                    <span class="mechanic-desc"><strong>Poison Arrow</strong> — No hit damage. Poisons for 7 damage per turn for 5 turns (35 total). Matches Mark Target's total output at lower MP cost — better in long fights.</span>
+                    <span class="mechanic-desc"><strong>Poison Arrow</strong> — No hit damage. Poisons for 3% of the enemy's max HP per turn for 5 turns. Scales with enemy HP — lethal in long fights and NG+ runs where enemies are beefier.</span>
                 </div>
                 <div class="mechanic-row">
                     <i class="fas fa-cross"></i>
@@ -170,7 +190,27 @@ Lightbox addition:
                 <div class="mechanic-row">
                     <i class="fas fa-skull"></i>
                     <span class="mechanic-label">Necromancer</span>
-                    <span class="mechanic-desc"><strong>Soul Leech</strong> — 1.5× magic damage, heals for 100% of damage dealt (minimum 15 HP). Sustain tool — use when hurt and the primary's raw damage isn't what you need.</span>
+                    <span class="mechanic-desc"><strong>Soul Leech</strong> — 1.5× magic damage, heals for 150% of damage dealt (minimum 12% of your max HP). Sustain tool — use when hurt and the primary's raw damage isn't what you need. Minimum heal scales with HP in NG+.</span>
+                </div>
+                <div class="mechanic-row">
+                    <i class="fas fa-hand-fist"></i>
+                    <span class="mechanic-label">Barbarian</span>
+                    <span class="mechanic-desc"><strong>Feel No Pain</strong> — 100% incoming damage blocked for 2 turns — full immunity. No MP cost beyond the 35 to activate. Use after taking a heavy hit to buy time for the HoT from Berserker Rage to kick in.</span>
+                </div>
+                <div class="mechanic-row">
+                    <i class="fas fa-person-falling-burst"></i>
+                    <span class="mechanic-label">Samurai</span>
+                    <span class="mechanic-desc"><strong>Iron Stance</strong> — Incoming damage halved for 3 turns AND you auto-counter each enemy attack for 50% of your attack stat — even on turns you dodge or use Estus. The counter always fires while the stance is active.</span>
+                </div>
+                <div class="mechanic-row">
+                    <i class="fas fa-person-drowning"></i>
+                    <span class="mechanic-label">Wretch</span>
+                    <span class="mechanic-desc"><strong>Fortune's Favour</strong> — Flip a coin. Win (50%): restore 50% max HP. Lose (50%): restore a little HP and gain +20% attack for 2 turns. High-variance sustain — the Wretch's only reliable way to recover health.</span>
+                </div>
+                <div class="mechanic-row">
+                    <i class="fas fa-gun"></i>
+                    <span class="mechanic-label">Hunter</span>
+                    <span class="mechanic-desc"><strong>Hunter's Mark</strong> — 1.5× attack + drain life. Heals for the damage dealt (minimum 10% of your max HP). The Bloodborne rally mechanic — press the attack immediately after taking a hit to recover HP through aggression.</span>
                 </div>
 
                 <hr class="bestiary-divider">
@@ -198,6 +238,35 @@ Lightbox addition:
                 {# Commit 21: Physical & Magic damage explanation #}
                 <h3><i class="fas fa-hat-wizard"></i> &nbsp;Physical &amp; Magic Damage</h3>
                 <p>Every class and enemy has a damage type — <span class="damage-type-badge badge--physical">⚔ Physical</span> or <span class="damage-type-badge badge--magic">✨ Magic</span>. Physical attacks are reduced by the target's physical defence; magic attacks are reduced by their magic defence. Some bosses deal <span class="damage-type-badge badge--mixed">⚔✨ Mixed</span> damage, alternating between both types. Check the Enemy Codex to see what you're up against before you fight.</p>
+
+                <hr class="bestiary-divider">
+
+                <hr class="bestiary-divider">
+
+                <h3><i class="fas fa-rotate-right"></i> &nbsp;New Game+</h3>
+                <p>Completing the story unlocks New Game+. Enemies scale up each cycle — higher HP, attack, and defense. Two modes are available:</p>
+                <div class="mechanic-row">
+                    <i class="fas fa-fire"></i>
+                    <span class="mechanic-label">New Journey</span>
+                    <span class="mechanic-desc">Choose a new class. Base stats reset. Souls carried (capped at 600). Shop resets — all permanent upgrades can be bought again.</span>
+                </div>
+                <div class="mechanic-row">
+                    <i class="fas fa-sword"></i>
+                    <span class="mechanic-label">Bearer's Legacy</span>
+                    <span class="mechanic-desc">Continue as the same class. All upgraded stats carry over. Souls capped. Shop resets. Enemies are stronger — but so are you.</span>
+                </div>
+                <p>Shop upgrades for dodge and block are capped at +15% above your class base across all NG+ runs, preserving class differences at higher cycles.</p>
+
+                <hr class="bestiary-divider">
+
+                <h3><i class="fas fa-lock"></i> &nbsp;Unlockable Classes</h3>
+                <p>Four classes start locked and must be earned through play:</p>
+                <ul>
+                    <li><strong>Barbarian</strong> — Complete the main story (any ending).</li>
+                    <li><strong>Samurai</strong> — Defeat Mesmereth in the Shadow Realm.</li>
+                    <li><strong>Hunter</strong> — Complete a New Game+ run (any mode, any ending).</li>
+                    <li><strong>Wretch</strong> — Available from the start. No unlock needed.</li>
+                </ul>
 
                 <hr class="bestiary-divider">
 

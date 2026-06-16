@@ -437,7 +437,7 @@ CLASSES = {
         # ── Secondary special — Feel No Pain ──────────────────────────────────
         # 100% shield for 2 turns — full damage immunity.
         "special2_name":              "Feel No Pain",
-        "special2_label":             "🩸 Feel No Pain",
+        "special2_label":             "🗿 Feel No Pain",
         "special2_desc":              "The pain does not register. All incoming damage blocked for 2 turns.",
         "special2_cost":              35,
         "special2_effect":            "shield",
