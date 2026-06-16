@@ -493,6 +493,12 @@ Inline quit-confirm JS kept small here (page-specific DOM wiring only).
             }
         }
 
+        // Save music position before story chapter navigation so music
+        // continues seamlessly on the next page load without restarting.
+        document.querySelectorAll('#choices-form form').forEach(form => {
+            form.addEventListener('submit', () => AudioManager.savePosition());
+        });
+
         // Quit confirmation overlay
         const overlay   = document.getElementById('quit-confirm-overlay');
         const quitLink  = document.getElementById('quit-link');
