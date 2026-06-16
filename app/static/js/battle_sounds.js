@@ -455,11 +455,14 @@ document.addEventListener('DOMContentLoaded', () => {
     const overlay = document.getElementById('victory-overlay');
     if (overlay) overlay.classList.add('victory-visible');
 
+    // Play victory SFX in sync with the overlay
+    AudioManager.playSfx('sfx-victory');
+
     // Navigate after 2.8s
     setTimeout(() => {
       victoryPending = false;
       window.location.href = redirect;
-    }, 2800);
+    }, 6000);
   });
 
   document.body.addEventListener('htmx:afterSwap', e => {

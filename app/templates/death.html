@@ -157,6 +157,9 @@ Commit 4 addition:
 
     </div><!-- /.bonfire-bg -->
 
+    {# ── SFX audio elements ── #}
+    <audio id="sfx-death" src="{{ url_for('static', filename='sounds/sound_effects/death.mp3') }}" preload="auto"></audio>
+
     <script src="{{ url_for('static', filename='js/audio_manager.js') }}"></script>
     <script src="{{ url_for('static', filename='js/settings.js') }}"></script>
     <script>
@@ -168,6 +171,9 @@ Commit 4 addition:
         if (vid.readyState >= 3) { vid.classList.add('loaded'); }
         else { vid.addEventListener('canplaythrough', () => vid.classList.add('loaded'), { once: true }); }
     }
+
+    // Death SFX — plays once as the screen appears, over background music
+    AudioManager.playSfx('sfx-death');
 
     // Run stats toggle
     const toggle  = document.getElementById('run-stats-toggle');

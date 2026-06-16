@@ -343,8 +343,12 @@ Inline quit-confirm JS kept small here (page-specific DOM wiring only).
 
         <!-- Music controls -->
         <div class="audio-controls" aria-label="Background music controls">
-            <button id="playMusic"  aria-label="Play music">&#128266; Play</button>
-            <button id="pauseMusic" aria-label="Pause music">&#128263; Pause</button>
+            <button id="playMusic"  class="menu-btn menu-btn--muted" aria-label="Play music">
+                <i class="fas fa-volume-high"></i> Play
+            </button>
+            <button id="pauseMusic" class="menu-btn menu-btn--muted" aria-label="Pause music">
+                <i class="fas fa-pause"></i> Pause
+            </button>
         </div>
 
     </div><!-- /.bonfire-bg -->
@@ -390,6 +394,9 @@ Inline quit-confirm JS kept small here (page-specific DOM wiring only).
             </div>
         </div>
     </div>
+
+    {# ── SFX audio elements — played once via AudioManager.playSfx() ── #}
+    <audio id="sfx-bonfire" src="{{ url_for('static', filename='sounds/sound_effects/bonfire.mp3') }}" preload="auto"></audio>
 
     <script src="{{ url_for('static', filename='js/audio_manager.js') }}"></script>
     <script src="{{ url_for('static', filename='js/settings.js') }}"></script>
@@ -464,11 +471,13 @@ Inline quit-confirm JS kept small here (page-specific DOM wiring only).
 
     <script>
     window.addEventListener('DOMContentLoaded', () => {
-        // Bonfire pulse on rest chapters
+        // Bonfire pulse + SFX on rest chapters
         const messages = {{ get_flashed_messages(with_categories=true) | tojson }};
         const pulse = document.getElementById('bonfire-pulse');
         if (messages.some(([cat, msg]) => cat === 'info' && msg.includes('bonfire'))) {
             pulse.classList.add('active');
+            // Play bonfire crackle as an overlay — background music continues
+            AudioManager.playSfx('sfx-bonfire');
         }
 
         // Story background video — fade in once ready
