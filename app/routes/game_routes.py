@@ -517,6 +517,10 @@ def register(blueprint):
             bosses_missed=bosses_missed,
             completion_pct=completion_pct,
             total_bosses=total_bosses,
+            # Preload the small rest-background pool so the random pick on
+            # the next /rest chapter is already cached. Mirrors the same
+            # pattern used in battle_routes.py for battle backgrounds.
+            preload_list=[url_for("static", filename=bg) for bg in REST_BGS],
         )
 
     @blueprint.route("/enter_shadow_realm", methods=["POST"])
