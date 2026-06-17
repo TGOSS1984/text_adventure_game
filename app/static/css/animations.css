@@ -548,6 +548,9 @@ body.home-page #bg-video {
 
 @media (prefers-reduced-motion: reduce) {
 
+    /* Page transitions */
+    body                                    { animation: none; }
+
     /* Flash overlays */
     #healing-flash.active,
     #estus-bubble-canvas                   { animation: none; opacity: 0; }
