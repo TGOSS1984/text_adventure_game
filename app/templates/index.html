@@ -75,6 +75,14 @@ Carousel upgrade:
         {% endif %}
         {% endwith %}
 
+        {% if total_runs and total_runs > 0 %}
+        <div class="lifetime-banner">
+            <i class="fas fa-fire-flame-curved"></i>
+            {{ total_runs }} journey{{ 's' if total_runs != 1 else '' }}
+            {{ 'have' if total_runs != 1 else 'has' }} ended here before yours.
+        </div>
+        {% endif %}
+
         {% if session.get('ng_plus', 0) > 0 %}
         <div class="ng-plus-banner">
             <span class="ng-plus-badge">⚔ Journey {{ session.get('ng_plus', 0) + 1 }}</span>

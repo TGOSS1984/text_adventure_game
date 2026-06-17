@@ -85,7 +85,7 @@ from ..classes import CLASSES
 from ..save_load import save_game, load_game, has_save, delete_save
 from ..enemies import ENEMIES, BOSSES
 from ..story.story_engine import Story
-from ..player_record import get_unlocked_names, unlock_class, increment_total_runs
+from ..player_record import get_unlocked_names, unlock_class, increment_total_runs, get_total_runs
 
 # ── Ending chapter IDs — show NG+ buttons on these ───────────────────────────
 ENDING_CHAPTERS = {100, 101, 102}
@@ -240,6 +240,7 @@ def register(blueprint):
             classes=CLASSES,
             unlocked_names=unlocked_names,
             has_save=has_save(),
+            total_runs=get_total_runs(),
         )
 
     @blueprint.route("/start", methods=["POST"])

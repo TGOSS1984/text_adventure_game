@@ -94,6 +94,18 @@ def get_unlocked_names():
     return set(get_record().get('unlocked_classes', []))
 
 
+def get_total_runs():
+    """
+    Return the lifetime count of completed runs (incremented on every
+    ending chapter reached, across restarts). Note: this counter has no
+    per-player key — it's a single shared value for the whole deployed
+    instance, same as unlocked_classes. Fine for local/single-player use;
+    on a shared live deployment it reflects all visitors combined, not
+    just the current browser's progress.
+    """
+    return get_record().get('total_runs', 0)
+
+
 def is_unlocked(class_name):
     """Return True if the given class name is unlocked."""
     return class_name in get_unlocked_names()
