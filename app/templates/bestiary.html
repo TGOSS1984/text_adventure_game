@@ -494,6 +494,141 @@ Lightbox addition:
         </details>
     </div>
 
+    <!-- ══════════════════════════════════════════════════════════════════════ -->
+    <!-- SECTION 3: CLASS CODEX                                                -->
+    <!-- Mirrors the Enemy Codex pattern above: one codex-entry per class,    -->
+    <!-- portrait + key stats + lore. Mechanics already exist in How to Play  -->
+    <!-- as text; this gives the same info a scannable visual card so the     -->
+    <!-- new classes (Barbarian/Samurai/Wretch/Hunter) sit alongside the      -->
+    <!-- originals instead of only being described in prose.                 -->
+    <!-- ══════════════════════════════════════════════════════════════════════ -->
+    <div class="bestiary-section">
+        <details class="bestiary-details">
+            <summary class="bestiary-summary--section">
+                <i class="fas fa-users"></i>
+                Classes
+                <i class="fas fa-chevron-down summary-chevron"></i>
+            </summary>
+
+            <div class="codex-wrapper">
+
+                {% for class_name, cls in classes.items() %}
+                {% set is_locked = class_name not in unlocked_names %}
+                <details class="codex-entry">
+                    <summary class="codex-summary">
+                        <img
+                            class="codex-thumb {% if is_locked %}class-img--locked{% endif %}"
+                            src="{{ url_for('static', filename='images/' + cls.image) }}"
+                            alt="{{ class_name }}"
+                            loading="lazy"
+                        >
+                        <div class="codex-summary-text">
+                            <div class="codex-name">
+                                <i class="fas {{ cls.icon }}"></i> {{ class_name }}
+                                {% if cls.damage_type == 'magic' %}
+                                    <span class="damage-type-badge badge--magic">✨ Magic</span>
+                                {% elif cls.damage_type == 'mixed' %}
+                                    <span class="damage-type-badge badge--mixed">⚔✨ Mixed</span>
+                                {% else %}
+                                    <span class="damage-type-badge badge--physical">⚔ Physical</span>
+                                {% endif %}
+                                {% if is_locked %}
+                                    <span class="damage-type-badge badge--locked"><i class="fas fa-lock"></i> Locked</span>
+                                {% endif %}
+                            </div>
+                            <div class="codex-stats-inline">
+                                HP {{ cls.max_hp }} &nbsp;·&nbsp;
+                                {% if cls.damage_type == 'magic' %}M.ATK {{ cls.magic_attack }}{% else %}ATK {{ cls.attack }}{% endif %}
+                                &nbsp;·&nbsp; DEF {{ cls.defense }}
+                            </div>
+                        </div>
+                        <i class="fas fa-chevron-down codex-chevron"></i>
+                    </summary>
+
+                    <div class="codex-body">
+                        <div class="codex-image-col">
+                            <img
+                                class="codex-image {% if is_locked %}class-img--locked{% endif %}"
+                                src="{{ url_for('static', filename='images/' + cls.image) }}"
+                                alt="{{ class_name }}"
+                                loading="lazy"
+                                data-lightbox
+                            >
+                            <div class="codex-stat-grid">
+                                <div class="codex-stat">
+                                    <span class="codex-stat-label"><i class="fas fa-heart"></i> HP</span>
+                                    <span class="codex-stat-val">{{ cls.max_hp }}</span>
+                                </div>
+                                <div class="codex-stat">
+                                    <span class="codex-stat-label">
+                                        {% if cls.damage_type == 'magic' %}
+                                            <i class="fas fa-wand-magic-sparkles"></i> M.ATK
+                                        {% else %}
+                                            <i class="fas fa-hand-fist"></i> ATK
+                                        {% endif %}
+                                    </span>
+                                    <span class="codex-stat-val">{{ cls.magic_attack if cls.damage_type == 'magic' else cls.attack }}</span>
+                                </div>
+                                <div class="codex-stat">
+                                    <span class="codex-stat-label"><i class="fas fa-shield-alt"></i> DEF</span>
+                                    <span class="codex-stat-val">{{ cls.defense }}</span>
+                                </div>
+                                <div class="codex-stat">
+                                    <span class="codex-stat-label"><i class="fas fa-hat-wizard"></i> Mag.Def</span>
+                                    <span class="codex-stat-val">{{ cls.magic_defense }}</span>
+                                </div>
+                                <div class="codex-stat">
+                                    <span class="codex-stat-label"><i class="fas fa-bullseye"></i> Crit%</span>
+                                    <span class="codex-stat-val">{{ (cls.crit_chance * 100) | round(0) | int }}%</span>
+                                </div>
+                                <div class="codex-stat">
+                                    <span class="codex-stat-label"><i class="fas fa-person-running"></i> Dodge%</span>
+                                    <span class="codex-stat-val">{{ (cls.dodge_chance * 100) | round(0) | int }}%</span>
+                                </div>
+                                <div class="codex-stat">
+                                    <span class="codex-stat-label"><i class="fas fa-flask"></i> MP Max</span>
+                                    <span class="codex-stat-val">{{ cls.mp_max }}</span>
+                                </div>
+                                <div class="codex-stat">
+                                    <span class="codex-stat-label">Type</span>
+                                    <span class="codex-stat-val">
+                                        {% if cls.damage_type == 'magic' %}
+                                            <span class="damage-type-badge badge--magic">✨ Magic</span>
+                                        {% elif cls.damage_type == 'mixed' %}
+                                            <span class="damage-type-badge badge--mixed">⚔✨ Mixed</span>
+                                        {% else %}
+                                            <span class="damage-type-badge badge--physical">⚔ Physical</span>
+                                        {% endif %}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="codex-info-col">
+                            {% if is_locked %}
+                            <p class="codex-lore" style="opacity:0.75;">
+                                <i class="fas fa-lock"></i> <strong>Unlock:</strong> {{ cls.unlock_condition }}
+                            </p>
+                            {% endif %}
+                            <div class="mechanic-row" style="margin-bottom:0.5rem;">
+                                <i class="fas fa-star"></i>
+                                <span class="mechanic-label">{{ cls.special_label }}</span>
+                                <span class="mechanic-desc">{{ cls.special_desc }}</span>
+                            </div>
+                            <div class="mechanic-row" style="margin-bottom:0.75rem;">
+                                <i class="fas fa-star-half-stroke"></i>
+                                <span class="mechanic-label">{{ cls.special2_label }}</span>
+                                <span class="mechanic-desc">{{ cls.special2_desc }}</span>
+                            </div>
+                            <p class="codex-lore">{{ cls.lore }}</p>
+                        </div>
+                    </div>
+                </details>
+                {% endfor %}
+
+            </div><!-- /.codex-wrapper -->
+        </details>
+    </div>
+
     <!-- ── Commit 19: Navigation — two buttons when mid-run, one when not ── -->
     <div class="bestiary-nav">
         {% if mid_run %}

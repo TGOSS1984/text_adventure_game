@@ -556,6 +556,8 @@ def register(blueprint):
             "bestiary.html",
             enemies=ENEMIES,
             bosses=BOSSES,
+            classes=CLASSES,
+            unlocked_names=get_unlocked_names(),
             mid_run=mid_run,
         )
 
