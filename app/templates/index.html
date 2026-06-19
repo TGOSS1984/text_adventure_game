@@ -134,7 +134,7 @@ Carousel upgrade:
                                 <span><i class="fas fa-heart"></i> HP: {{ cls.max_hp }}</span>
                                 <span><i class="fas fa-bullseye"></i> Crit: {{ (cls.crit_chance * 100) | round(0) | int }}%</span>
                                 <span><i class="fas fa-running"></i> Dodge: {{ (cls.dodge_chance * 100) | round(0) | int }}%</span>
-                                <span><i class="fas fa-shield-virus"></i> Block: {{ (100 - cls.block_multiplier * 100) | round(0) | int }}% reduced</span>
+                                <span><i class="fas fa-shield-virus"></i> Block: {{ (100 - cls.block_multiplier * 100) | round(0) | int }}%<span class="stat-block-suffix"></span></span>
                                 <span><i class="fas fa-hat-wizard"></i> Mag.Def: {{ cls.magic_defense }}</span>
                             </div>
                             <div class="class-type-row">
@@ -294,7 +294,7 @@ Carousel upgrade:
             <button id="pauseMusic">&#128263; Pause</button>
         </div>
 
-        <div class="menu" style="margin-top: 0.5rem;">
+        <div style="margin-top: 0.5rem; text-align: center;">
             <a href="{{ url_for('main.bestiary') }}" style="color: rgba(201,168,76,0.75); font-size: 0.85rem; letter-spacing: 0.06em;">
                 <i class="fas fa-book-skull"></i> Bestiary &amp; Guide
             </a>

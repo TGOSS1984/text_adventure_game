@@ -295,6 +295,27 @@
     .class-option   { width: 100%; max-width: 260px; box-sizing: border-box; }
     .class-option img { width: 110px; height: 110px; }
     .class-lore     { display: none !important; }
+
+    /* 2-column stat grid — was 7 stats stacked one per line, now 4 rows */
+    .class-stats {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 0.3rem 0.5rem;
+        text-align: left;
+        margin: 0.75rem 0;
+    }
+
+    /* "Block: 40% reduced" -> "Block: 40%" -- shorter line wraps more
+       cleanly in the narrower 2-column grid cell above */
+    .stat-block-suffix { display: none; }
+
+    /* Tighter ability boxes */
+    .class-special-preview {
+        margin: 0.4rem 0 0.3rem;
+        padding: 0.4rem 0.5rem;
+    }
+    .class-special-desc { font-size: 0.68rem; line-height: 1.25; }
+    .class-special-preview--secondary { margin-top: 0.25rem; }
 }
 
 @media (max-width: 480px) {
@@ -982,6 +1003,27 @@ body.status-page {
     border-color: rgba(255, 255, 255, 0.35);
     color: rgba(210, 195, 160, 0.90);
     text-decoration: none;
+}
+
+/* Story screen nav responsive — mirrors .battle-actions' 2-column grid
+   on battle.html for a consistent feel across screens. Was a flex-wrap
+   row that, on a narrow phone, only fit 1-2 buttons per line and ran to
+   3+ rows; this guarantees a tidy 2-column x 3-row grid instead. */
+@media (max-width: 768px) {
+    .menu {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 0.5rem;
+        margin-top: 0.85rem;
+    }
+
+    .menu-btn {
+        padding: 0.5rem 0.5rem;
+        font-size: 0.74rem;
+        justify-content: center;
+    }
+
+    .audio-controls { margin-top: 0.5rem; }
 }
 
 /* Secondary special on status screen — teal accent */
@@ -1679,6 +1721,10 @@ details[open] > .codex-summary .codex-chevron { transform: rotate(180deg); }
   font-size: 0.92rem;
   color: var(--clr-gold);
   font-style: italic;
+}
+
+@media (max-width: 768px) {
+  .lifetime-banner { display: none; }
 }
 
 .ng-plus-badge {

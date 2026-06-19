@@ -421,10 +421,24 @@ details[open] > .enemy-lore-summary .lore-chevron {
         padding: 6px 8px !important;
     }
 
-    .enemy-img              { max-width: 180px !important; }
-    .battle-player-portrait { width: 60px !important; }
+    .enemy-img              { max-width: 140px !important; }
+    .battle-player-portrait { width: 50px !important; }
+
+    .enemy-display { margin: 4px 0 2px !important; }
 
     .enemy-lore-details { max-width: 92vw; }
+
+    /* Tighter message boxes — less padding, slightly tighter line-height */
+    .move-hint-box,
+    .battle-log-box {
+        padding: 6px 10px !important;
+        margin: 4px auto !important;
+    }
+    .move-hint-box p,
+    .battle-log-box p {
+        font-size: 0.82rem !important;
+        line-height: 1.3 !important;
+    }
 
     /* 2-column action grid */
     .battle-actions {
@@ -468,7 +482,7 @@ details[open] > .enemy-lore-summary .lore-chevron {
         padding: 9px 5px !important;
     }
 
-    .enemy-img { max-width: 150px !important; }
+    .enemy-img { max-width: 120px !important; }
 }
 
 
