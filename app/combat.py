@@ -632,6 +632,13 @@ class BattleManager:
         if shield_turns > 0:
             shield_turns -= 1
             if shield_turns == 0:
+                # Without this, shield_pct stays at whatever it was (e.g. 1.0
+                # for Barbarian's Feel No Pain) forever, since everywhere this
+                # is consumed (resolve_player_action) only checks
+                # `shield_pct > 0.0` — it never re-checks shield_turns. That
+                # silently blocked nearly all incoming damage for the rest of
+                # the fight, well past the intended 2-turn duration.
+                shield_pct = 0.0
                 expire_key = buff_label if buff_label else "nullfield"
                 expire_msg = BUFF_EXPIRE_MESSAGES.get(expire_key, "")
                 if expire_msg:
