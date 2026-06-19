@@ -58,9 +58,9 @@ CLASSES = {
         # ── Core stats ────────────────────────────────────────────────────────
         "attack":           17,
         "magic_attack":     0,
-        "defense":          15,
+        "defense":          16,
         "magic_defense":    10,
-        "max_hp":           160,
+        "max_hp":           170,
         "mp_max":           80,
         # ── Combat modifiers ──────────────────────────────────────────────────
         "crit_chance":      0.20,
@@ -400,7 +400,7 @@ CLASSES = {
         "magic_attack":     0,
         "defense":          10,
         "magic_defense":    6,
-        "max_hp":           170,
+        "max_hp":           180,
         "mp_max":           70,
         # ── Combat modifiers ──────────────────────────────────────────────────
         "crit_chance":      0.25,

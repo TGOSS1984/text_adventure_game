@@ -460,6 +460,11 @@ def register(blueprint):
             return redirect(victory_url)
 
         if player_hp <= 0:
+            # Mark the run as over so it can't be resumed by navigating
+            # back to /game from elsewhere (e.g. Bestiary's "Continue
+            # Story" link) — see game_routes.py's game() route, which
+            # checks this flag and bounces back here instead.
+            session["game_over"] = True
             death_url = url_for("main.death")
             if _is_htmx():
                 return _htmx_redirect(death_url)

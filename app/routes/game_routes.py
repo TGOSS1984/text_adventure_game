@@ -171,6 +171,7 @@ def _reset_combat_state(souls=0, ng_level=0):
     session["boss_phase"]            = 1
     session["phase_changed"]         = False
     session["ng_plus"]               = ng_level
+    session["game_over"]             = False
     # ── Active effect state ───────────────────────────────────────────────────
     session["dot_damage"]            = 0
     session["dot_turns"]             = 0
@@ -512,6 +513,17 @@ def register(blueprint):
 
     @blueprint.route("/game", methods=["GET", "POST"])
     def game():
+        if session.get("game_over"):
+            # The run already ended (player HP hit 0 in battle — see
+            # battle_routes.py). session["character"]/["chapter"] are
+            # still sitting there from before death, so without this
+            # check, navigating back to /game from anywhere (Bestiary's
+            # "Continue Story" link, browser back button, a bookmarked
+            # URL) would silently resume the dead run exactly where it
+            # left off. Bounce back to the death screen instead,
+            # regardless of how /game was reached.
+            return redirect(url_for("main.death"))
+
         if request.method == "POST":
             # Determine the CURRENT chapter (the one being left) before
             # mutating session, so we know whether this is a plain
@@ -632,7 +644,13 @@ def register(blueprint):
 
     @blueprint.route("/bestiary")
     def bestiary():
-        mid_run = bool(session.get("character"))
+        # game_over guards against the death-screen exploit: without it,
+        # session["character"] is still sitting there from the run that
+        # just ended, so mid_run would be True and "Continue Story" would
+        # show even though there's nothing left to continue into (see
+        # game_routes.py's /game route, which would just bounce back to
+        # /death anyway if clicked).
+        mid_run = bool(session.get("character")) and not session.get("game_over", False)
         return render_template(
             "bestiary.html",
             enemies=ENEMIES,
