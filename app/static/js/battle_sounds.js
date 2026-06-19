@@ -479,6 +479,44 @@ document.addEventListener('DOMContentLoaded', () => {
     }, 8500);
   });
 
+  // ── Death blow scream — intercept before HTMX processes the redirect ─────
+  // Same mechanism as the victory block above: htmx:beforeOnLoad fires
+  // before HTMX reads the response. battle_routes.py sends an identical
+  // empty-bodied HX-Redirect when the player's HP hits 0, so we check for
+  // /death instead of /game. Shows #death-overlay (same shape/timing as
+  // #victory-overlay, crimson "You Died" banner instead of gold) in sync
+  // with the scream, then moves on to /death exactly as before — where
+  // death.mp3 plays separately, on that screen, unchanged.
+  let screamPending = false;
+
+  document.body.addEventListener('htmx:beforeOnLoad', (e) => {
+    const xhr = e.detail?.xhr;
+    if (!xhr) return;
+
+    const redirect = xhr.getResponseHeader('HX-Redirect');
+    if (!redirect || !redirect.includes('/death')) return;
+
+    e.preventDefault();
+
+    if (screamPending) return;
+    screamPending = true;
+
+    // No more turns are coming — stop the timer immediately.
+    BattleTimer.stop();
+
+    // Show overlay
+    const overlay = document.getElementById('death-overlay');
+    if (overlay) overlay.classList.add('death-visible');
+
+    // Play scream SFX in sync with the overlay
+    AudioManager.playSfx('sfx-scream');
+
+    setTimeout(() => {
+      screamPending = false;
+      window.location.href = redirect;
+    }, 4900);  // scream.mp3 is 5s — same small buffer style as victory/death
+  });
+
   document.body.addEventListener('htmx:afterSwap', e => {
     bindBattleButtons();
 
