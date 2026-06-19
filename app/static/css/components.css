@@ -619,3 +619,34 @@
     .carousel-item       { width: 230px; max-width: 230px; }
     .carousel-item--gift { width: 210px; max-width: 210px; }
 }
+
+/*
+  Large-screen scaling — class carousel only.
+
+  Below 1100px, the existing rules above already handle everything
+  (2 cards in the 700-1099px band, fixed pixel widths under 700px) —
+  none of that is touched. At 1100px and up, --cards-visible was
+  previously just the :root default of 3 forever, regardless of how
+  much wider the viewport got — on an ultrawide monitor the carousel
+  sat in a 1200px-max-width column with huge unused margins on both
+  sides (see the two screenshots that prompted this).
+
+  These two breakpoints progressively show more cards as the screen
+  grows, capping at 5 rather than scaling indefinitely. Scoped to
+  #class-carousel-outer (not .carousel-outer) so the gift carousel's
+  layout is completely unaffected.
+
+  carousel.js already reads --cards-visible from computed CSS at
+  runtime rather than hardcoding a count (see the bug-fix comment at
+  the top of that file) — so these are pure CSS additions; nothing in
+  the scroll/arrow/dot logic needs to change or even know about this.
+*/
+@media (min-width: 1600px) {
+    :root { --cards-visible: 4; }
+    #class-carousel-outer { max-width: 1500px; }
+}
+
+@media (min-width: 2000px) {
+    :root { --cards-visible: 5; }
+    #class-carousel-outer { max-width: 1900px; }
+}

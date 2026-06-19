@@ -172,6 +172,7 @@ def _reset_combat_state(souls=0, ng_level=0):
     session["phase_changed"]         = False
     session["ng_plus"]               = ng_level
     session["game_over"]             = False
+    session["at_title"]              = False
     # ── Active effect state ───────────────────────────────────────────────────
     session["dot_damage"]            = 0
     session["dot_turns"]             = 0
@@ -366,6 +367,19 @@ def register(blueprint):
     def index():
         # Commit 8: load unlocked class names for carousel filtering
         unlocked_names = get_unlocked_names()
+
+        # Marks that the player is sitting at the title/character-select
+        # screen right now. Visiting here does NOT clear session["character"]
+        # (a mid-run player might land here via "Return to Title" without
+        # saving, or just be on a fresh browser tab with an old session
+        # cookie) -- but it does mean Bestiary's "Continue Story" link
+        # shouldn't be allowed to resume that run from here. The title
+        # screen's own "Resume Journey" button (/load) is the intended way
+        # back in, and /game clears this flag the moment it's reached, so
+        # that path -- and any other genuine resume -- works exactly as
+        # before. See bestiary()'s mid_run check below.
+        session["at_title"] = True
+
         return render_template(
             "index.html",
             classes=CLASSES,
@@ -524,6 +538,13 @@ def register(blueprint):
             # regardless of how /game was reached.
             return redirect(url_for("main.death"))
 
+        # The player is genuinely back in the run now -- whether they just
+        # came from /load, a fresh /start, or anywhere else. Clears the
+        # flag set by index() so Bestiary's "Continue Story" correctly
+        # works again for the rest of this session, until they return to
+        # the title screen again.
+        session["at_title"] = False
+
         if request.method == "POST":
             # Determine the CURRENT chapter (the one being left) before
             # mutating session, so we know whether this is a plain
@@ -644,13 +665,19 @@ def register(blueprint):
 
     @blueprint.route("/bestiary")
     def bestiary():
-        # game_over guards against the death-screen exploit: without it,
-        # session["character"] is still sitting there from the run that
-        # just ended, so mid_run would be True and "Continue Story" would
-        # show even though there's nothing left to continue into (see
-        # game_routes.py's /game route, which would just bounce back to
-        # /death anyway if clicked).
-        mid_run = bool(session.get("character")) and not session.get("game_over", False)
+        # game_over guards the death-screen exploit (see Commit 35).
+        # at_title guards this one: visiting / (title/character-select)
+        # does NOT clear session["character"] -- a player might land there
+        # via "Return to Title" without saving, or just on an old browser
+        # tab -- so mid_run alone would still be True and "Continue Story"
+        # would resume that run. The save/load mechanism (the title
+        # screen's "Resume Journey" button) is the intended way back in;
+        # this just closes the same-class shortcut through Bestiary.
+        mid_run = (
+            bool(session.get("character"))
+            and not session.get("game_over", False)
+            and not session.get("at_title", False)
+        )
         return render_template(
             "bestiary.html",
             enemies=ENEMIES,
