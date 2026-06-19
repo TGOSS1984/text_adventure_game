@@ -73,7 +73,7 @@ Commit 8 — New class unlock system:
     session but reset on dyno restart. Same limitation as savegame.json.
 """
 
-from flask import render_template, request, redirect, url_for, session, flash
+from flask import render_template, request, redirect, url_for, session, flash, Response
 import random
 from ..combat import BattleManager
 from ..config import (
@@ -226,6 +226,136 @@ def _reset_run_session(char_class, souls=0, ng_level=0):
     session["hp"] = session["character"]["max_hp"]
 
     return character
+
+
+def _render_chapter(as_fragment=False):
+    """
+    Render whatever chapter session["chapter"] currently points to.
+
+    This is the single source of truth for "what does the player see
+    right now" — it's called both by a normal GET /game request, and by
+    the POST branch of game() when an HTMX story-to-story transition
+    qualifies for an in-place fragment swap instead of a full reload
+    (see Commit 32). Keeping this logic in one place means the smooth
+    HTMX path can never drift out of sync with what a plain GET would
+    have shown for the same chapter — every flash message, secret-map
+    eligibility check, and NG+/unlock side effect behaves identically
+    either way.
+
+    as_fragment=False (default) -> renders the full game.html page.
+    as_fragment=True            -> renders only game_fragment.html,
+                                    meant to be returned directly as the
+                                    body of an HTMX response.
+
+    Note: when as_fragment=True, this should only ever be called for a
+    chapter confirmed (by the caller) to be neither rest nor battle —
+    the one-time rest-restore branch below returns a redirect, which
+    would be the wrong shape for an HTMX fragment response. The POST
+    branch in game() guarantees this by checking next_data before
+    deciding to call here with as_fragment=True, so the branch below is
+    structurally unreachable in fragment mode rather than just
+    defensively avoided.
+    """
+    chapter    = session.get("chapter", 0)
+    data       = story.get_chapter(chapter)
+    chapter_id = chapter
+
+    if data.get("rest") and not session.get("rested_here"):
+        session["rest_bg"] = random.choice(REST_BGS)
+        session["hp"]    = session["character"]["max_hp"]
+        session["estus"] = session.get("estus_max", DEFAULT_ESTUS)
+        session["mp"]    = 0
+        flash("🔥 You rest at the bonfire. HP, Estus Flasks and MP restored.", "info")
+        session["rested_here"] = True
+        return redirect(url_for("main.game"))
+
+    session["rested_here"] = False
+    hp = session.get("hp", session["character"]["max_hp"])
+
+    # ── Commit 3: chapter visit tracking ──────────────────────────────────
+    # Only count each chapter once — compare against last_counted_chapter
+    # to avoid double-counting from the rest redirect.
+    last_counted = session.get("last_counted_chapter", -1)
+    if chapter_id != last_counted:
+        stats = session.get("run_stats", _blank_run_stats())
+        stats["chapters_visited"] = stats.get("chapters_visited", 0) + 1
+        session["run_stats"]            = stats
+        session["last_counted_chapter"] = chapter_id
+
+    # ── Secret map icon ───────────────────────────────────────────────────
+    is_eligible = (
+        not data.get("battle") and
+        not data.get("boss") and
+        not data.get("rest") and
+        chapter_id not in [0, 100, 101, 102] and
+        not session.get("shadow_realm_completed", False)
+    )
+    secret_chapters = session.get("secret_chapters", [])
+    if not secret_chapters and is_eligible:
+        all_story = [n for n in range(1, 100)
+                     if n not in [7, 14, 20, 25, 34, 40, 45, 50, 54,
+                                  59, 62, 65, 68, 71, 74, 76, 78, 80,
+                                  82, 88, 93]]
+        secret_chapters = random.sample(all_story, min(8, len(all_story)))
+        session["secret_chapters"] = secret_chapters
+
+    show_secret_map = is_eligible and chapter_id in secret_chapters
+
+    # ── NG+ buttons and run stats on ending chapters ───────────────────────
+    ng_level     = session.get("ng_plus", 0)
+    show_ng_plus = chapter_id in ENDING_CHAPTERS
+
+    # ── Barbarian + Hunter unlock on game completion ──────────────────────
+    # unlock_class() is a no-op if already unlocked, so repeated visits
+    # to ending chapters are safe. increment_total_runs() always fires.
+    # Barbarian: unlocked on any story completion (base game or NG+).
+    # Hunter: unlocked on completing a NG+ run (ng_level > 0).
+    if chapter_id in ENDING_CHAPTERS:
+        newly_unlocked_barb = unlock_class("Barbarian")
+        if newly_unlocked_barb:
+            flash("💢 The Barbarian class has been unlocked!", "info")
+
+        if ng_level > 0:
+            newly_unlocked_hunter = unlock_class("Hunter")
+            if newly_unlocked_hunter:
+                flash("🩸 The Hunter class has been unlocked!", "info")
+
+        increment_total_runs()
+
+    # Build completion data for the ending/status screens
+    run_stats      = session.get("run_stats", _blank_run_stats())
+    bosses_missed  = [
+        b for b in ALL_BOSS_NAMES
+        if b not in run_stats.get("bosses_list", [])
+    ]
+    total_bosses   = len(ALL_BOSS_NAMES)
+    bosses_hit     = len(run_stats.get("bosses_list", []))
+    completion_pct = round((bosses_hit / total_bosses) * 100) if total_bosses else 0
+
+    template_args = dict(
+        chapter=data,
+        hp=hp,
+        character=session["character"],
+        is_rest=bool(data.get("rest", False)),
+        gift=session.get("gift", "fading_soul"),
+        souls=session.get("souls", 0),
+        show_secret_map=show_secret_map,
+        show_ng_plus=show_ng_plus,
+        ng_level=ng_level,
+        run_stats=run_stats,
+        bosses_missed=bosses_missed,
+        completion_pct=completion_pct,
+        total_bosses=total_bosses,
+    )
+
+    if as_fragment:
+        return render_template("game_fragment.html", **template_args)
+
+    # Preload the small rest-background pool so the random pick on the
+    # next /rest chapter is already cached. Mirrors the same pattern
+    # used in battle_routes.py for battle backgrounds.
+    template_args["preload_list"] = [url_for("static", filename=bg) for bg in REST_BGS]
+    return render_template("game.html", **template_args)
 
 
 def register(blueprint):
@@ -383,11 +513,23 @@ def register(blueprint):
     @blueprint.route("/game", methods=["GET", "POST"])
     def game():
         if request.method == "POST":
+            # Determine the CURRENT chapter (the one being left) before
+            # mutating session, so we know whether this is a plain
+            # story-to-story transition eligible for a smooth in-place
+            # HTMX swap, versus one that should still do a full page/
+            # route transition exactly as before (entering/leaving a
+            # rest chapter, or starting a battle).
+            current_chapter_id = session.get("chapter", 0)
+            current_data       = story.get_chapter(current_chapter_id)
+            current_is_rest    = bool(current_data.get("rest", False))
+
             choice       = request.form["choice"]
             next_chapter = story.choose_path(choice)
             next_data    = story.get_chapter(next_chapter)
 
             session["choices"] = next_data.get("choices", [])
+
+            is_htmx = request.headers.get("HX-Request") == "true"
 
             if next_data.get("battle"):
                 is_boss   = next_data.get("boss", False)
@@ -422,107 +564,46 @@ def register(blueprint):
                 session["chapter_after_battle"] = next_chapter
                 session["boss_phase"]           = 1
                 session["phase_changed"]        = False
+
+                if is_htmx:
+                    # A bare redirect() here would just hand HTMX a 3xx
+                    # it auto-follows, swapping the *entire* destination
+                    # page's HTML into #story-content. HX-Redirect tells
+                    # HTMX to do a real top-level navigation instead —
+                    # the browser ends up exactly where it would have
+                    # with a normal redirect, full reload included.
+                    resp = Response("")
+                    resp.headers["HX-Redirect"] = url_for("main.battle")
+                    return resp
                 return redirect(url_for("main.battle"))
-            else:
-                session["chapter"] = next_chapter
-                return redirect(url_for("main.game"))
 
-        chapter    = session.get("chapter", 0)
-        data       = story.get_chapter(chapter)
-        chapter_id = chapter
+            next_is_rest = bool(next_data.get("rest", False))
+            session["chapter"] = next_chapter
 
-        if data.get("rest") and not session.get("rested_here"):
-            session["rest_bg"] = random.choice(REST_BGS)
-            session["hp"]    = session["character"]["max_hp"]
-            session["estus"] = session.get("estus_max", DEFAULT_ESTUS)
-            session["mp"]    = 0
-            flash("🔥 You rest at the bonfire. HP, Estus Flasks and MP restored.", "info")
-            session["rested_here"] = True
+            if is_htmx and not current_is_rest and not next_is_rest:
+                # Smooth path: plain story chapter -> plain story
+                # chapter. Render just the inner fragment so HTMX swaps
+                # #story-content in place, leaving the persistent
+                # video/audio shell in game.html completely untouched —
+                # this is the actual fix for the per-chapter stutter.
+                return _render_chapter(as_fragment=True)
+
+            if is_htmx:
+                # Rest is involved on one end or the other — still a
+                # deliberate full reload exactly like before (the
+                # background is genuinely supposed to change), just
+                # expressed as HX-Redirect so HTMX navigates instead of
+                # trying to swap an auto-followed redirect's full HTML
+                # into #story-content.
+                resp = Response("")
+                resp.headers["HX-Redirect"] = url_for("main.game")
+                return resp
+
+            # No-JS / non-HTMX fallback — completely unchanged behaviour.
             return redirect(url_for("main.game"))
 
-        session["rested_here"] = False
-        hp = session.get("hp", session["character"]["max_hp"])
+        return _render_chapter(as_fragment=False)
 
-        # ── Commit 3: chapter visit tracking ──────────────────────────────────
-        # Only count each chapter once — compare against last_counted_chapter
-        # to avoid double-counting from the rest redirect.
-        last_counted = session.get("last_counted_chapter", -1)
-        if chapter_id != last_counted:
-            stats = session.get("run_stats", _blank_run_stats())
-            stats["chapters_visited"] = stats.get("chapters_visited", 0) + 1
-            session["run_stats"]            = stats
-            session["last_counted_chapter"] = chapter_id
-
-        # ── Secret map icon ───────────────────────────────────────────────────
-        is_eligible = (
-            not data.get("battle") and
-            not data.get("boss") and
-            not data.get("rest") and
-            chapter_id not in [0, 100, 101, 102] and
-            not session.get("shadow_realm_completed", False)
-        )
-        secret_chapters = session.get("secret_chapters", [])
-        if not secret_chapters and is_eligible:
-            all_story = [n for n in range(1, 100)
-                         if n not in [7, 14, 20, 25, 34, 40, 45, 50, 54,
-                                      59, 62, 65, 68, 71, 74, 76, 78, 80,
-                                      82, 88, 93]]
-            secret_chapters = random.sample(all_story, min(8, len(all_story)))
-            session["secret_chapters"] = secret_chapters
-
-        show_secret_map = is_eligible and chapter_id in secret_chapters
-
-        # ── NG+ buttons and run stats on ending chapters ───────────────────────
-        ng_level     = session.get("ng_plus", 0)
-        show_ng_plus = chapter_id in ENDING_CHAPTERS
-
-        # ── Barbarian + Hunter unlock on game completion ──────────────────────
-        # unlock_class() is a no-op if already unlocked, so repeated visits
-        # to ending chapters are safe. increment_total_runs() always fires.
-        # Barbarian: unlocked on any story completion (base game or NG+).
-        # Hunter: unlocked on completing a NG+ run (ng_level > 0).
-        if chapter_id in ENDING_CHAPTERS:
-            newly_unlocked_barb = unlock_class("Barbarian")
-            if newly_unlocked_barb:
-                flash("💢 The Barbarian class has been unlocked!", "info")
-
-            if ng_level > 0:
-                newly_unlocked_hunter = unlock_class("Hunter")
-                if newly_unlocked_hunter:
-                    flash("🩸 The Hunter class has been unlocked!", "info")
-
-            increment_total_runs()
-
-        # Build completion data for the ending/status screens
-        run_stats      = session.get("run_stats", _blank_run_stats())
-        bosses_missed  = [
-            b for b in ALL_BOSS_NAMES
-            if b not in run_stats.get("bosses_list", [])
-        ]
-        total_bosses   = len(ALL_BOSS_NAMES)
-        bosses_hit     = len(run_stats.get("bosses_list", []))
-        completion_pct = round((bosses_hit / total_bosses) * 100) if total_bosses else 0
-
-        return render_template(
-            "game.html",
-            chapter=data,
-            hp=hp,
-            character=session["character"],
-            is_rest=bool(data.get("rest", False)),
-            gift=session.get("gift", "fading_soul"),
-            souls=session.get("souls", 0),
-            show_secret_map=show_secret_map,
-            show_ng_plus=show_ng_plus,
-            ng_level=ng_level,
-            run_stats=run_stats,
-            bosses_missed=bosses_missed,
-            completion_pct=completion_pct,
-            total_bosses=total_bosses,
-            # Preload the small rest-background pool so the random pick on
-            # the next /rest chapter is already cached. Mirrors the same
-            # pattern used in battle_routes.py for battle backgrounds.
-            preload_list=[url_for("static", filename=bg) for bg in REST_BGS],
-        )
 
     @blueprint.route("/enter_shadow_realm", methods=["POST"])
     def enter_shadow_realm():

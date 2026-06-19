@@ -26,6 +26,21 @@
  * Commit 13 addition:
  * - CHAR_DELAY_MS reads from localStorage key 'twSpeed' if set by settings.js
  *   Values: 'slow'=45, 'normal'=22 (default), 'fast'=8, 'instant'=0
+ *
+ * Commit 32 change:
+ * - Story-to-story navigation no longer reloads the page (see
+ *   game_routes.py / game.html — HTMX swaps #story-content in place).
+ *   That means init() must be safely re-runnable on every swap, not
+ *   just once on DOMContentLoaded:
+ *     - Any in-flight timer/interval from a previous chapter's typing
+ *       is cleared at the start of every call, so two chapters' worth
+ *       of typing can never run at once if a swap lands mid-animation.
+ *     - The Space/Enter "skip" keydown listener is now a single
+ *       persistent listener (added once) that delegates to whichever
+ *       chapter is currently active, instead of adding a fresh
+ *       `{ once: true }` listener on every init() call — the old
+ *       approach would leak one listener per chapter for the lifetime
+ *       of the page once chapters stopped triggering full reloads.
  */
 
 (function () {
@@ -48,8 +63,18 @@
     return SPEED_MAP[saved] ?? SPEED_MAP.normal;
   }
 
-  // ── Main init ─────────────────────────────────────────────────────────────
-  document.addEventListener('DOMContentLoaded', () => {
+  // Tracks the in-progress animation across calls so a fresh init() can
+  // always cleanly cancel whatever the previous chapter left running.
+  let timerId       = null;
+  let blinkId       = null;
+  let activeFinish  = null;  // current chapter's finish(), or null when idle
+
+  function initTypewriter() {
+    // Cancel any previous chapter's still-running animation first.
+    clearTimeout(timerId);
+    clearInterval(blinkId);
+    activeFinish = null;
+
     const storyEl   = document.querySelector('[data-typewriter="true"]');
     const choicesEl = document.getElementById('choices-form');
 
@@ -75,9 +100,6 @@
     storyEl.textContent = '';
 
     // ── Cursor: appended INSIDE <p> so it's inline with the text ─────────────
-    // This is the key fix: an inline <span> inside the <p> doesn't affect
-    // the outer lore-box height. Previously the cursor was storyEl.after(cursor)
-    // which made it a sibling block element, inflating the box height.
     const cursor = document.createElement('span');
     cursor.className = 'typewriter-cursor';
     cursor.setAttribute('aria-hidden', 'true');
@@ -86,12 +108,11 @@
 
     let index    = 0;
     let finished = false;
-    let timerId  = null;
-    let blinkId  = null;
 
     function finish() {
       if (finished) return;
       finished = true;
+      activeFinish = null;
 
       clearTimeout(timerId);
       clearInterval(blinkId);
@@ -105,6 +126,8 @@
         choicesEl.classList.add('choices-reveal');
       }
     }
+
+    activeFinish = finish;
 
     function typeNext() {
       if (index >= fullText.length) {
@@ -130,20 +153,36 @@
       cursor.style.opacity = cursorVisible ? '1' : '0';
     }, CURSOR_BLINK);
 
-    // Skip on click anywhere in lore-box
+    // Skip on click anywhere in lore-box. This listener dies along with
+    // the lore-box element itself on the next swap (or full reload), so
+    // it never needs manual cleanup — only one is ever live at a time.
     const loreBox = storyEl.closest('.lore-box');
     if (loreBox) {
       loreBox.style.cursor = 'pointer';
       loreBox.addEventListener('click', finish, { once: true });
     }
+  }
 
-    // Skip on Space / Enter
-    document.addEventListener('keydown', (e) => {
-      if ((e.code === 'Space' || e.code === 'Enter') && !finished) {
-        e.preventDefault();
-        finish();
-      }
-    }, { once: true });
+  // Single persistent Space/Enter listener, added once. Delegates to
+  // whichever chapter's finish() is currently active (or no-ops if
+  // typing has already finished / hasn't started).
+  document.addEventListener('keydown', (e) => {
+    if ((e.code === 'Space' || e.code === 'Enter') && activeFinish) {
+      e.preventDefault();
+      activeFinish();
+    }
+  });
+
+  document.addEventListener('DOMContentLoaded', initTypewriter);
+
+  // Re-run on every HTMX swap of #story-content (story-to-story
+  // navigation) — without this, chapter 2 onward would show fully
+  // revealed text instantly with no typewriter effect, since
+  // DOMContentLoaded only fires once for the whole page now.
+  document.body.addEventListener('htmx:afterSwap', (evt) => {
+    if (evt.detail && evt.detail.target && evt.detail.target.id === 'story-content') {
+      initTypewriter();
+    }
   });
 
 })();

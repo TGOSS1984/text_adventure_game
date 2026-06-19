@@ -1,0 +1,16 @@
+<!--
+game_fragment.html
+Partial template — returned ONLY for HTMX-driven story-chapter-to-
+story-chapter POSTs (see game_routes.py's _render_chapter()).
+Swapped into <div id="story-content"> by HTMX, leaving the persistent
+video/audio/menu shell in game.html completely untouched.
+
+To change what's shown per chapter, edit _game_content.html — not
+this file, and not game.html's copy of the same macro call.
+-->
+
+{% from "_game_content.html" import render_story_content %}
+{{ render_story_content(
+    character, hp, souls, gift, chapter, is_rest, show_ng_plus, ng_level,
+    run_stats, bosses_missed, completion_pct, total_bosses, show_secret_map
+) }}

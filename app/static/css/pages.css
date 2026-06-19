@@ -946,7 +946,7 @@ body.status-page {
     text-transform: uppercase;
     text-decoration: none;
     cursor: pointer;
-    background: transparent;
+    background: rgba(0, 0, 0, 0.60);
     background-image: none !important;
     transition: background var(--transition-fast),
                 color     var(--transition-fast),

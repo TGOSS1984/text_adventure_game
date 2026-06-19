@@ -1,0 +1,376 @@
+<!--
+_game_content.html
+
+Shared macro holding everything in game.html that varies per chapter:
+header (HP/souls/class), class portrait, HP bar, gift badge, flash
+messages, lore box, choices form (or ending summary + NG+ buttons), and
+the secret map icon/lightbox.
+
+Used from two places:
+  - game.html        — full page, on initial load / any full reload
+  - game_fragment.html — standalone, returned for the in-place HTMX swap
+    on a plain story-chapter-to-story-chapter transition (see Commit 32
+    in game_routes.py / game.html). Keeping this logic in one macro
+    means both call sites can never drift out of sync.
+
+Everything OUTSIDE this macro in game.html (the video, audio elements,
+menu, audio controls, quit dialog, JS includes) is the persistent shell
+and is never touched by the swap — that's the whole point of the fix.
+-->
+
+{% macro render_story_content(character, hp, souls, gift, chapter, is_rest, show_ng_plus, ng_level, run_stats, bosses_missed, completion_pct, total_bosses, show_secret_map) %}
+
+{# ── Per-class icon map ── #}
+{% set class_icons = {
+    'Knight': 'fa-chess-knight',
+    'Mage':   'fa-wand-magic-sparkles',
+    'Rogue':  'fa-skull-crossbones',
+    'Archer': 'fa-feather',
+    'Paladin': 'fa-cross',
+    'Necromancer': 'fa-skull',
+    'Barbarian': 'fa-fist',
+    'Samurai': 'fa-person-falling-burst',
+    'Wretch': 'fa-person-drowning',
+    'Hunter': 'fa-gun',
+} %}
+{% set class_icon = class_icons.get(character.class_name, 'fa-shield-halved') %}
+
+{# ── HP bar values ── #}
+{% set hp_pct = ((hp / character.max_hp) * 100) | round(1) %}
+{% if hp_pct > 50 %}
+    {% set hp_cls = '' %}
+{% elif hp_pct > 25 %}
+    {% set hp_cls = 'hp-mid' %}
+{% else %}
+    {% set hp_cls = 'hp-low' %}
+{% endif %}
+
+<!-- Header — class icon, HP and souls counter -->
+<h2>
+    <i class="fas {{ class_icon }}"></i>
+    {{ character.class_name }}
+    &nbsp;|&nbsp;
+    <i class="fas fa-heart" style="color: var(--clr-primary);"></i>
+    {{ hp }}/{{ character.max_hp }}
+    <span class="souls-badge" title="Souls collected">
+        <i class="fas fa-coins"></i>
+        {{ souls }}
+    </span>
+</h2>
+
+<!-- Class portrait -->
+<img
+    src="{{ url_for('static', filename='images/' + character['image']) }}"
+    alt="{{ character['class_name'] }}"
+    class="class-image"
+>
+
+<!-- HP bar -->
+<div class="stat-bar-group">
+    <div class="stat-bar-label">
+        <span>HP</span>
+        <span>{{ hp }}/{{ character.max_hp }} ({{ hp_pct | round(0) | int }}%)</span>
+    </div>
+    <div class="stat-bar-track" role="img" aria-label="Player HP {{ hp }} of {{ character.max_hp }}">
+        <div
+            class="stat-bar-fill stat-bar-fill--player {{ hp_cls }}"
+            style="width: {{ hp_pct }}%;"
+        ></div>
+    </div>
+</div>
+
+{# ── Starting gift badge ── #}
+{% set gift_display = {
+    'estus_plus':    ('fas fa-flask',              'Estus +1'),
+    'hunters_charm': ('fas fa-bullseye',           "Hunter's Charm"),
+    'iron_talisman': ('fas fa-shield-halved',      'Iron Talisman'),
+    'witchs_ember':  ('fas fa-fire-flame-curved',  "Witch's Ember"),
+    'old_coin':      ('fas fa-coins',              'Old Coin'),
+    'fading_soul':   ('fas fa-ghost',              'Fading Soul'),
+} %}
+{% if gift and gift != 'fading_soul' %}
+{% set g = gift_display.get(gift, ('fas fa-gift', gift)) %}
+<div class="gift-badge" title="Starting gift: {{ g[1] }}">
+    <i class="fas {{ g[0] }}"></i>
+    <span>{{ g[1] }}</span>
+</div>
+{% endif %}
+
+<!-- Hidden native progress for screen-reader fallback -->
+<progress value="{{ hp }}" max="{{ character.max_hp }}"
+    aria-label="Player HP">{{ hp }}/{{ character.max_hp }}</progress>
+
+<!-- Flash messages -->
+{% with messages = get_flashed_messages(with_categories=true) %}
+{% if messages %}
+<div class="flash-container">
+    {% for category, message in messages %}
+    <div class="flash-message {{ category }}">{{ message }}</div>
+    {% endfor %}
+</div>
+{% endif %}
+{% endwith %}
+
+<!-- Story / lore panel -->
+<div class="lore-box">
+    <img
+        src="{% if is_rest %}
+                {{ url_for('static', filename='images/icons/rest_tome.png') }}
+             {% else %}
+                {{ url_for('static', filename='images/icons/tome.png') }}
+             {% endif %}"
+        alt="Tome"
+        class="icon-shadow"
+    >
+    <p data-typewriter="true"><strong>Story:</strong> {{ chapter.text }}</p>
+
+    {% if chapter.lore %}
+    <p class="lore"><em>{{ chapter.lore }}</em></p>
+    {% endif %}
+</div>
+
+{% if chapter.choices %}
+    <div id="choices-form">
+        <form method="POST"
+              hx-post="{{ url_for('main.game') }}"
+              hx-target="#story-content"
+              hx-swap="innerHTML">
+            {% for choice in chapter.choices %}
+                <button name="choice" value="{{ choice }}">
+                    {{ choice.replace("_", " ").title() }}
+                </button>
+            {% endfor %}
+        </form>
+
+        {% if is_rest %}
+        <a href="{{ url_for('main.shop') }}" class="shop-link-btn">
+            <i class="fas fa-store"></i> Visit Merchant
+        </a>
+        {% endif %}
+    </div>
+ {% else %}
+    <div class="center-links">
+        <a href="{{ url_for('main.index') }}">Return to Title</a>
+    </div>
+
+    {# ── Commit 4/5: Run completion summary — shown on ending chapters ── #}
+    {% if show_ng_plus and run_stats is defined %}
+    <div class="completion-summary">
+
+        <h2 class="completion-title">
+            <i class="fas fa-scroll"></i> Journey Complete
+        </h2>
+
+        {# ── Boss completion bar ── #}
+        <div class="completion-boss-bar-wrap">
+            <div class="completion-boss-bar-label">
+                <span>Bosses Defeated</span>
+                <span>{{ run_stats.get('bosses_list', [])|length }} / {{ total_bosses }}
+                      &nbsp;({{ completion_pct }}%)</span>
+            </div>
+            <div class="stat-bar-track">
+                <div class="stat-bar-fill stat-bar-fill--completion"
+                     style="width: {{ completion_pct }}%;"></div>
+            </div>
+        </div>
+
+        {# ── Stat grid ── #}
+        <div class="run-stats-grid run-stats-grid--completion">
+
+            <div class="run-stat-item">
+                <span class="run-stat-icon"><i class="fas fa-skull"></i></span>
+                <span class="run-stat-value">{{ run_stats.get('enemies_defeated', 0) }}</span>
+                <span class="run-stat-label">Enemies Slain</span>
+            </div>
+
+            <div class="run-stat-item">
+                <span class="run-stat-icon"><i class="fas fa-dragon"></i></span>
+                <span class="run-stat-value">{{ run_stats.get('bosses_defeated', 0) }}</span>
+                <span class="run-stat-label">Bosses Defeated</span>
+            </div>
+
+            <div class="run-stat-item">
+                <span class="run-stat-icon"><i class="fas fa-swords"></i></span>
+                <span class="run-stat-value">{{ run_stats.get('damage_dealt', 0) }}</span>
+                <span class="run-stat-label">Damage Dealt</span>
+            </div>
+
+            <div class="run-stat-item">
+                <span class="run-stat-icon"><i class="fas fa-heart-crack"></i></span>
+                <span class="run-stat-value">{{ run_stats.get('damage_taken', 0) }}</span>
+                <span class="run-stat-label">Damage Taken</span>
+            </div>
+
+            <div class="run-stat-item">
+                <span class="run-stat-icon"><i class="fas fa-flask"></i></span>
+                <span class="run-stat-value">{{ run_stats.get('estus_used', 0) }}</span>
+                <span class="run-stat-label">Estus Used</span>
+            </div>
+
+            <div class="run-stat-item">
+                <span class="run-stat-icon"><i class="fas fa-bolt"></i></span>
+                <span class="run-stat-value">{{ run_stats.get('specials_fired', 0) }}</span>
+                <span class="run-stat-label">Specials Fired</span>
+            </div>
+
+            <div class="run-stat-item">
+                <span class="run-stat-icon"><i class="fas fa-map"></i></span>
+                <span class="run-stat-value">{{ run_stats.get('chapters_visited', 0) }}</span>
+                <span class="run-stat-label">Chapters Visited</span>
+            </div>
+
+            <div class="run-stat-item">
+                <span class="run-stat-icon"><i class="fas fa-crosshairs"></i></span>
+                <span class="run-stat-value">{{ run_stats.get('crits_landed', 0) }}</span>
+                <span class="run-stat-label">Critical Hits</span>
+            </div>
+
+            <div class="run-stat-item">
+                <span class="run-stat-icon"><i class="fas fa-coins"></i></span>
+                <span class="run-stat-value">{{ run_stats.get('souls_earned', 0) }}</span>
+                <span class="run-stat-label">Souls Earned</span>
+            </div>
+
+        </div><!-- /.run-stats-grid -->
+
+        {# ── Bosses defeated list ── #}
+        {% if run_stats.get('bosses_list') %}
+        <div class="completion-bosses-hit">
+            <p class="completion-bosses-title">
+                <i class="fas fa-check-circle"></i> Bosses Defeated
+            </p>
+            <div class="completion-bosses-tags">
+                {% for boss in run_stats.get('bosses_list', []) %}
+                <span class="completion-boss-tag completion-boss-tag--hit">
+                    <i class="fas fa-check"></i> {{ boss }}
+                </span>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+
+        {# ── Bosses missed — nudge toward NG+ ── #}
+        {% if bosses_missed %}
+        <div class="completion-bosses-missed">
+            <p class="completion-bosses-title completion-bosses-title--missed">
+                <i class="fas fa-question-circle"></i> Yet to be Found
+            </p>
+            <div class="completion-bosses-tags">
+                {% for boss in bosses_missed %}
+                <span class="completion-boss-tag completion-boss-tag--missed">
+                    <i class="fas fa-question"></i> ???
+                </span>
+                {% endfor %}
+            </div>
+            <p class="completion-missed-hint">
+                {{ bosses_missed | length }} boss
+                {{ 'encounter remains' if bosses_missed | length == 1 else 'encounters remain' }}
+                undiscovered. The cycle invites you to look deeper.
+            </p>
+        </div>
+        {% else %}
+        <div class="completion-perfect">
+            <i class="fas fa-trophy"></i>
+            <p>All bosses defeated. True completion achieved.</p>
+        </div>
+        {% endif %}
+
+    </div><!-- /.completion-summary -->
+    {% endif %}
+
+    {# ── NG+ mode buttons ── #}
+    {% if show_ng_plus %}
+    <div class="ng-plus-container">
+
+        <p class="ng-plus-flavour">
+            The cycle does not end. It turns again — darker, hungrier, unyielding.
+        </p>
+
+        <div class="ng-plus-modes">
+
+            <div class="ng-plus-mode-card">
+                <p class="ng-plus-mode-title">🔥 New Journey</p>
+                <p class="ng-plus-mode-desc">
+                    Choose a new class. Base stats. Souls carried (capped).
+                    Enemies are stronger.
+                </p>
+                <form method="POST" action="{{ url_for('main.ng_plus') }}">
+                    <button type="submit" class="btn btn--ng-plus">
+                        Begin Journey {{ ng_level + 2 }}
+                        <span class="ng-plus-sub">New class — fresh start</span>
+                    </button>
+                </form>
+            </div>
+
+            <div class="ng-plus-mode-card">
+                <p class="ng-plus-mode-title">⚔ Bearer's Legacy</p>
+                <p class="ng-plus-mode-desc">
+                    Continue as {{ character.class_name }}. Keep all upgraded
+                    stats. Souls carried (capped). Enemies are stronger.
+                </p>
+                <form method="POST" action="{{ url_for('main.ng_plus_legacy') }}">
+                    <button type="submit" class="btn btn--ng-plus btn--ng-plus-legacy">
+                        Continue as {{ character.class_name }}
+                        <span class="ng-plus-sub">Inherited stats — true NG+</span>
+                    </button>
+                </form>
+            </div>
+
+        </div><!-- /.ng-plus-modes -->
+
+    </div><!-- /.ng-plus-container -->
+    {% endif %}
+
+{% endif %}
+
+{% if show_secret_map %}
+<!-- ── Secret Map Icon ──────────────────────────────────────────────────
+     Pulses subtly bottom-right. Clicking opens a full-screen lightbox
+     with cryptic notes and two options: enter or return.
+     Click/keyboard wiring lives in story_nav.js as delegated listeners
+     on document.body — NOT an inline script here — because this block
+     gets destroyed and recreated on every chapter swap, and a fresh
+     element needs fresh listeners every time it reappears.
+── -->
+<button id="secret-map-btn" aria-label="A strange map" title="">
+    <img src="{{ url_for('static', filename='images/icons/secret_map.png') }}"
+         alt="A worn map, glowing faintly">
+</button>
+
+<div id="secret-map-lightbox" role="dialog" aria-modal="true" aria-label="The Shadow Map">
+    <div class="secret-map-inner">
+        <img
+            src="{{ url_for('static', filename='images/icons/secret_map.png') }}"
+            alt="The Shadow Map"
+            class="secret-map-fullimg"
+        >
+        <div class="secret-map-notes">
+            <p class="secret-map-title">❧ A Map Not Meant To Be Found ❧</p>
+            <p class="secret-map-text">
+                The parchment is old. Older than the kingdoms you have walked through,
+                older than the flame that lit them. The cartography is wrong in ways
+                that suggest the mapmaker could see places that should not be visible
+                from any surface vantage point. Annotations crowd the margins in a
+                script that predates language, and yet you can almost read them.
+                <em>Here lies what was kept from the burning.</em>
+                <em>Here lies what was too dangerous to remember.</em>
+                <em>Do not enter unless you are prepared to be changed by what you find.</em>
+                A golden thread marks a path into the tear. It ends at a single word:
+                <strong>Shadow.</strong>
+            </p>
+            <div class="secret-map-actions">
+                <form method="POST" action="{{ url_for('main.enter_shadow_realm') }}" style="display:inline;">
+                    <button type="submit" class="secret-map-btn--enter">
+                        ✦ Step Into The Shadow
+                    </button>
+                </form>
+                <button type="button" id="secret-map-close" class="secret-map-btn--return">
+                    ↩ Turn Back
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+{% endmacro %}

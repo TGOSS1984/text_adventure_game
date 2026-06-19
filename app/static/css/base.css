@@ -214,6 +214,23 @@ span {
     padding: var(--space-md);
 }
 
+/*
+ * Commit 32: #story-content wraps the per-chapter content so HTMX can
+ * swap it in place (see game.html / _game_content.html). Without this
+ * rule, .lore-box and friends are normal block children of that div
+ * instead of direct flex children of .bonfire-bg like they used to be
+ * — losing the per-item shrink-to-fit sizing that kept them narrow and
+ * centered, and instead stretching to fill the wrapper's full width on
+ * large screens. Re-declaring the same flex column here on the wrapper
+ * itself restores the original per-child sizing/centering exactly.
+ */
+#story-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+}
+
 .lore-box {
     background-color: var(--clr-bg-panel);
     padding: 10px;
