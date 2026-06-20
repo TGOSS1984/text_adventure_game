@@ -11,7 +11,7 @@
  *
  * Sequence (first load):
  *   0 ms   — page starts invisible, letterbox bars in place
- *  200 ms  — video overlay fades to 0.55 opacity
+ *  200 ms  — video overlay fades in (darkens the background video)
  *  600 ms  — letterbox bars retract (1 s ease)
  * 1400 ms  — h1 title fades + rises in (800 ms)
  * 2400 ms  — music soft-starts (if AudioManager present)

@@ -23,6 +23,21 @@
  * The 80ms debounce is also lengthened to 150ms and supplemented with a
  * post-click 350ms re-check so arrow state is always correct after smooth
  * scrolling completes.
+ *
+ * Bug fix 2: left arrow never appeared on some mobile Safari/iOS versions,
+ * even after swiping well past the first card.
+ *
+ * Root cause: arrow/dot state only updated via the 'scroll' event when
+ * 'onscrollend' in window was false. On some iOS Safari versions, that
+ * feature-detection is a false positive -- the scrollend event property
+ * exists, but the event itself doesn't reliably fire for touch-driven
+ * momentum scrolling, only for programmatic/mouse scrolls. Result: arrow
+ * state froze at whatever it was computed at page load (idx=0 -> left
+ * hidden, right shown) and never updated again on touch.
+ *
+ * Fix: always attach the debounced 'scroll' listener as a reliable
+ * baseline, and treat scrollend as a purely additive, optional speed-up
+ * where it happens to work, rather than the sole update path.
  */
 
 (function () {
@@ -83,18 +98,29 @@
             });
         }
 
-        // Use scrollend where supported (fires once after scroll fully settles).
-        // Fall back to a 150ms debounce — long enough for smooth-scroll to finish.
+        // Always run the debounced scroll listener as a reliable baseline —
+        // scrollend has known gaps on some Safari/iOS versions where the
+        // event property exists ('onscrollend' in window is true) but the
+        // event doesn't actually fire for touch-driven momentum scrolling,
+        // only for programmatic/mouse scrolls. Trusting that feature
+        // detection exclusively meant arrow/dot state could freeze at
+        // whatever it was computed at page load (idx=0 -> left arrow
+        // hidden, right arrow shown) and never update again on touch,
+        // which is exactly "right arrow shows, left arrow never does"
+        // regardless of how far the carousel was actually swiped.
+        let scrollTimer;
+        trackEl.addEventListener('scroll', () => {
+            clearTimeout(scrollTimer);
+            scrollTimer = setTimeout(() => { updateArrows(); updateDots(); }, 150);
+        }, { passive: true });
+
+        // scrollend, where it reliably fires, gives a snappier update than
+        // waiting out the 150ms debounce above — harmless to also have it,
+        // since both just call the same idempotent update functions.
         if ('onscrollend' in window) {
             trackEl.addEventListener('scrollend', () => {
                 updateArrows();
                 updateDots();
-            }, { passive: true });
-        } else {
-            let scrollTimer;
-            trackEl.addEventListener('scroll', () => {
-                clearTimeout(scrollTimer);
-                scrollTimer = setTimeout(() => { updateArrows(); updateDots(); }, 150);
             }, { passive: true });
         }
 

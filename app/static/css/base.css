@@ -116,6 +116,14 @@ html, body {
     height: auto;
     margin: 0;
     padding: 0;
+    /* Safety net: without this, anything that overflows the viewport
+       width (even by a pixel or two -- a fixed-width element, a hover
+       scale/transform, rounding) makes the whole page horizontally
+       scrollable/pannable on mobile, which is confusing and can make
+       it look like a touch carousel has more (or less) range than it
+       actually does. .carousel-track's own overflow-x:auto is its own
+       independent scroll container and is unaffected by this. */
+    overflow-x: hidden;
 }
 
 body {
@@ -190,7 +198,18 @@ h1, h2 {
 
 h1 {
     font-family: var(--font-title);
-    font-size: 5rem;
+    /* Fluid scaling instead of a fixed 80px -- "Elden Souls" at a flat
+       5rem rendered far wider than any phone viewport with nothing to
+       shrink it, which was the actual root cause of the whole-page
+       horizontal overflow/pan bug on mobile (this is also why "drag
+       right" ever revealed anything in the first place -- the title
+       was the wide element). Scales down smoothly on narrow screens,
+       reaches the original 80px ceiling at ~728px and up so desktop
+       and tablet are visually unchanged.
+       Also benefits Bestiary/Merchant's Wares/Bearer's Status, which
+       all use a bare <h1> too. death.html's "YOU DIED" has its own
+       inline font-size and is unaffected either way. */
+    font-size: clamp(2.2rem, 11vw, 5rem);
 }
 
 h2 {

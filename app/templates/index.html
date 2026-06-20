@@ -75,14 +75,6 @@ Carousel upgrade:
         {% endif %}
         {% endwith %}
 
-        {% if total_runs and total_runs > 0 %}
-        <div class="lifetime-banner">
-            <i class="fas fa-fire-flame-curved"></i>
-            {{ total_runs }} journey{{ 's' if total_runs != 1 else '' }}
-            {{ 'have' if total_runs != 1 else 'has' }} ended here before yours.
-        </div>
-        {% endif %}
-
         {% if session.get('ng_plus', 0) > 0 %}
         <div class="ng-plus-banner">
             <span class="ng-plus-badge">⚔ Journey {{ session.get('ng_plus', 0) + 1 }}</span>
@@ -134,7 +126,7 @@ Carousel upgrade:
                                 <span><i class="fas fa-heart"></i> HP: {{ cls.max_hp }}</span>
                                 <span><i class="fas fa-bullseye"></i> Crit: {{ (cls.crit_chance * 100) | round(0) | int }}%</span>
                                 <span><i class="fas fa-running"></i> Dodge: {{ (cls.dodge_chance * 100) | round(0) | int }}%</span>
-                                <span><i class="fas fa-shield-virus"></i> Block: {{ (100 - cls.block_multiplier * 100) | round(0) | int }}%<span class="stat-block-suffix"></span></span>
+                                <span><i class="fas fa-shield-virus"></i> Block: {{ (100 - cls.block_multiplier * 100) | round(0) | int }}%<span class="stat-block-suffix"> reduced</span></span>
                                 <span><i class="fas fa-hat-wizard"></i> Mag.Def: {{ cls.magic_defense }}</span>
                             </div>
                             <div class="class-type-row">
@@ -299,6 +291,14 @@ Carousel upgrade:
                 <i class="fas fa-book-skull"></i> Bestiary &amp; Guide
             </a>
         </div>
+
+        {% if total_runs and total_runs > 0 %}
+        <div class="lifetime-banner" style="margin-top: 1rem;">
+            <i class="fas fa-fire-flame-curved"></i>
+            {{ total_runs }} journey{{ 's' if total_runs != 1 else '' }}
+            {{ 'have' if total_runs != 1 else 'has' }} ended here before yours.
+        </div>
+        {% endif %}
 
     </div><!-- /.bonfire-bg -->
 
