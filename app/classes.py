@@ -59,7 +59,7 @@ CLASSES = {
         "attack":           17,
         "magic_attack":     0,
         "defense":          16,
-        "magic_defense":    10,
+        "magic_defense":    12,
         "max_hp":           170,
         "mp_max":           80,
         # ── Combat modifiers ──────────────────────────────────────────────────

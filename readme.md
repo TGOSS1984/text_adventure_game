@@ -7,7 +7,7 @@
 [![CSS](https://img.shields.io/badge/CSS-Custom_Properties-1572B6?style=for-the-badge&logo=css3&logoColor=white)]()
 [![Chapters](https://img.shields.io/badge/Story_Chapters-137-gold?style=for-the-badge)]()
 [![Bosses](https://img.shields.io/badge/Bosses-18-crimson?style=for-the-badge)]()
-[![Classes](https://img.shields.io/badge/Classes-6-purple?style=for-the-badge)]()
+[![Classes](https://img.shields.io/badge/Classes-10-purple?style=for-the-badge)]()
 
 [![GitHub](https://img.shields.io/badge/GitHub-Repository-181717?style=for-the-badge&logo=github)](https://github.com/TGOSS1984/text_adventure_game)
 [![Live Demo](https://img.shields.io/badge/Heroku-Live_Demo-430098?style=for-the-badge&logo=heroku)](https://elden-souls-text-adventure-app-6406dec306fc.herokuapp.com/)
@@ -15,37 +15,65 @@
 ---
 
 ## 📸 Screenshots
-
+ 
 ### 🏠 Title / Character Select Screen
-
+ 
 ![Game screen](app/static/images/screenshots/game_screen.PNG)
 > *The atmospheric character select screen with class carousel and lore panels*
-
+ 
 ---
-
+ 
 ### 📖 Story Screen
-
+ 
 ![Story screen](app/static/images/screenshots/story_screen.PNG)
 > *The main story interface — typewriter narrative, branching choices and the looping bonfire video background*
-
+ 
 ---
-
+ 
+### 🔥 Rest Screen
+ 
+![Rest screen](app/static/images/screenshots/rest_screen.PNG)
+> *A bonfire respite — HP, Estus Flasks and MP fully restored, with the merchant just a step away*
+ 
+---
+ 
+### 🏪 Merchant Screen
+ 
+![Merchant screen](app/static/images/screenshots/merchant_screen.PNG)
+> *The merchant's wares — spend souls on consumables and upgrades between battles*
+ 
+---
+ 
 ### ⚔️ Battle Screen
-
+ 
 ![Battle screen](app/static/images/screenshots/battle_screen.PNG)
 > *The turn-based combat UI — HP/MP bars, active effects strip, dual special abilities and the battle timer*
-
+ 
 ---
-
+ 
+### 📜 Status Screen
+ 
+![Status screen](app/static/images/screenshots/status_screen.PNG)
+> *The Bearer's status screen — full character stats and a running tally of the current journey's deeds*
+ 
+---
+ 
+### 📚 Bestiary Screen
+ 
+![Bestiary screen](app/static/images/screenshots/bestiary_screen.PNG)
+> *The bestiary & class compendium — enemy lore, locked-class previews and full stat breakdowns for every Bearer*
+ 
+---
+ 
 ### 💀 Death Screen
-
+ 
 ![Death screen](app/static/images/screenshots/death_screen.PNG)
 > *The death screen — atmospheric bonfire imagery and a prompt to begin again*
-
+ 
 ---
-
+ 
 ### 📐 Initial Wireframe
-
+ 
 ![Wireframe mockup](app/static/images/screenshots/wireframe_mockup.PNG)
 > *Early concept wireframe for the story/game screen layout*
 
@@ -68,6 +96,7 @@
   - [Souls & Shop](#souls--shop)
   - [Estus Flask Healing](#estus-flask-healing)
   - [Bonfire & Rest System](#bonfire--rest-system)
+  - [New Game Plus](#new-game-plus)
 - [Enemies & Bosses](#-enemies--bosses)
 - [Story & World](#-story--world)
   - [Story Architecture](#story-architecture)
@@ -88,7 +117,7 @@
 
 I have loved dark fantasy games — *Dark Souls*, *Elden Ring*, *Demon's Souls* — for a long time, but the root of this project goes further back. As a child, I was captivated by Ian Livingstone's *Fighting Fantasy* gamebooks: those *Choose Your Own Adventure* paperbacks where you played a lone hero navigating a monster-filled dungeon, making branching choices that led to wildly different outcomes, and rolling dice for turn-based combat that could end your run in an instant.
 
-I wanted to build something in that spirit — a modern, web-based version of those gamebooks, where your choices genuinely matter, where the world feels dark and atmospheric, and where the combat has enough tactical depth to make each fight feel meaningful. *Elden Souls* is that project: a text adventure with 137 chapters of branching story, six distinct character classes each with unique stat builds and abilities, a full turn-based combat system with dodge, block, and dual special moves, boss fights with phase changes, a secret hidden realm, and a gothic visual style inspired by FromSoftware's art direction.
+I wanted to build something in that spirit — a modern, web-based version of those gamebooks, where your choices genuinely matter, where the world feels dark and atmospheric, and where the combat has enough tactical depth to make each fight feel meaningful. *Elden Souls* is that project: a text adventure with 137 chapters of branching story, ten distinct character classes (six available from the start, four unlockable through play) each with unique stat builds and abilities, a full turn-based combat system with dodge, block, and dual special moves, boss fights with phase changes, a secret hidden realm, New Game+, and a gothic visual style inspired by FromSoftware's art direction.
 
 The game started as a pure Python console project and grew into a full Flask web application — a journey that taught me an enormous amount about OOP, session handling, HTMX, modular CSS, and what it actually takes to build something that feels *finished*.
 
@@ -102,22 +131,26 @@ The game started as a pure Python console project and grew into a full Flask web
 
 ## ✨ Features at a Glance
 
-- 6 unique playable classes, each with distinct stats, lore, and **dual special abilities**
+- 10 playable classes — 6 available from the start, 4 unlockable through play — each with distinct stats, lore, and **dual special abilities**
 - 137 story chapters across the main path, two optional branches, and a hidden Shadow Realm
 - 171+ choice-to-chapter mappings in a flat JSON dictionary, hot-reloaded on every choice
 - Turn-based combat: attack, dodge, block, Estus Flask, primary special, secondary special
 - 13 regular enemies with distinct damage types (physical, magic, mixed)
 - 18 bosses — 10 on the main path, 2 in optional story branches, 6 exclusive to the Shadow Realm
 - Two-phase boss fights with mid-battle lore reveals and increased damage
-- Active combat effects: damage-over-time (bleed/poison), attack buffs, damage shields, stun, life leech
+- Active combat effects: damage-over-time (bleed/poison), attack buffs, damage shields, stun, life leech, parry/counter, gambled heals
+- New Game+ — two modes (fresh class or carry your build forward), capped soul carryover, scaling enemies
 - Soul rewards from every encounter, spent in an in-world shop on permanent upgrades
 - Starting gift system — a unique item chosen at the start of each run
 - Bonfire rest system — restore HP and Estus, with a rotating selection of atmospheric background images
 - Secret Shadow Realm — a hidden optional route accessed via a glowing map icon appearing randomly on story chapters
-- Victory overlay — animated gold banner on boss defeat before redirect
+- Victory and Death overlays — animated banners in sync with their respective SFX before redirect
+- In-place HTMX story navigation — smooth chapter-to-chapter transitions with no page reload, so the background video never restarts
+- Cross-run lifetime stats — "N journeys have ended here before yours" banner on the title screen
 - Looping background video on desktop (static fallback on mobile)
-- Responsive design: 5-file CSS split using custom properties, HTMX battle fragment, animated class select carousel
+- Responsive design: 5-file CSS split using custom properties, HTMX battle fragment, animated class select carousel that scales up to 5 cards on large/ultrawide screens
 - Audio system: background music, combat sound effects, Estus flask audio, per-area tracks
+- 143-test automated suite (`pytest`) covering story integrity, save migration, and structural validation
 
 ---
 
@@ -255,16 +288,29 @@ Visit [http://127.0.0.1:5000](http://127.0.0.1:5000) in your browser.
 
 ### Character Classes
 
-Six classes are available at the start of each run. Every class is fully defined in `classes.py` as the single source of truth — stats, special moves, lore, assets, and combat modifiers all live in one place.
+Ten classes exist in total — six available from the start, and four unlockable through play. Every class is fully defined in `classes.py` as the single source of truth — stats, special moves, lore, assets, and combat modifiers all live in one place.
+
+**Starting classes:**
 
 | Class | HP | MP | Phys ATK | Magic ATK | Phys DEF | Magic DEF | Dodge | Block | Crit | Damage Type | Primary Special | Secondary Special |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|
 | Knight | 160 | 80 | 17 | — | 15 | 10 | 20% | 75% | 20% | Physical | Shield Bash | War Cry |
-| Mage | 110 | 120 | — | 28 | 6 | 18 | 60% | 60% | 30% | Magic | Arcane Burst | Nullfield |
+| Mage | 110 | 120 | — | 28 | 6 | 18 | 60% | 40% | 30% | Magic | Arcane Burst | Nullfield |
 | Rogue | 130 | 100 | 22 | — | 8 | 6 | 70% | 50% | 40% | Physical | Smoke Screen | Backstab |
 | Archer | 140 | 100 | 20 | — | 10 | 8 | 50% | 60% | 50% | Physical | Mark Target | Poison Arrow |
 | Paladin | 150 | 90 | 18 | 18 | 12 | 14 | 40% | 70% | 20% | Mixed | Healing Light | Hammer of Justice |
 | Necromancer | 100 | 130 | — | 24 | 10 | 22 | 55% | 50% | 25% | Magic | Raise the Dead | Soul Leech |
+
+**Unlockable classes:**
+
+| Class | HP | MP | Phys ATK | Phys DEF | Magic DEF | Dodge | Block | Crit | Damage Type | Primary Special | Secondary Special | Unlock Condition |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| Wretch | 120 | 90 | 16 | 8 | 8 | 45% | 50% | 30% | Physical | Desperate Strike | Fortune's Favour | *Always available — no condition* |
+| Barbarian | 170 | 70 | 24 | 10 | 6 | 25% | 55% | 25% | Physical | Berserker Rage | Feel No Pain | Complete the main story (any ending) |
+| Samurai | 135 | 110 | 23 | 12 | 7 | 55% | 55% | 45% | Physical | Iaijutsu | Iron Stance | Defeat Mesmereth in the Shadow Realm |
+| Hunter | 125 | 100 | 21 | 9 | 7 | 60% | 40% | 45% | Physical | Trick Weapon | Hunter's Mark | Complete a New Game+ run (any mode, any ending) |
+
+Locked classes still appear on the Bestiary's Classes tab with full portrait, lore, stats, and both specials visible behind a lock badge — a teaser for what's waiting to be unlocked.
 
 **Knight** — An ironclad brawler built to absorb punishment. High HP and defense, and the highest block reduction in the game (75% damage reduced). Slow to dodge at just 20% but unmatched in sustained durability. Lore: *Once a sentinel of the Sunken Citadel, their oath was not broken — only forgotten. Clad in rusted honour, they march through death unbent.*
 
@@ -277,6 +323,14 @@ Six classes are available at the start of each run. Every class is fully defined
 **Paladin** — A hybrid warrior who deals both physical and magic damage, the only class to do so. Well-rounded stats with solid defense on both types, a healing primary special, and a stun secondary. The most forgiving class for new players. Lore: *Oathbound to a god who no longer answers, the Paladin carries faith as a weapon and a wound.*
 
 **Necromancer** — The highest-risk, highest-reward class. Tied for lowest HP in the game (100) but compensated by the highest magic defense (22), a 55% dodge chance, and the largest MP pool (130). Soul Leech heals for 150% of damage dealt and can completely turn a losing fight around. Lore: *They do not fear death. They have spoken to it, bargained with it, and worn its face as a mask.*
+
+**Wretch** — The chaos pick, available from the very first run with no unlock required. Deliberately mediocre base stats; the risk/reward lives entirely in the specials — Desperate Strike is a flat random roll (5–60 damage) with zero stat scaling, win or lose entirely on luck. Fortune's Favour is a 50/50 coin flip: a big heal, or a smaller one plus a fury buff as a consolation prize. Lore: *They arrived at the Ashen Ruins with nothing — no name, no weapon, no plan. Somehow, they are still here. The world has not decided what to do with them yet. Neither have they.*
+
+**Barbarian** — Unlocked by finishing the main story once, on any ending. Overwhelms rather than endures — Berserker Rage stacks an attack buff and a heal-over-time at once, and Feel No Pain grants full damage immunity for 2 turns, the only 100% damage shield in the game. Lore: *There are no tactics in the Barbarian's eyes — only the arithmetic of force. They have broken every chain that tried to hold them, including their own mercy.*
+
+**Samurai** — Unlocked by defeating Mesmereth, the Shadow Realm's final boss. The highest crit chance of any physical class (45%) paired with a unique parry mechanic — Iron Stance halves incoming damage *and* auto-counters every hit landed against you for 3 turns. Iaijutsu lands two full-power strikes in one special. Lore: *They do not seek battle. Battle finds them, as it always has, and they meet it the same way every time — calmly, completely, and without regret. The blade has been drawn ten thousand times. It has never been drawn wrong.*
+
+**Hunter** — Unlocked by completing a New Game+ run. A Bloodborne-inspired evasion build with the lowest block of any physical class (40%) — built to never get hit rather than shrug it off. Trick Weapon is the hardest-hitting physical special in the game (2.5× attack) with a stun; Hunter's Mark drains life back on every hit. Lore: *From the fog-choked streets of a city that no longer exists, the Hunter carries a weapon that remembers every kill it has ever made. The cleaver folds. The blunderbuss clicks. The hunt does not end — it only changes shape.*
 
 ---
 
@@ -306,7 +360,7 @@ Every battle is turn-based. On each turn the player selects one action, then the
 
 - **Dodge** — Attempt to avoid all incoming damage for the turn. Success is based on the class's `dodge_chance` (20% to 60%). A failed dodge means full incoming damage lands with no reduction. High-dodge classes like the Mage and Rogue should use this aggressively.
 
-- **Block** — Reduce incoming damage by the class's `block_multiplier`. The Knight reduces incoming damage to just 25% (the best block in the game); the Mage blocks 50%, other classes fall between. Blocking never fails — but it also provides no damage output.
+- **Block** — Reduce incoming damage by the class's `block_multiplier`. The Knight reduces incoming damage to just 25% of the hit (a 75% reduction — the best block in the game); the Mage lets 60% through (a 40% reduction), with other classes falling between. Blocking never fails — but it also provides no damage output.
 
 - **Use Estus Flask** — Consume one flask to heal 70% of max HP. Estus is a finite resource (5 flasks per run, refilled at bonfires). The screen pulses green with rising bubble animations when a flask is used.
 
@@ -336,14 +390,20 @@ When either special fires, both buttons grey out simultaneously and display a co
 
 | Class | Primary Special | Secondary Special |
 |---|---|---|
-| Knight | 🛡 Shield Bash — normal damage + stun | ⚔ War Cry — +5 attack for 3 turns |
-| Mage | ✨ Arcane Burst — 2× magic, ignores armour | 🔮 Nullfield — 50% incoming damage blocked for 2 turns |
-| Rogue | 💨 Smoke Screen — attack + dodge buff | 🗡 Backstab — 0.5× hit + bleed (8 dmg/turn × 4 turns) |
-| Archer | 🎯 Mark Target — 2× guaranteed crit | ☠ Poison Arrow — 7 poison dmg/turn × 5 turns |
+| Knight | 🛡 Shield Bash — normal damage + stun | ⚔ War Cry — +25% attack and +20% defense for 3 turns |
+| Mage | ✨ Arcane Burst — 2× magic, ignores armour | 🔮 Nullfield — 50% incoming damage blocked for 3 turns |
+| Rogue | 💨 Smoke Screen — attack + dodge buff | 🗡 Backstab — 0.5× hit + bleed (3.5% max HP/turn × 4 turns) |
+| Archer | 🎯 Mark Target — 2× guaranteed crit | 🏹 Poison Arrow — 3% enemy max HP poison/turn × 5 turns |
 | Paladin | ✝ Healing Light — 40% HP restore + stun | 🔨 Hammer of Justice — 1.5× mixed damage + stun |
-| Necromancer | 💀 Raise the Dead — 2.5× magic burst | 🩸 Soul Leech — 1.5× magic + heal 100% of damage dealt (min 15 HP) |
+| Necromancer | 💀 Raise the Dead — 2.5× magic burst | 💉 Soul Leech — 1.5× magic + heal 150% of damage dealt (min 12% max HP) |
+| Wretch | 🎲 Desperate Strike — random 5–60 damage, no stat scaling | 🪙 Fortune's Favour — 50% chance: heal 50% HP. 50% chance: small heal + 20% attack buff for 2 turns |
+| Barbarian | 💢 Berserker Rage — +25% attack for 3 turns AND heal 5% max HP/turn for 3 turns | 🗿 Feel No Pain — 100% incoming damage blocked for 2 turns |
+| Samurai | ⚔ Iaijutsu — two strikes, each at full attack power | 🛡 Iron Stance — 50% incoming damage blocked for 3 turns AND auto-counter 50% attack on every hit landed |
+| Hunter | 🪓 Trick Weapon — 2.5× attack + stun | 🩸 Hunter's Mark — 1.5× attack, heal equal to damage dealt (min 10% max HP) |
 
 MP regenerates by 25 per standard attack. Running low on MP means falling back on basic attacks while the cooldown ticks down — a deliberate resource tension.
+
+The four unlockable classes introduce new special-effect types beyond the original roster: `combo_buff_hot` (a buff and a heal-over-time fired by the same special), `double_hit` (two full attacks in one special), `random_hit` (pure chance damage with no stat scaling at all), `parry` (a damage shield that also auto-counters), and `gamble_heal` (a 50/50 coin-flip heal).
 
 ---
 
@@ -352,10 +412,12 @@ MP regenerates by 25 per standard attack. Running low on MP means falling back o
 Secondary specials can apply persistent status effects that are tracked across turns and displayed as colour-coded pills in the battle HUD:
 
 - **Damage Over Time** 🔴 — Bleed or Poison ticks at the start of each player turn for a set number of turns. Labels and messages are configurable in `config.py`.
-- **Attack Buff** 🟡 — A flat bonus is added to the player's attack stat for a set number of turns, then expires naturally with a message in the battle log.
-- **Damage Shield** 🩵 — A percentage of incoming damage is absorbed. The Mage's Nullfield absorbs 50% of all incoming damage for 2 turns.
+- **Attack Buff** 🟡 — A flat or percentage bonus is added to the player's attack (and sometimes defense) for a set number of turns, then expires naturally with a message in the battle log.
+- **Damage Shield** 🩵 — A percentage of incoming damage is absorbed. The Mage's Nullfield absorbs 50% of all incoming damage for 3 turns; the Barbarian's Feel No Pain absorbs 100% for 2 turns.
+- **Parry / Counter** ⚔ — The Samurai's Iron Stance combines a damage shield with an automatic counter-attack on every hit landed against the player while it's active.
 - **Stun** — Prevents the enemy from counterattacking on the turn it is applied.
-- **Life Leech** — The Necromancer's Soul Leech heals the player for the full damage dealt (minimum 15 HP), enabling dramatic mid-fight recoveries.
+- **Life Leech** — Soul Leech and Hunter's Mark heal the player based on damage dealt, enabling dramatic mid-fight recoveries.
+- **Gambled Heal** — The Wretch's Fortune's Favour is a 50/50 coin flip between a large heal and a smaller one plus a consolation attack buff.
 
 ---
 
@@ -368,14 +430,16 @@ Every defeated enemy drops a soul reward, calculated from a formula balancing HP
 | Item | Effect | Cost |
 |---|---|---|
 | Estus Refill | Restore all Estus Flasks | 150 souls |
-| Cracked Red Shard | +3 attack (permanent) | 200 souls |
-| Cracked Blue Shard | +3 defense (permanent) | 175 souls |
-| Vessel of Embers | +20 max HP (permanent) | 250 souls |
-| Greater Vessel of Embers | +30 max HP (permanent) | 350 souls |
-| Wraith-Step Pendant | +10% dodge chance (permanent) | 225 souls |
-| Ironwall Talisman | Block damage reduced a further 10% (permanent) | 200 souls |
-| Sharpened Crit Stone | +10% crit chance (permanent) | 225 souls |
-| Executioner's Lens | +0.25× crit damage multiplier (permanent) | 275 souls |
+| Cracked Red Shard | +3 attack (permanent) | 225 souls |
+| Cracked Blue Shard | +3 defense (permanent) | 200 souls |
+| Vessel of Embers | +20 max HP (permanent) | 275 souls |
+| Greater Vessel of Embers | +30 max HP (permanent) | 400 souls |
+| Wraith-Step Pendant | +5% dodge chance (permanent) | 260 souls |
+| Ironwall Talisman | Block damage reduced a further 5% (permanent) | 225 souls |
+| Sharpened Crit Stone | +5% crit chance (permanent) | 260 souls |
+| Executioner's Lens | +0.25× crit damage multiplier (permanent) | 325 souls |
+
+The three percentage-based upgrades (Wraith-Step Pendant, Ironwall Talisman, Sharpened Crit Stone) are capped at a lifetime maximum of +15% above the class's base value, enforced in `shop_routes.py` — this matters most across New Game+ runs, where repeated purchases could otherwise stack indefinitely.
 
 Mid-to-late-game boss HP values are scaled to expect 2–3 shop upgrades — particularly the Ember Tyrant (320 HP), Cindergloom (380 HP in the rebalanced version), and Mesmereth (420 HP).
 
@@ -397,6 +461,23 @@ When a story chapter has the `rest: true` flag, the player enters a bonfire rest
 - Sets a randomised atmospheric background image from the `REST_BGS` pool (Firelink Shrine, and four bonfire variants)
 
 The active rest background is stored per-session as `session["rest_bg"]` and rendered via a CSS custom property `var(--rest-bg)` set inline on `<body>`. The bonfire screen includes ember particle animations for atmosphere.
+
+---
+
+### New Game Plus
+
+Completing any ending unlocks two ways to begin again with carried-over progress:
+
+- **New Journey** — pick a fresh class from scratch. Stats reset to that class's base values.
+- **Bearer's Legacy** — keep your current class and every upgraded stat exactly as it stood at the end of the run, including shop upgrades.
+
+Both modes:
+- Cap souls carried into the new run at 600 (`NG_PLUS_SOUL_CAP`) — anything above that is discarded, with a flash message confirming how much carried over
+- Scale every enemy: **+35% HP**, **+20% attack/magic attack**, and **+25% soul reward** per New Game+ level (so NG+2 enemies are scaled at double those percentages, and so on)
+- Skip the starting-gift screen entirely — no gift is offered on NG+ runs
+- Increment `session["ng_plus"]`, which drives a red "Journey N" banner on the title screen for the rest of that run
+
+Completing a NG+ run (either mode, any ending) is the unlock condition for the Hunter class.
 
 ---
 
@@ -717,11 +798,14 @@ Token values are defined in `base.css` `:root` and include:
 **HTMX Battle Fragment**
 The battle screen uses HTMX 1.9.12 to update only the battle state partial (`battle_fragment.html`) on each turn — no full page reloads. The `_battle_hud.html` partial handles the HP/MP bars and active effects strip. HTMX's `htmx:beforeOnLoad` (not `htmx:beforeRedirect`, which does not work in v1.9.x) is used to intercept the `HX-Redirect` header and show the Victory Overlay before navigating.
 
-**Victory Overlay**
-When an enemy's HP reaches 0, the battle loop sets an `HX-Redirect` header. Before the browser follows it, `htmx:beforeOnLoad` fires, displaying an animated "Victory Achieved" overlay — gold text, a faded banner, dark background — for 2.8 seconds before allowing the navigation to proceed. The death screen is unaffected and navigates normally.
+**HTMX Smooth Story Navigation**
+Story-chapter-to-story-chapter choices also swap in place via HTMX (`#story-content`, swapped against `game_fragment.html`) instead of triggering a full page reload — the persistent background video, menu, and audio controls live in a shell around the swap target and are never destroyed, so the video plays continuously across a sequence of chapter clicks rather than restarting from frame 0 every time. Transitions into or out of a rest chapter, or into a battle, still do a full reload by design, since the background is genuinely meant to change there. A `_render_chapter()` helper is the single source of truth used by both the full-page GET path and the in-place fragment path, so the two can never drift out of sync.
+
+**Victory & Death Overlays**
+When an enemy's HP reaches 0, the battle loop sets an `HX-Redirect` header. Before the browser follows it, `htmx:beforeOnLoad` fires, displaying an animated "Victory Achieved" overlay — gold text, a faded banner, dark background — in sync with the victory SFX, for 8.5 seconds before allowing the navigation to proceed. When the player's own HP reaches 0 instead, the same mechanism shows a mirrored crimson "You Died" banner in sync with a scream SFX before moving on to the death screen, where `death.mp3` plays separately on its own.
 
 **Class Select Carousel**
-The character select screen uses a carousel with responsive card counts: 3 cards visible on desktop, 2 on tablet, 1 on mobile. Cards display class portrait, lore, both special ability names, and core stats. A critical CSS ordering note: `pages.css` loads after `components.css`, so the mobile `.class-option { max-width: 260px }` rule in `pages.css` must match the `carousel-item` width in `components.css` or cards will overflow their container.
+The character select screen uses a carousel with responsive card counts: 1 card on the smallest phones, 2 on tablets, 3 on standard desktop screens, scaling up further to 4 cards at 1600px and 5 cards at 2000px+ so ultrawide monitors aren't left with a narrow column and huge unused margins. Cards display class portrait, lore, both special ability names, and core stats — including a lock badge with the unlock condition for the four unlockable classes. `carousel.js` reads the active card count directly from the `--cards-visible` CSS custom property at runtime rather than hardcoding it, so the JS and CSS can never drift out of sync as new breakpoints are added.
 
 **Active Effects Pills**
 During battle, active status effects are shown as colour-coded pills in the HUD strip:
@@ -734,6 +818,15 @@ Story text is rendered character-by-character using `typewriter.js`, giving each
 
 **Ember Particles**
 Bonfire and rest screens display an ember particle system (`ember_particles.js`) where glowing particles drift upward from the bottom of the screen, reinforcing the campfire atmosphere.
+
+**Bestiary — Classes Tab**
+Alongside the Enemy Codex, the Bestiary has a Classes tab mirroring the same visual pattern: portrait, full stats, lore, and both specials for every one of the ten classes — including the four unlockable ones, shown behind a lock badge with their unlock condition rather than hidden entirely.
+
+**Cross-Run Lifetime Stats**
+The title screen shows a small gold banner — "N journeys have ended here before yours" — tracking total completed runs across all sessions via `player_record.json`. It's hidden entirely at zero runs and uses correct singular/plural grammar at exactly one.
+
+**Mobile Responsiveness Pass**
+Beyond the carousel breakpoints, a dedicated mobile pass tightened up the battle, character-select, and story screens specifically for phones: the enemy lore disclosure defaults to collapsed on mobile (still open by default on desktop) to save vertical space, the class-stat list switches to a 2-column grid, the story screen's six nav buttons switch from an uneven wrapping row to a clean 2-column grid mirroring the battle screen's own action-button layout, and a global `overflow-x: hidden` safety net plus fluid `clamp()`-based heading sizes prevent the page from becoming horizontally pannable on narrow viewports.
 
 ---
 
@@ -865,6 +958,7 @@ Throughout development, features were tested iteratively using both in-browser p
 | HTML validator | ✅ Pass (Flask/Jinja2 syntax excluded as expected) |
 | CSS validator | ✅ Pass |
 | JSHint | ✅ Pass |
+| `pytest` suite (143 tests) | ✅ Pass |
 
 ---
 
@@ -888,62 +982,63 @@ Enemy lore was stored in the session via object reference rather than as individ
 **`session["rest_bg"]` not persisting across rest entry**
 Rest background was being randomly selected but not committed to session before the redirect. Ensured `session.modified = True` is set after writing the new value.
 
+**Shield damage reduction outliving its duration**
+A class's shield percentage (e.g. Barbarian's Feel No Pain) was reset to 0 only via the turn-decrement path for `shield_turns`, but the function that actually applies the shield to incoming damage only checked `shield_pct > 0`, never `shield_turns`. Once a shield was cast, the percentage silently never cleared again unless that same special was recast — blocking nearly all damage for the rest of the fight, far past the intended duration. Fixed by explicitly zeroing `shield_pct` the instant `shield_turns` reaches 0, mirroring how the buff system already clears its own secondary amount at the same point.
+
+**Dead or abandoned runs resumable via the Bestiary's "Continue Story" link**
+Two related exploits, fixed the same way: `session["character"]`/`session["chapter"]` are left untouched both when a player dies and when they return to the title screen without saving — neither action actually clears the session. The Bestiary's `mid_run` check only looked for `session["character"]` existing, so "Continue Story" would silently resume a run that should have been over. Fixed with two explicit flags — `session["game_over"]` (set the instant HP hits 0) and `session["at_title"]` (set whenever the title screen renders, cleared the moment `/game` is genuinely reached again, e.g. via Save/Load) — both checked by the Bestiary route and, for the death case, defensively re-checked at the top of `/game` itself so the exploit can't be reached through any other path either (browser back button, a bookmarked URL).
+
+**Carousel left arrow never reappearing after a touch swipe on some iOS Safari versions**
+Arrow/dot visibility only updated via a debounced `scroll` listener when `'onscrollend' in window` was false. That feature check is a false positive on some Safari/iOS versions — the `scrollend` event property exists, but the event itself doesn't reliably fire for touch-driven momentum scrolling, only for programmatic or mouse-driven scrolls. Arrow-click scrolling is programmatic, so that path always worked, masking the bug — but real finger-swiping silently never re-evaluated arrow state, freezing it at whatever it was computed at page load. Fixed by always attaching the debounced `scroll` listener as the reliable baseline, treating `scrollend` as a purely additive speed-up where it happens to work rather than the sole update path.
+
+**Whole page horizontally pannable on mobile**
+`<h1>` had a fixed `5rem` font-size with no responsive scaling anywhere — "Elden Souls" at that size rendered far wider than any phone viewport, and with no `overflow-x: hidden` safety net on `html`/`body`, that excess width made the entire page horizontally draggable rather than just the intended carousel. Fixed with a fluid `clamp(2.2rem, 11vw, 5rem)` so the title scales down on narrow screens (reaching the original size again above ~728px), plus the `overflow-x: hidden` safety net as defense-in-depth against any future element doing the same thing.
+
 ---
 
-### Automated Testing (Planned)
+### Automated Testing
 
-> The following test classes are planned for a future update using Flask's built-in test client and `pytest`.
+A `pytest` suite of **143 tests** runs against the actual story data and save logic — not planned, fully implemented and passing.
 
-**`test_combat.py`** — Unit tests for `BattleManager`:
-- Correct damage calculation for physical and magic attack types
-- PHYS_PEN applied at the correct factor
-- Crit rolls and multipliers applied correctly
-- Dodge success/failure at boundary probabilities
-- Block multiplier applied per class
-- Estus heal at 70% max HP; no heal when flasks empty
-- Phase 2 trigger at 50% boss HP
-- Soul reward added to session on enemy death
+```bash
+pytest tests/ -q
+```
 
-**`test_routes.py`** — Flask route integration tests:
-- `/start` correctly writes class stats, gift, and Estus to session
-- `/choose` resolves choice keys to correct chapter IDs
-- `/battle` returns updated HP/MP state after each action
-- `/enter_shadow_realm` stores return chapter and redirects to Ch103
-- `/leave_shadow_realm` returns to stored chapter
-- `/buy` deducts souls and applies upgrade; rejects purchase with insufficient souls
+> **Note:** `pytest.ini` sets `pythonpath = .` at the project root. Without it, running a bare `pytest` (rather than `python -m pytest`) fails with a `ModuleNotFoundError` on some setups, since the working directory isn't automatically added to `sys.path`.
 
-**`test_story.py`** — Story engine tests:
-- `choose_path()` correctly resolves all 171+ entries in `choices_mapping.json`
-- Chapter JSON files load without errors for all IDs 0–147
-- Battle/boss/rest flags present and correctly typed in all chapter files
+**`test_story_integrity.py`** (138 tests):
+- `test_chapter_structure` — parametrized once per chapter ID across all 137 chapter files, verifying every chapter has the required fields and correctly-typed `battle`/`boss`/`rest` flags
+- `test_choice_mapping_connectivity` — every entry in `choices_mapping.json` resolves to a chapter ID that actually exists on disk
+
+**`test_save_migration.py`** (5 tests):
+- Builds a save dict shaped like an old session-version save (missing newer keys such as `ng_plus`, `shadow_realm_completed`, etc.) and verifies `load_game()` correctly backfills every missing key to its current default via `SESSION_DEFAULTS`, so older saves never crash on load after a version bump
+
+**`test_story_structure.py`**:
+- Currently holds a `walk()` path-reachability helper used for ad-hoc verification of branch connectivity; not yet wired into standalone `test_*` functions
 
 ---
 
 ## 🔮 Known Issues & Future Enhancements
 
-**Pending Assets**
-- Placeholder images still needed: `starbound_colossus.png`, `gilded_predator.png`, `saintess_of_rot.png`, `moon_sworn_blade.png`, `mesmereth.png`, `vaelhis.png` in `static/images/enemies/`, and `secret_map.png` in `static/images/icons/`
-
-**Shadow Realm Completion Flag**
-- The `session["shadow_realm_completed"]` guard to suppress the secret map icon after the realm has been completed is planned but not yet implemented
+**Mobile Carousel Touch Range (open issue)**
+On some real mobile devices, the class-select and gift carousels can be swiped toward one end freely but won't reach all the way back to the first card/option — `scrollLeft` appears to never return fully to 0 via touch, even though clicking the left arrow button (which is JS-driven rather than a native gesture) works correctly. Confirmed not caused by the carousel's edge-fade mask (symmetric, doesn't explain a one-sided limit) or by `carousel.js` itself (it doesn't intercept native touch-scroll at all). Root cause not yet found — currently paused pending a rethink of how the mobile carousel should behave, rather than continuing to patch the existing touch-scroll approach.
 
 **Audio**
 - Secondary specials currently reuse primary special SFX — unique audio per secondary is planned
+- The Barbarian's primary special plays the Necromancer's `raise_the_dead.mp3` rather than its own `war_cry.mp3`, which exists but is unused
+- Samurai, Wretch, and Barbarian have no dedicated secondary-special sound yet (Hunter already has one)
 - Additional rest and area-specific background music tracks
 
 **Additional Rest Backgrounds**
 - Currently only `firelink.jpg` and four bonfire variants in `REST_BGS` — more atmospheric variants planned
 
-**Shop Pricing**
-- Shop prices have not yet been adjusted upward to account for mid-to-late-game soul rewards — balance pass planned
-
 **Future Features**
 - Levelling system with XP gain from combat
 - Expanded bestiary with lore entries for all enemies
-- Mobile-first layout pass for the battle screen
 - Character screen with equipment/upgrade history
 - New story branches and additional ending variants
 - Additional enemy visual animations during combat
+- `player_record.json` (unlocked classes, lifetime run count) is a single shared file with no per-user key — on a live multi-visitor deployment, unlocks and the lifetime-runs banner are shared across every visitor rather than tracked individually. A real fix needs an external database (Heroku's filesystem is ephemeral, so SQLite wouldn't survive any better than the current JSON file) — deliberately deferred for now
 
 ---
 
